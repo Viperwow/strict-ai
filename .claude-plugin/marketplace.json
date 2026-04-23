@@ -1,0 +1,27 @@
+{
+  "name": "strict-ai",
+  "owner": {
+    "name": "Viperwow",
+    "email": "viperkodiak@gmail.com"
+  },
+  "metadata": {
+    "description": "Personal Claude Code plugin marketplace",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "jira",
+      "source": "./plugins/jira",
+      "description": "Jira workflow skills",
+      "version": "0.1.0",
+      "category": "integrations"
+    },
+    {
+      "name": "misc",
+      "source": "./plugins/misc",
+      "description": "Miscellaneous utility skills",
+      "version": "0.1.0",
+      "category": "utilities"
+    }
+  ]
+}
