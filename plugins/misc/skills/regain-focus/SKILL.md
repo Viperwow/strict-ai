@@ -76,6 +76,27 @@ Time-of-day modifier: in `late` window, cap at `low` regardless of the self-repo
 
 Always render a single line at the top of the output showing what was used, e.g. `Energy: mid (self-report) · Time: afternoon` or `Energy: low (inferred from evening) · Time: evening`.
 
+## Task Link (when available)
+
+Directly under the energy/time header, render a dedicated line with a direct link to the task when a URL can be resolved for it. The goal is one-click jump from the console.
+
+Sources to resolve the link, in priority order:
+1. Jira issue key → `<JIRA_BASE_URL>/browse/<KEY>` (base URL from env, memory, or session context).
+2. GitHub / GitLab issue or PR URL present in the session or recent activity.
+3. Any other tracker URL mentioned in the session (Linear, Asana, Notion, etc.).
+4. A local path reference (e.g. a plan file or design doc) — render as a plain path link.
+
+Format:
+
+```
+Task: [<key or short title>](<url>)
+```
+
+Rules:
+- Markdown link so terminals that support hyperlinks make it clickable; the raw URL stays visible in plain terminals.
+- When multiple candidate URLs exist, pick the single most canonical one (Jira > GitHub > other trackers > local path). List secondary links inline only when they add clear value, separated by ` · `.
+- When no URL can be resolved, omit the Task Link line entirely. Do not invent a URL.
+
 ## Output format
 
 Always emit the answer in this exact structure and order.
@@ -236,6 +257,7 @@ Check what skills actually exist in the current environment first. Only then nam
 ## Example response shape
 
 Energy: mid (self-report) · Time: afternoon
+· Task: [PROJ-123 — Data table with server-side pagination](https://example.atlassian.net/browse/PROJ-123)
 
 ## Task Summary
 - Built the initial table skeleton.
