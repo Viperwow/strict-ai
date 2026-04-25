@@ -33,13 +33,9 @@ Stopping rules:
 
 Credentials MUST be read exclusively from environment variables. Tokens MUST NOT be stored in memory beyond the duration of one request, and MUST NOT be written to plugin data files or logs.
 
-Required env vars are declared per-connector; typical patterns:
+Required env vars are declared per-connector. Concrete env var names live in the connector's own reference file. Typical naming pattern: `<SYSTEM>_BASE_URL`, `<SYSTEM>_API_TOKEN`, plus optional `<SYSTEM>_EMAIL` (Basic auth) or `<SYSTEM>_PAT` (Bearer token).
 
-- `JIRA_BASE_URL`, `JIRA_USER`, `JIRA_API_TOKEN` — Jira Cloud (Basic auth: `<email>:<token>` base64)
-- `JIRA_PAT` — Jira Data Center (Bearer token)
-- `TEMPO_API_TOKEN` — Tempo Cloud
-
-Credential layering: prefer Basic (email + API token) for Cloud instances; prefer Bearer PAT for Data Center instances. The connector MUST detect which auth scheme applies based on the probe result.
+Credential layering: where a system offers multiple auth schemes (e.g. hosted vs self-managed deployments), the connector MUST detect which scheme applies based on the probe result and select credentials accordingly. The connector reference MUST document the selection rule.
 
 Masking rules: any value — in printed output, logs, or error messages — whose key matches the pattern `Authorization|BEARER|TOKEN|PAT|API_KEY` (case-insensitive) MUST be masked. When the value cannot be omitted (e.g. in a debug trace), show the first 2 characters, `…`, and the last 2 characters only (e.g. `AT…3x`).
 
