@@ -27,7 +27,26 @@ Pagination and rate-limit handling inherit from `jira.md` §Capabilities without
 
 ## Output shape
 
-Returns an array of `WorkEvent` objects. Each element represents one discrete activity on a Jira issue that falls within the requested date window and is attributed to the specified assignee.
+Each call (`events_for` or `events_for_range`) returns ONE canonical envelope per `connector-pattern.md` §Output shape. The envelope's `data.events` field carries the array of `WorkEvent` records produced for the requested window.
+
+### Envelope
+
+```json
+{
+  "kind": "work-event-batch",
+  "source": "mcp | cli | rest",
+  "connector": "jira-activity",
+  "timestamp": "<ISO-8601 UTC>",
+  "data": {
+    "date": "YYYY-MM-DD",
+    "assignee": "user@example.com",
+    "project": "PROJ",
+    "events": [ /* WorkEvent[] */ ]
+  }
+}
+```
+
+`envelope.source` is the transport layer that produced the underlying Jira call (`mcp`, `cli`, or `rest`); it is unrelated to `WorkEvent.source`. For `events_for_range`, `data.date` MUST be omitted and `data.from` / `data.to` MUST be set instead.
 
 ### WorkEvent
 
@@ -43,7 +62,7 @@ Returns an array of `WorkEvent` objects. Each element represents one discrete ac
 }
 ```
 
-`summary` MUST be a single human-readable string combining the issue summary and a brief description of the change (e.g. `"PROJ-123 Fix login bug — status: In Progress → Done"`). `metadata` fields are populated where available; omit keys that have no value rather than emitting `null`.
+`summary` MUST be a single human-readable string combining the issue summary and a brief description of the change (e.g. `"PROJ-123 Fix login bug — status: In Progress → Done"`). `metadata` fields are populated where available; omit keys that have no value rather than emitting `null`. `WorkEvent.kind` is the inner event-type discriminator (status-change / comment / assignment / field-edit) and is distinct from the outer `envelope.kind` which is always `"work-event-batch"`.
 
 ## Event derivation
 
