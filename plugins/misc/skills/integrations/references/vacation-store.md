@@ -25,7 +25,7 @@ N/A. This connector reads no environment variables for authentication and contac
 - Operations:
   - `list_entries()` — returns the canonical envelope with `data.entries` carrying `VacationEntry[]`.
   - `add_entry(entry)` — appends a new entry; returns the canonical envelope with `data.entry` carrying the inserted record. UUIDv4 is assigned by the connector if absent.
-  - `update_entry(id, patch)` — patches an existing entry in place; returns the updated record. Patching is a shallow merge over top-level keys; nested `external_ref` is replaced wholesale, not merged.
+  - `update_entry(id, patch)` — patches an existing entry in place; returns the updated record. Patching is a shallow merge over top-level keys; nested `external_ref` is replaced wholesale, not merged. A patch field set to `null` clears that field on the entry; a patch field that is absent leaves the existing value unchanged.
   - `remove_entry(id)` — deletes an entry; returns the canonical envelope with `data.removed_id` and `data.removed: true|false`.
   - `lock()` — acquires a cooperative file-lock via `${CLAUDE_PLUGIN_DATA}/vacations.lock`. Best-effort; single-user enforcement; NOT crash-safe for multi-writer scenarios.
 - `entities`: `vacation-entry`.
@@ -72,13 +72,13 @@ Every response MUST be wrapped in the canonical envelope from `connector-pattern
   "source": "local | bamboo | merged",
   "created_at": "<ISO-8601 UTC>",
   "updated_at": "<ISO-8601 UTC>",
-  "external_ref": { "bamboo_id": "<id>" }
+  "external_ref": { "bamboo_id": "<id>" }   // OPTIONAL — omit the entire key when no external ref exists
 }
 ```
 
 `VacationEntry.source` is the per-record provenance tag (`"local"` for hand-added, `"bamboo"` for `sync`-imported, `"merged"` for entries that were imported and then locally edited). `envelope.source` is always `"local-fs"` — the transport layer. The two fields are distinct; disambiguate explicitly per the `bamboohr.md` `TimeOff.source` vs `envelope.source` precedent.
 
-`external_ref` is OPTIONAL and SHOULD be omitted (rather than emitted as `{}`) when there is no external reference — matches the null-omission precedent in `jira-worklog.md`.
+`external_ref` is OPTIONAL: when there is no external reference, the connector MUST omit the key entirely rather than emit `{}` or `null` — matches the null-omission precedent in `jira-worklog.md`.
 
 ## Validation rules
 
@@ -90,9 +90,9 @@ Applied on `add_entry` and `update_entry`:
 - `reason ∈ { "vacation", "sick", "holiday", "other" }`.
 - `source ∈ { "local", "bamboo", "merged" }`.
 - Overlap policy: a candidate entry overlaps an existing entry when `[candidate.from, candidate.to]` intersects `[existing.from, existing.to]` for any existing entry. Reject the write unless the caller passes `overlap_strategy ∈ { "merge", "replace", "cancel" }`:
-  - `merge` — extend the existing entry's range to cover both spans.
-  - `replace` — delete the existing entry, insert the candidate.
-  - `cancel` — abort the write with `{ removed: false }` and a warning.
+  - `merge` — extend the existing entry's range to cover the union of both spans (`from = min(existing.from, candidate.from)`, `to = max(existing.to, candidate.to)`). The existing entry's `id` and `created_at` are preserved; `updated_at` advances to the current `Single now`. `note` and `external_ref` from the candidate REPLACE the existing values when present in the candidate; absent fields leave the existing values intact. `source` becomes `"merged"` when the existing and candidate `source` differ; otherwise it is preserved.
+  - `replace` — delete the existing entry, insert the candidate. The candidate's `id` survives (or a fresh UUIDv4 is assigned if absent) and its `created_at` is the current `Single now`.
+  - `cancel` — abort the write. The connector returns the canonical envelope with no entry written, `data.warnings` populated with the conflict, and (for `add_entry`) `data.entry` omitted entirely.
 - Validation failures surface as `unsupported` per the canonical taxonomy with a specific hint string (e.g. `"from must be ≤ to"`, `"reason out of enum"`).
 
 ## Error taxonomy
@@ -102,8 +102,9 @@ Inherits from `connector-pattern.md` §Error taxonomy. Connector-specific notes:
 - `unsupported` is the only domain-specific code expected: missing data directory, unwritable disk, invalid input, validation failures, overlap rejections.
 - `network` — N/A.
 - `auth` — N/A.
-- Filesystem errors (EACCES, ENOSPC, EIO, etc.) surface as the canonical `server`-class code with the OS message truncated to 200 Unicode code points (matches the `git.md` truncation precedent).
-- Lock contention: if `vacations.lock` exists and references a pid that is still alive, surface `unsupported` with hint `"vacation-store locked by pid <N> since <timestamp>"`. If the pid is stale (process not alive), the connector MAY break the lock and continue.
+- Filesystem errors (EACCES, ENOSPC, EIO, etc.) surface as the canonical `server`-class code with the OS message truncated to 200 Unicode code points. Truncation MUST NOT slice mid-codepoint and MUST NOT append an ellipsis (same policy as the `git.md` commit-subject rule, with a different length budget).
+- Lock contention: if `vacations.lock` exists and references a pid that is still alive, surface `unsupported` with hint `"vacation-store locked by pid <N> since <timestamp>"`. If the pid is stale (process not alive), the connector MAY break the lock and continue. Liveness is probed via `kill(pid, 0)` on POSIX and `OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, …)` on Windows; any error other than EPERM/access-denied (which still indicates a live process) is treated as "stale".
+- Malformed lock file (zero-byte, missing pid, unparseable timestamp, or pid not a positive integer) MUST be treated as stale: the connector breaks the lock, surfaces a warning under `data.warnings`, and continues.
 
 ## Fallback rules
 
@@ -114,7 +115,7 @@ Inherits from `connector-pattern.md` §Fallback rules. With only one probe layer
 In addition to `connector-pattern.md` §Forbidden behaviors, this connector:
 
 - MUST NOT contact any remote system. The store is local-disk only.
-- MUST NOT write outside `${CLAUDE_PLUGIN_DATA}/`. Path traversal in any input MUST be rejected.
+- MUST NOT write outside `${CLAUDE_PLUGIN_DATA}/`. The store path is fixed (`vacations.json`) and never derived from caller input — there is no input field that names a path — so this is a structural guarantee, not a runtime validation.
 - MUST NOT delete the backup file `vacations.json.bak.*`. The user inspects backups manually; the connector creates them on corruption recovery and never reaps them.
 - MUST NOT bypass the `lock()` / unlock cycle on writes. Reads MAY skip the lock (best-effort consistency is acceptable for `list_entries()`).
 - MUST NOT mutate `created_at` after first write. `updated_at` is updated on every write.
