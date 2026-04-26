@@ -54,7 +54,7 @@ No parameters. Window is fixed: `now-1y` to `now+1y`.
 
 ### Phase 0 — Resolve connectors
 
-Resolve the vacation-store connector first. If the connector returns `unsupported` (e.g. `${CLAUDE_PLUGIN_DATA}` missing or unwritable), surface the error and stop. If the subcommand is `sync`, probe the BambooHR connector next using its declared probe order (MCP → CLI → REST); an `auth` or `network` error MUST stop execution immediately and surface the error — do NOT fall through or continue as a no-op. Record the resolved layer for each connector in the trailing `Source:` line of the output.
+Resolve the vacation-store connector first. If the connector returns `unsupported` (e.g. `${CLAUDE_PLUGIN_DATA}` missing or unwritable), surface the error and stop. If the subcommand is `sync`, probe the BambooHR connector next using its declared probe order (MCP → CLI → REST); an `auth` or `network` error MUST stop execution immediately and surface the error — do NOT fall through or continue as a no-op. If BambooHR returns `unsupported` (not installed or not configured), the sync completes as a no-op (zero writes, counts all zero) with a warning — this is the safe degradation path, distinct from `auth` which always stops. Record the resolved layer for each connector in the trailing `Source:` line of the output.
 
 ### Phase 1 — Execute subcommand
 
@@ -72,7 +72,7 @@ Resolve matching entries: if `id` is supplied, find the entry with that id; if `
 
 **`sync`**
 
-Call `bamboohr.time_off_requests(from=now-1y, to=now+1y)` to retrieve approved time-off requests. Map each `TimeOff` to a `VacationEntry`: set `source="bamboo"`, copy `from`, `to`, `note`, and `external_ref.bamboo_id`; map `TimeOff.reason` → `VacationEntry.reason` using the reason table in `bamboohr.md` §Reason mapping (note: BambooHR `"personal"` has no direct `VacationEntry` enum value; map it to `"other"`). Call `vacation_store.add_entry(entry, overlap_strategy="merge")` for each mapped entry. Accumulate counts from connector responses: entries with `data.entry` present → added or merged; entries with `data.entry` absent and `data.warnings` non-empty → skipped. Print the summary line on completion.
+Call `bamboohr.time_off_requests(from=now-1y, to=now+1y)` to retrieve approved time-off requests. Map each `TimeOff` to a `VacationEntry`: set `source="bamboo"`, copy `from`, `to`, `note`, and `external_ref.bamboo_id`; map `TimeOff.reason` → `VacationEntry.reason` using the reason table in `bamboohr.md` §Reason mapping (`"personal"` maps to `"other"` — this is the only BambooHR reason with no direct VacationEntry enum counterpart, per the mapping table in that reference). Call `vacation_store.add_entry(entry, overlap_strategy="merge")` for each mapped entry. Accumulate counts from connector responses: check the returned `VacationEntry.source` field — if `"bamboo"` then the entry was freshly added; if `"merged"` then an existing entry was extended; if `data.warnings` contains the duplicate-detection message then the entry was skipped unchanged. Print the summary line on completion.
 
 ## Output contract
 
@@ -95,6 +95,12 @@ Generated: <ISO-8601 UTC>
 
 ```
 Added: <full-uuid> <from>–<to> (<reason>)
+```
+
+On overlap cancel (user selects `c` or passes `overlap_strategy=cancel`):
+
+```
+Cancelled. No entry written.
 ```
 
 **`remove`**
