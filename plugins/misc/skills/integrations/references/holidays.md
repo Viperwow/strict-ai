@@ -17,7 +17,7 @@ This connector has TWO probe layers, attempted in declared order; stop at first 
 
 ## Auth
 
-N/A. The endpoint is public; no env vars or auth headers are read or sent. This connector reads no environment variables. Credential masking rules from `connector-pattern.md` §Auth do not apply.
+N/A. The endpoint is public; no auth headers are read or sent. The connector reads no user-provided environment variables. The `${CLAUDE_PLUGIN_DATA}` path used for caching (see Idempotency) is a runtime-injected directory provided by the Claude Code plugin host, not a user-set credential — credential masking rules from `connector-pattern.md` §Auth do not apply.
 
 ## Capabilities
 
@@ -31,7 +31,9 @@ N/A. The endpoint is public; no env vars or auth headers are read or sent. This 
 
 ## Output shape
 
-Each call returns ONE canonical envelope per `connector-pattern.md` §Output shape. `connector` is always `"holidays"`. `kind` is always `"holiday-batch"` (the singular `"holiday"` is unused since this connector only returns batches; this matches the precedent set by `git.md` and `jira-activity.md` for batch-shaped responses). `source` is `"rest" | "cache"`, naming the probe layer that produced the result.
+Each call returns ONE canonical envelope per `connector-pattern.md` §Output shape. `connector` is always `"holidays"`. `kind` is always `"holiday-batch"` (the singular `"holiday"` is unused since this connector only returns batches; this matches the precedent set by `git.md` and `jira-activity.md` for batch-shaped responses).
+
+**Deviation from §Output shape (`source` field).** The canonical `source` enum is `mcp | cli | rest`. This connector has no MCP or CLI layer and adds a disk-cache layer that is not a transport tier, so `source` ∈ `{ "rest", "cache" }`. `cache` names the layer-2 disk-fallback path. This is the only divergence from the canonical enum and is documented here so consumers do not treat it as drift. On the both-layers-fail terminal path (see Error taxonomy), `envelope.source` carries the layer that LAST attempted (i.e. `"cache"`), even though that layer also failed.
 
 ```json
 {
@@ -71,7 +73,7 @@ Inherits from `connector-pattern.md` §Error taxonomy. Connector-specific notes:
 - `auth` — N/A. The API is public.
 - If both layers fail (no network AND cache miss), the connector MUST return `{ holidays: [], warnings: ["holidays unavailable for <country>-<year>"] }` with no error code surfaced. The downstream consumer treats empty-with-warning as "no holidays known, proceed".
 - `unsupported` is reserved for the case where no probe layer is available at all (e.g., a sandbox blocks all network AND `${CLAUDE_PLUGIN_DATA}` is unwritable for cache).
-- A 4xx other than 404 from layer 1 is `unknown`/`client` per the canonical taxonomy and MUST be surfaced — it MUST NOT be silently mapped to the empty-with-warning terminal state.
+- `404` from layer 1 means the requested `country` is not in date.nager.at's coverage set. Map to `unsupported` and fall through to layer 2; if layer 2 also misses, terminate with the empty-array + `holidays unavailable for <country>-<year>` warning. A 4xx OTHER than 404 from layer 1 is `client` per the canonical taxonomy and MUST be surfaced — it MUST NOT be silently mapped to the empty-with-warning terminal state.
 
 ## Fallback rules
 
@@ -91,7 +93,7 @@ In addition to `connector-pattern.md` §Forbidden behaviors, this connector:
 Per `idempotency.md`. The cache file `${CLAUDE_PLUGIN_DATA}/holidays-{country}-{year}.json` is the source of truth and stores the raw layer-1 response (or a hand-edited offline equivalent). Cache durability rules:
 
 - **Past years** — cache never invalidates. Public holidays are retrospective once the calendar year has closed.
-- **Current year** — cache MAY be invalidated on the `--refresh-holidays` flag from the consumer skill; otherwise, the cache is reused for the entire calendar year.
-- **Future years** — cache is rebuilt on year-roll. The connector MUST NOT return stale data from a future-year cache that predates a known regulatory change; on year-roll, the layer-1 fetch is mandatory before reuse.
+- **Current year** — cache MAY be invalidated on the `--refresh-holidays` flag passed to the consumer skill (`log-work` or `log-vacation`); otherwise, the cache is reused for the entire calendar year. The flag is connector-scoped, so either consumer triggers the same refresh.
+- **Future years** — cache is rebuilt on year-roll. "Year-roll" is defined as the first connector call where `year > <year embedded in the cache file name>` AND the current UTC instant (per the `Single now` rule from `idempotency.md`) has crossed `<embedded year>-12-31T23:59:59Z`. The connector MUST NOT return stale data from a future-year cache that predates a known regulatory change; on year-roll, the layer-1 fetch is mandatory before reuse.
 
 Cache writes follow the `Atomic writes` rule from `idempotency.md`: write `holidays-{country}-{year}.json.tmp`, fsync, rename over the target. The `envelope.timestamp` MUST be derived from the single UTC instant captured at probe start per the `Single now` rule from `idempotency.md`. This connector emits `timestamp` only — there is no `data.detected_at`-equivalent field.
