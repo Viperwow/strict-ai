@@ -24,7 +24,7 @@ N/A. Git operates on local repositories with no authentication. This connector r
 - `write: false`
 - Operations:
   - `commits_for(date, repos, author_email)` — returns all `WorkEvent` records of `kind=commit` for the given calendar `date`, scanning every repo in `repos[]`, filtered by `author_email`. `date` is an ISO-8601 calendar date (`YYYY-MM-DD`); `repos` is an array of absolute filesystem paths.
-  - `list_repos(root?)` — returns the active repo set: either `[<git-root-of-cwd>]` if `root` is omitted, or the explicit list configured by the consumer (forward reference: future config key `git_repos` consumed by the caller). This connector itself does NOT read any config file.
+  - `list_repos(root?)` — returns the active repo set: either `[<git-root-of-cwd>]` if `root` is omitted, or the explicit list passed in by the caller. v1: caller-supplied argument only; binding to a persistent config key is deferred to the consumer skill (`log-work`) and is OUT of scope here. This connector itself does NOT read any config file.
 - `entities`: `work-event` (matches `jira-activity.md`'s entity name to keep the source-class entity uniform across connectors).
 - `pagination`: `none` — `git log` returns the full window in one call.
 - `rate-limit policy`: N/A (local subprocess; no rate limit applies).
@@ -37,11 +37,11 @@ For each repo in `repos`, run:
 git -C <repo> log --author="<author_email>" --since="<date>T00:00:00<localtz>" --until="<date+1>T00:00:00<localtz>" --pretty=format:"%H%x09%ct%x09%s"
 ```
 
-The output is tab-separated: full hash, committer Unix timestamp, commit subject. The body is fetched via a follow-up `git -C <repo> show -s --format=%B <hash>` per commit, but only as an optimization when the issue-key regex misses the subject — skip the body fetch when the subject already yields one or more keys.
+The output is tab-separated: full hash, committer Unix timestamp, commit subject.
 
 Filter rule: keep only commits whose committer timestamp falls within `[<date>T00:00:00<localtz>, <date+1>T00:00:00<localtz>)`. The `--since` / `--until` flags pre-filter, but git's date semantics are looser than calendar-day; the explicit timestamp check is the source of truth.
 
-**Issue-key extraction.** Apply the regex `[A-Z][A-Z0-9]+-\d+` (case-sensitive) against the commit subject AND body. Extract every match; deduplicate by exact string equality preserving first-seen order.
+**Issue-key extraction.** Apply the regex `[A-Z][A-Z0-9]+-\d+` (case-sensitive) against the commit subject FIRST. If the subject yields zero matches, fetch the commit body via `git -C <repo> show -s --format=%B <hash>` and apply the same regex against it. Body fetch is skipped when the subject already yields one or more keys. Extract every match across whichever input was scanned; deduplicate by exact string equality preserving first-seen order.
 
 **WorkEvent emission rule.**
 
@@ -67,12 +67,13 @@ Each call returns ONE canonical envelope per `connector-pattern.md` §Output sha
     "date": "YYYY-MM-DD",
     "repos": ["/abs/path/to/repo"],
     "author_email": "user@example.com",
+    "warnings": ["<one entry per skipped repo>"],
     "events": [ /* WorkEvent[] */ ]
   }
 }
 ```
 
-`envelope.source` is always `"cli"` since CLI is the only available layer. `commits_for` is single-day per the plan; an `events_for_range`-style helper is OUT of scope for v1.
+`envelope.source` is always `"cli"` since CLI is the only available layer. `data.warnings` MUST be present (possibly empty) on every response; one string entry per repo skipped under the `not-found` rule below. `commits_for` is single-day per the plan; an `events_for_range`-style helper is OUT of scope for v1.
 
 ### WorkEvent
 
@@ -94,7 +95,7 @@ Each call returns ONE canonical envelope per `connector-pattern.md` §Output sha
 }
 ```
 
-`issue_key` MAY be `null` when no key is extracted. `summary` is `<7-char hash prefix>: <subject truncated to 100 chars>`; truncation is applied to the subject only and uses no ellipsis. `metadata.keys` is the full deduplicated list of keys extracted from this commit, identical across every WorkEvent emitted from a single commit when N ≥ 2. `WorkEvent.kind` is always `"commit"` for this connector and is distinct from `envelope.kind`, which is always `"work-event-batch"`.
+`issue_key` MAY be `null` when no key is extracted. `summary` is `<7-char hash prefix>: <subject truncated to 100 Unicode code points>`; truncation is applied to the subject only, MUST NOT slice mid-codepoint, and uses no ellipsis. `metadata.keys` is the full deduplicated list of keys extracted from this commit, identical across every WorkEvent emitted from a single commit when N ≥ 2. `WorkEvent.kind` is always `"commit"` for this connector and is distinct from `envelope.kind`, which is always `"work-event-batch"`.
 
 ## Error taxonomy
 
@@ -119,6 +120,6 @@ In addition to `connector-pattern.md` §Forbidden behaviors, this connector:
 
 ## Idempotency
 
-`git log` over a closed timestamp window is deterministic — commit timestamps and hashes are immutable once written. Re-running `commits_for(date, repos, author_email)` over the same triple produces an identical envelope (modulo `envelope.timestamp`, which is the connector's own normalization clock and follows the `Single now` rule from `idempotency.md`). Stable ordering of events MUST follow the `Stable sort keys` rule from `idempotency.md`: sort by `(metadata.repo, metadata.hash, issue_key)` so ties are fully resolved.
+`git log` over a closed timestamp window is deterministic — commit timestamps and hashes are immutable once written. Re-running `commits_for(date, repos, author_email)` over the same triple produces an identical envelope (modulo `envelope.timestamp`, which follows the `Single now` rule from `idempotency.md`, and `metadata.branch`, which is observational — see below). Stable ordering of events MUST follow the `Stable sort keys` rule from `idempotency.md`: sort by `(metadata.repo, metadata.hash, issue_key)`. The 0-key branch emits exactly one event per commit, so `(repo, hash)` is unique within that subset and the `null` `issue_key` cannot tie.
 
-`metadata.branch` MAY change between calls if the repo is checked out to a different branch — note this caveat. The branch label is observational and does not affect event identity.
+`metadata.branch` MAY change between calls if the repo is checked out to a different branch. The branch label is observational and does not affect event identity.
