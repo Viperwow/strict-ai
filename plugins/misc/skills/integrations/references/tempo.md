@@ -49,7 +49,7 @@ The MCP layer carries credentials per its host runtime; no env var is read direc
 
 **Entities:** `worklog`.
 
-**Pagination:** `offset+limit`. Tempo Cloud v4 and Tempo Server v4 use `limit` and `offset` query parameters.
+**Pagination:** `offset+limit` per `connector-pattern.md` §Capabilities — `limit` and `offset` query parameters on both Cloud v4 and Server v4.
 
 **Rate-limit policy:** per `connector-pattern.md` §Capabilities (1 s / 2 s / 4 s × 3 attempts, then stop). No connector-specific override.
 
@@ -71,7 +71,7 @@ The connector layer is selected by §Probe order above; the API variant follows 
 }
 ```
 
-Cloud v4 splits start into `startDate` and `startTime`. `authorAccountId` is the Atlassian account ID of the resolved current user; resolution is provided by `jira.md` §Capabilities (current-user lookup) and is not redefined here.
+Cloud v4 splits start into `startDate` and `startTime`. `authorAccountId` resolves per `jira.md` §Capabilities (current-user lookup).
 
 **Server (Tempo Timesheets DC):** `POST ${JIRA_BASE_URL}/rest/tempo-timesheets/4/worklogs` with body:
 
@@ -88,10 +88,12 @@ Cloud v4 splits start into `startDate` and `startTime`. `authorAccountId` is the
 
 Server v4 takes a single `dateStarted` ISO-8601 with timezone. `worker` accepts the Jira username (DC) or the Atlassian accountId.
 
-For `list_worklogs`:
+### List endpoint mapping
+
+`list_worklogs(issue_key, author_email, date)` resolves per layer:
 
 - **Cloud:** `GET https://api.tempo.io/4/worklogs?issue=<issue_key>&worker=<accountId>&from=<date>&to=<date>` (use the same `date` for both `from` and `to`).
-- **Server:** `POST ${JIRA_BASE_URL}/rest/tempo-timesheets/4/worklogs/search` with a JSON body containing `worker`, `from`, `to`, and `issue`. Tempo DC's canonical list operation is a POST search because the filter set exceeds practical query-string length.
+- **Server:** `POST ${JIRA_BASE_URL}/rest/tempo-timesheets/4/worklogs/search` with a JSON body containing `worker`, `from`, `to`, and `issue` (Tempo DC's canonical list operation is a POST search).
 
 ## Output shape
 
@@ -138,9 +140,7 @@ The generic per-error rules from `connector-pattern.md` §Fallback rules apply W
 
 **Special rule (cross-connector fallthrough):** if `unsupported` is the resolved error at every probe layer (Tempo wholly unavailable), the CALLER MUST fall through to the `jira-worklog` connector. This is the only cross-connector fallthrough in the system. The connector itself MUST surface `unsupported` to the caller; the caller (consumer skill) is responsible for performing the cross-connector fallthrough — `tempo.md` itself MUST NOT call `jira-worklog`.
 
-**Anti-special rule:** `auth` or `network` errors MUST stop. The connector MUST NOT silently fall through to `jira-worklog` on `auth` or `network` — the user must fix credentials or connectivity explicitly. Rationale: silent fallthrough on `auth` would mask a misconfigured Tempo token by writing to native Jira worklogs instead, producing duplicate or misattributed entries downstream.
-
-The cross-connector fallthrough is also documented in the consumer pipeline reference (forward reference: `plugins/jira/skills/log-work/references/pipeline.md`, not yet authored).
+**Anti-special rule:** the cross-connector fallthrough MUST NOT trigger on `auth` or `network`. Rationale: silent fallthrough on `auth` would mask a misconfigured Tempo token by writing to native Jira worklogs instead, producing duplicate or misattributed entries downstream. (Per-connector `auth`/`network` stopping is already required by `connector-pattern.md` §Probe order; this rule extends it across the connector boundary.)
 
 ## Forbidden behaviors
 
