@@ -1,6 +1,6 @@
 # location connector reference
 
-This connector is the local-only `aux` reference for detecting the user's country and IANA timezone from system signals. It bundles `tz-country.json` (a subset of tzdata `zone.tab`) for offline IANA-zone → ISO-3166-1 alpha-2 country lookup, so detection works without a network round-trip. It is consumed by `holidays`, `vacation-store`, and `log-work` to localize date logic (workweek shape, holiday calendar, vacation defaults).
+This connector is the local-only `aux` reference for detecting the user's country and IANA timezone from system signals. It bundles `tz-country.json` (sibling file at `plugins/misc/skills/integrations/references/tz-country.json`, a subset of tzdata `zone.tab`) for offline IANA-zone → ISO-3166-1 alpha-2 country lookup, so detection works without a network round-trip. It is consumed by `holidays`, `vacation-store`, and `log-work` to localize date logic (workweek shape, holiday calendar, vacation defaults).
 
 ## Class
 
@@ -18,7 +18,7 @@ This connector has FOUR probe layers, attempted in declared order; stop at first
 3. **tz-country** — resolve the system IANA zone (see `detect_timezone` below) and look it up in the bundled `tz-country.json`. If the zone is NOT present in the table, this layer MUST fall through to layer 4 with a warning surfaced under `data.warnings: [...]`. A zone-table miss is NOT an error.
 4. **user** — interactive prompt: `Country (ISO-3166-1 alpha-2, e.g. RU, US, DE)?`. The prompt is the safety net and MUST NOT fire until layers 1–3 have all been attempted.
 
-Silent downgrade is forbidden per `connector-pattern.md` §Probe order: every layer transition MUST be recorded by setting `data.method` (and `envelope.source`) to the layer that ultimately produced the result.
+Silent downgrade is forbidden per `connector-pattern.md` §Probe order: every layer transition MUST be recorded by setting `envelope.source` (and `data.method`, on `detect_country` only) to the layer that ultimately produced the result. `detect_timezone` has no `data.method` field — see Output shape below.
 
 ## Auth
 
@@ -37,7 +37,9 @@ N/A. This connector reads no environment variables for authentication and contac
 
 ## Output shape
 
-Each call returns ONE canonical envelope per `connector-pattern.md` §Output shape. `connector` is always `"location"`; `kind` is always `"location"`. The `source` field repurposes from the usual `mcp | cli | rest` transport tier to name the detection layer that produced the result — this connector has no transport tiers, so `source` ∈ `{ "os-region", "locale-env", "tz-country", "user" }`. On every `detect_country` response, `envelope.source` and `data.method` MUST agree (both name the same layer).
+Each call returns ONE canonical envelope per `connector-pattern.md` §Output shape. `connector` is always `"location"`; `kind` is always `"location"`.
+
+**Deviation from §Output shape (`source` field).** The canonical `source` enum is `mcp | cli | rest` — the transport tier that produced the call. This connector has no transport tiers (it executes shell-outs and process API calls directly), so `source` repurposes to name the detection layer that produced the result: `source` ∈ `{ "os-region", "locale-env", "tz-country", "user" }`. This is the only known divergence from the canonical enum and is documented here so consumers do not treat it as drift. On every `detect_country` response, `envelope.source` and `data.method` MUST agree (both name the same layer).
 
 ### `detect_country` envelope
 
@@ -72,7 +74,7 @@ Each call returns ONE canonical envelope per `connector-pattern.md` §Output sha
 }
 ```
 
-`data.timezone` is an IANA zone string (e.g. `Europe/Moscow`, `America/New_York`). `envelope.source` records which detection chain produced the zone; `tz-country` is the typical value when the zone was resolved via the JS / POSIX / readlink chain described under Capabilities.
+`data.timezone` is an IANA zone string (e.g. `Europe/Moscow`, `America/New_York`). On a `detect_timezone` response, `envelope.source` MUST be `"os-region"` — the JS / POSIX / readlink resolution chain described under Capabilities is treated as a single OS-region probe and reports that layer name. The other three layer values (`locale-env`, `tz-country`, `user`) do NOT apply to `detect_timezone` because none of them produces a zone string: `locale-env` parses a country code, `tz-country` consumes a zone (rather than producing one), and the user prompt asks for a country. If every step of the resolution chain fails, the connector surfaces `unsupported`.
 
 `envelope.kind` is always `"location"` for this connector and is the entity-type discriminator from `Capabilities.entities`. There is no inner `kind` field on `data`, so the `WorkEvent.kind` vs `envelope.kind` disambiguation that applies to source connectors does not apply here.
 
