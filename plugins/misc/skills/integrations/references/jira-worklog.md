@@ -18,7 +18,7 @@ Inherits from `jira.md` §Auth. No additional environment variables are introduc
 
 **read: true** (limited; for duplicate detection only)
 
-- `list_worklogs(issue_key, author_email?, date?)` — returns existing `Worklog` records on the given issue, optionally filtered by author email and calendar date. Used exclusively to satisfy the idempotency check defined in `idempotency.md` §5 before a `create_worklog` call.
+- `list_worklogs(issue_key, author_email?, date?)` — returns existing `Worklog` records on the given issue, optionally filtered by author email and calendar date. Used exclusively to satisfy the idempotency check defined in `idempotency.md` (existing-worklogs source-of-truth rule) before a `create_worklog` call.
 
 **write: true**
 
@@ -38,9 +38,9 @@ The connector layer is selected by `jira.md` §Probe order; the API version foll
 
 ```json
 {
-  "timeSpentSeconds": "<duration_minutes * 60>",
+  "timeSpentSeconds": <duration_minutes * 60>,
   "started": "<ISO-8601 with timezone>",
-  "comment": "<ADF document>"
+  "comment": <ADF document>
 }
 ```
 
@@ -54,7 +54,7 @@ Cloud REQUIRES the `comment` field as Atlassian Document Format. Wrap a plain st
 
 ```json
 {
-  "timeSpentSeconds": "<duration_minutes * 60>",
+  "timeSpentSeconds": <duration_minutes * 60>,
   "started": "<ISO-8601 with timezone>",
   "comment": "<plain string>"
 }
@@ -80,11 +80,11 @@ Every response MUST be wrapped in the normalized envelope from `connector-patter
 }
 ```
 
-**`list_worklogs` response:** `data` carries the request key triple alongside the result array.
+**`list_worklogs` response:** `data` carries the request key triple alongside the result array. Envelope `kind` is `"worklog-batch"` (mirroring the `work-event-batch` convention in `jira-activity.md` for batch-shaped responses); single-result `create_worklog` keeps `kind: "worklog"`.
 
 ```json
 {
-  "kind": "worklog",
+  "kind": "worklog-batch",
   "source": "mcp | cli | rest",
   "connector": "jira-worklog",
   "timestamp": "<ISO-8601 UTC>",
@@ -119,4 +119,4 @@ In addition to `connector-pattern.md` §Forbidden behaviors, this connector:
 
 ## Idempotency
 
-Every `create_worklog(issue_key, started_at, duration_minutes, comment)` call MUST be preceded by a `list_worklogs(issue_key, author_email, date)` lookup, where `date` is the calendar date of `started_at` and `author_email` is the authenticated user's email. The duplicate-key triple `(issue_key, author_email, date)` and the no-op / new-entry decision are governed by `idempotency.md` §5; do not redefine the rules here. The connector MUST NOT delete or rewrite existing worklogs under any condition.
+Every `create_worklog(issue_key, started_at, duration_minutes, comment)` call MUST be preceded by a `list_worklogs(issue_key, author_email, date)` lookup, where `date` is the calendar date of `started_at` and `author_email` is the authenticated user's email. The duplicate-key triple `(issue_key, author_email, date)` and the no-op / new-entry decision are governed by the rules defined in `idempotency.md`; do not redefine them here. The connector MUST NOT delete or rewrite existing worklogs under any condition.
