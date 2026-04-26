@@ -28,7 +28,7 @@ Full field-by-field description:
 | `to` | string | yes | ISO-8601 calendar date `YYYY-MM-DD`. Last day of absence. MUST be `>= from`. |
 | `reason` | string | yes | Enum: `"vacation" \| "sick" \| "holiday" \| "other"`. |
 | `note` | string or null | no | Plain-text annotation. Omit the key entirely when null — do NOT emit `"note": null`. |
-| `source` | string | yes | Enum: `"local" \| "bamboo" \| "merged"`. `"local"` = hand-added via `log-vacation add`. `"bamboo"` = imported by `sync` from BambooHR. `"merged"` = entry was BambooHR-imported and then locally edited, OR two overlapping entries were merged via `overlap_strategy="merge"`. |
+| `source` | string | yes | Enum: `"local" \| "bamboo" \| "merged"`. `"local"` = hand-added via `log-vacation add`. `"bamboo"` = imported by `sync` from BambooHR and not yet locally modified. `"merged"` = set by the vacation-store connector when `overlap_strategy="merge"` is applied and the two sources differ (canonical write-time trigger). Also set by `update_entry` when editing a `"bamboo"` entry locally (local-edit trigger). |
 | `created_at` | string | yes | ISO-8601 UTC timestamp. Set once on `add_entry`. MUST NOT change on subsequent writes. |
 | `updated_at` | string | yes | ISO-8601 UTC timestamp. Updated on every write to the entry. |
 | `external_ref` | object | no | Omit key entirely when no external reference exists. MUST NOT emit `{}` or `null`. Sub-field: `bamboo_id` (string) — the BambooHR request id, carried from `TimeOff.external_ref.bamboo_id` during `sync`. |
@@ -117,13 +117,15 @@ Deletes the existing entry and inserts the candidate. The candidate's `id` survi
   "source": "local", "created_at": "2026-04-01T10:00:00Z", "updated_at": "2026-04-01T10:00:00Z" }
 ```
 
-Candidate: `{ "from": "2026-07-14", "to": "2026-07-25", "reason": "sick", "source": "local" }`
+Candidate with no `id` (connector assigns a fresh UUIDv4): `{ "from": "2026-07-14", "to": "2026-07-25", "reason": "sick", "source": "local" }`
 
-**After:**
+**After** (`id` is new; `created_at` is the current `Single now`, NOT the deleted entry's timestamp):
 ```json
 { "id": "<new-UUIDv4>", "from": "2026-07-14", "to": "2026-07-25", "reason": "sick",
   "source": "local", "created_at": "2026-04-26T08:00:00Z", "updated_at": "2026-04-26T08:00:00Z" }
 ```
+
+When the candidate already carries an `id`, that `id` survives into the after-block unchanged.
 
 ### `cancel`
 
@@ -141,7 +143,9 @@ Candidate: `{ "from": "2026-07-18", "to": "2026-07-25", "reason": "vacation" }` 
 
 ## Conflict annotation rules for `list`
 
-A conflict exists when two entries share overlapping date spans (`[a.from, a.to]` intersects `[b.from, b.to]`) AND have different `source` values (e.g. one `"local"`, one `"bamboo"`) AND have different `reason` values.
+**Overlap vs conflict distinction.** An *overlap* is detected at write time and handled immediately by `overlap_strategy` (see §Validation rules). A *conflict* is the result of two entries coexisting in the store with overlapping spans — this can happen when entries were imported via different paths that bypassed overlap detection, or when a merge was deferred. The `list` output surfaces conflicts visually; no automatic resolution is performed.
+
+A conflict exists when two entries share overlapping date spans (`[a.from, a.to]` intersects `[b.from, b.to]`) AND have different `source` values (e.g. one `"local"`, one `"bamboo"`). Different `reason` values are NOT required — two entries from different sources covering the same dates are a conflict regardless of whether the reason matches, because the provenance disagreement itself is actionable.
 
 The `list` subcommand SHOULD annotate both conflicting rows with `⚠` in the output table. No automatic resolution is performed — the user MUST explicitly invoke `remove` or `add` with an `overlap_strategy` to resolve the conflict.
 
