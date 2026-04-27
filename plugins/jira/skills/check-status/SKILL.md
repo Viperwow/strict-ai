@@ -9,16 +9,7 @@ Reports Jira issues for a given project/assignee/sprint window as deterministic 
 
 ## Prerequisite
 
-This skill targets the official Atlassian MCP server: https://github.com/atlassian/atlassian-mcp-server. When available, its tools appear as `mcp__*atlassian*__*` in the current session and are the first-class path.
-
-Fall-through order (strict — stop at first success; never silently drop to a lower source on auth/network error):
-
-1. **Atlassian MCP** — official, preferred.
-2. **Atlassian CLI** `acli` — probe via `acli --version`. Use JSON output only.
-3. **Jira Cloud REST API v3** — first-class. `POST {JIRA_BASE_URL}/rest/api/3/search/jql` with Basic auth (`JIRA_EMAIL:JIRA_API_TOKEN` base64). Paginate via `nextPageToken`.
-4. **Jira Server / Data Center REST API** — secondary. Detect by probing `GET /rest/api/2/serverInfo`; use `/rest/api/2/search` with bearer PAT (`Authorization: Bearer $JIRA_PAT`). Paginate via `startAt`/`maxResults`. Assumes Jira 9.x+ DC/Server.
-
-Always record which source was used in the trailing `Source:` line.
+Jira connector is described in `plugins/misc/skills/integrations/references/jira.md`. Use its probe order (MCP → acli → REST Cloud → REST on-prem), auth rules, and error taxonomy. Record the resolved layer in the trailing `Source:` line.
 
 ## Parameters
 
@@ -239,14 +230,7 @@ Rules:
 
 ## Idempotency
 
-Two runs against identical Jira state must produce byte-identical output except for the `Generated:` line. Guaranteed by:
-
-- Single `now` captured at start and reused for all age, updated, due-overdue, and `Generated:` calculations.
-- Stable, fully-specified sort keys (priority → sprint-bit → updated → in-progress bucket → key).
-- Deterministic label ordering and sprint-name joining.
-- Fixed column set, fixed type order, capped "other types" list.
-- `—` for every missing value (never empty string, `null`, `N/A`).
-- No random or wall-clock-dependent data injected into row ordering or rendering.
+This skill follows the rules in `plugins/misc/skills/integrations/references/idempotency.md`: single `now` capture, stable sort keys, `—` sentinel for missing values, atomic writes for any cached files. Two runs against identical Jira state produce byte-identical output except for the `Generated:` line.
 
 ## Error handling and security
 
