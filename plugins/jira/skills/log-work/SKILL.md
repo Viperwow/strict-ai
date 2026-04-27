@@ -80,11 +80,19 @@ Config is **read-only** after first materialization. To change a value (e.g. `ta
   "auto_task_type": "Story",
   "lookback_default_days": 7,
   "day_start_local": "09:00",
-  "git_repos": []
+  "git_repos": [],
+  "event_weights": {
+    "commit": 1.0,
+    "comment": 1.0,
+    "status-change": 3.0,
+    "assignment": 2.0,
+    "field-edit": 2.0
+  },
+  "deviation_warning_pct": 5
 }
 ```
 
-`git_repos` is an array of absolute filesystem paths scanned by the git connector in addition to the repo at the current working directory. An empty array means only the current repo is scanned. All other fields match the built-in defaults. Schema validation rules and permitted value ranges are documented in `plugins/jira/skills/log-work/references/config-schema.md`.
+`git_repos` is an array of absolute filesystem paths scanned by the git connector in addition to the repo at the current working directory. An empty array means only the current repo is scanned. Schema validation rules and permitted value ranges are documented in `plugins/jira/skills/log-work/references/config-schema.md`.
 
 ## Pipeline overview
 
