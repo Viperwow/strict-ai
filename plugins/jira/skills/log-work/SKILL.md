@@ -92,7 +92,7 @@ Full per-phase detail lives in `plugins/jira/skills/log-work/references/pipeline
 
 ### Phase 0 — Resolve context
 
-Capture one UTC timestamp (`now`) at skill start and reuse it for all age math, cache-bucket selection, and the `Generated:` line per the Single now rule from `idempotency.md`. Resolve the active `project` (arg → memory key `jira:last-project` → interactive prompt; save to memory on success). Resolve `country`: arg → memory key `jira:log-time:country` (reuse if set within 30 days and `redetect` is false) → probe via the location connector in declared probe order (os-region → locale-env → tz-country table → user prompt); record the winning layer as `jira:log-time:country-detected-by`. Load config from `${CLAUDE_PLUGIN_DATA}/log-work.json`, merging with built-in defaults; write the merged config atomically if the file was missing. Probe all required connectors in their declared probe order per their connector references; an `auth` or `network` error from any required connector MUST stop execution immediately.
+Capture one UTC timestamp (`now`) at skill start and reuse it for all age math, cache-bucket selection, and the `Generated:` line per the Single `now` rule from `idempotency.md`. Resolve the active `project` (arg → memory key `jira:last-project` → interactive prompt; save to memory on success). Resolve `country`: arg → memory key `jira:log-time:country` (reuse if set within 30 days and `redetect` is false) → probe via the location connector in declared probe order (os-region → locale-env → tz-country table → user prompt); record the winning layer as `jira:log-time:country-detected-by`. Load config from `${CLAUDE_PLUGIN_DATA}/log-work.json`, merging with built-in defaults; write the merged config atomically if the file was missing. Probe all required connectors in their declared probe order per their connector references; an `auth` or `network` error from any required connector MUST stop execution immediately.
 
 ### Phase 1 — Catch-up scan
 
@@ -122,7 +122,7 @@ Print the summary table (see Output contract). Append trailing `Source:`, `Sink:
 Triggered when the user enters `add` during the Phase 2 edit loop. Follows spec §5.5.
 
 1. Prompt: `Title?` — accept a free-text title.
-2. Search via jira connector using the fully resolved JQL (per the Deterministic JQL rule from `idempotency.md`):
+2. Search via jira connector using the fully resolved JQL (per the Deterministic `JQL:` line rule from `idempotency.md`):
    ```
    project = {PROJECT} AND summary ~ "{title}" ORDER BY updated DESC
    ```
@@ -166,7 +166,7 @@ Sink: tempo=mcp|rest (or jira-worklog=mcp|rest)
 Generated: <ISO-8601 UTC>
 ```
 
-`Source:` lists each enabled source connector and the resolved transport layer. `Sink:` names the active sink connector and its layer. All timestamps derive from the single `now` captured at skill start per the Single now rule.
+`Source:` lists each enabled source connector and the resolved transport layer. `Sink:` names the active sink connector and its layer. All timestamps derive from the single `now` captured at skill start per the Single `now` rule.
 
 ## Idempotency guarantees
 
