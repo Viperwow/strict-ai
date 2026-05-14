@@ -62,9 +62,17 @@ Show the full recommended path, all steps in order. Time is an estimate only bas
 | tests | pending | ... | ~Nm |
 | pr | pending | ... | ~Nm |
 
-Phases are inferred from the task type. Typical order: `req` · `impl` · `tests` · `pr`. Add or drop phases as the task demands. Row order within each phase: done → in progress → pending.
+Phases are inferred from the task type. Typical order: `req` · `impl` · `tests` · `pr`. Add or drop phases as the task demands. Row order within each phase: done → in progress → blocked → pending.
 
 No forks or alternatives in this table — recommended path only.
+
+Statuses:
+- `done` — completed
+- `in progress` — actively being worked on (includes async steps waiting on external input; Est. format for async: `~Nm · wait ~Nh`)
+- `blocked` — cannot start because it depends on an in-progress async step that has not resolved yet
+- `pending` — not started, no dependency blocking it
+
+Parallelism rules: mark a step `blocked` only if it directly depends on an unresolved async step. Independent steps are unaffected — the nearest independent pending step becomes `in progress`.
 
 When `req` is the active phase, render Contact Points directly below the steps table — inferred from the task domain:
 
