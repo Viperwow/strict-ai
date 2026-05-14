@@ -1,0 +1,10 @@
+{
+  "name": "strict-security",
+  "version": "0.1.0",
+  "description": "Skills for security practices — security review, secure design guidance, secrets handling, vulnerability checks, and threat-oriented validation.",
+  "author": {
+    "name": "Viperwow",
+    "email": "viperkodiak@gmail.com"
+  },
+  "keywords": ["security", "review", "vulnerabilities", "secrets", "threat-modeling"]
+}

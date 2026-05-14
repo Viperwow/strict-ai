@@ -1,0 +1,10 @@
+{
+  "name": "strict-communication",
+  "version": "0.1.0",
+  "description": "Skills for communication support — drafting messages, Slack and email workflows, async summaries, and knowledge-grounded responses.",
+  "author": {
+    "name": "Viperwow",
+    "email": "viperkodiak@gmail.com"
+  },
+  "keywords": ["communication", "slack", "email", "drafting", "summaries"]
+}
