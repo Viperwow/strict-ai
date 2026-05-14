@@ -6,14 +6,14 @@
   },
   "metadata": {
     "description": "Opinionated skill collection for professional software engineering workflows — modular, replaceable packages for every phase of daily work and SDLC.",
-    "version": "0.1.0"
+    "version": "0.2.0"
   },
   "plugins": [
     {
       "name": "strict-workday",
       "source": "./strict-workday",
       "description": "Skills for daily work execution — operating rhythm, focus, time management, day planning.",
-      "version": "0.1.0",
+      "version": "0.2.0",
       "category": "productivity"
     },
     {

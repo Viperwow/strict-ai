@@ -5,7 +5,7 @@ description: Get current status of a task, one atomic next step, and a scope gua
 
 # strict-task-status
 
-Three outputs: **Where** (current state) · **Next** (one atomic step) · **Guard** (scope drift).
+Four outputs: **Summary** (task context) · **Steps** (full path with estimates) · **Recommendations** (what to do next) · **Guard** (scope drift).
 
 Always combines session history with project change history — never skip either.
 
@@ -13,7 +13,7 @@ Always combines session history with project change history — never skip eithe
 
 | Source | What to collect |
 |:---|:---|
-| **Session** | recent messages, decisions, blockers, goals, intent |
+| **Session** | recent messages, decisions, blockers, goals, intent, tried approaches |
 | **Project** | working tree, diffs, recent commits, touched files |
 | **Optional** | Jira issue, memory files, local docs, Slack, Confluence, Obsidian Vault — when cheap and relevant |
 
@@ -30,39 +30,69 @@ Read local time automatically. Derive energy level and step bias:
 
 Render at top of output: `Time: midday · Energy: high`
 
+Prefer time blocks for not more than 30 min for one task step to keep going by small steps.
+
 ## Output
 
 ### Task link
 If resolvable: `Task: [<key or title>](<url>)` — Jira > GitHub/GitLab > other tracker > local path. Omit if nothing resolves.
 
-### Where
+### Summary
+
+```
+Goal: <what must be achieved>
+Context: <why this matters / where it came from>
+Vector: <what has been done so far and in what direction the work has been moving>
+```
+
+`Vector` captures trajectory, not current status — what was tried, what direction emerged, what momentum exists, why previous work was done.
+
+### Steps
 
 ```
 Progress: [██████░░░░] ~60% — <stage label>
 ```
 
-| Phase | Status | Item |
-|:---|:---|:---|
-| req | done | ... |
-| impl | in progress | ... |
-| tests | pending | ... |
-| pr | pending | ... |
+Show the full recommended path, all steps in order. Time is an estimate only based on the user's previous performance.
 
-Phases are inferred from the task type. Typical order: `req` · `impl` · `tests` · `pr`. Add or drop phases as the task demands. Row order within each phase: done → in progress → pending.
+| Phase | Status | Step | Est. |
+|:---|:---|:---|:---|
+| req | done | ... | ~Nm |
+| impl | in progress | ... | ~Nh |
+| tests | pending | ... | ~Nm |
+| pr | pending | ... | ~Nm |
 
-When `req` is the active phase, render Contact Points directly below the checkpoint table — inferred from the task domain:
+Phases are inferred from the task type. Typical order: `req` · `impl` · `tests` · `pr`. Add or drop phases as the task demands. Row order within each phase: done → in progress → blocked → pending.
 
-| Contact | Why and what                         |
-|:---|:-------------------------------------|
-| <role or name> | <whya and what to clarify with them> |
+No forks or alternatives in this table — recommended path only.
 
-### Next
+Statuses:
+- `done` — completed
+- `in progress` — actively being worked on (includes async steps waiting on external input; Est. format for async: `~Nm · wait ~Nh`)
+- `blocked` — cannot start because it depends on an in-progress async step that has not resolved yet
+- `pending` — not started, no dependency blocking it
 
-Always one atomic action. Choose the smallest step that moves the task forward given current energy.
+Parallelism rules: mark a step `blocked` only if it directly depends on an unresolved async step. Independent steps are unaffected — the nearest independent pending step becomes `in progress`.
 
-| Time | Action | Why |
+When `req` is the active phase, render Contact Points directly below the steps table — inferred from the task domain:
+
+| Contact | Why and what |
+|:---|:---|
+| <role or name> | <why and what to clarify with them> |
+
+### Recommendations
+
+One atomic action. Choose the smallest step that moves the task forward given current energy.
+
+| Est. | Action | Why |
 |:---|:---|:---|
 | Nm | concrete atomic action | reason |
+
+If alternatives exist, list them below as plain text — only if the recommended action is blocked:
+
+Alternatives if blocked:
+1. option-1 — <when and why to use it>
+2. option-2 — <when and why to use it>
 
 ### Companions
 
