@@ -58,7 +58,11 @@ Show the full recommended path, all steps in order. Time is an estimate only bas
 | Phase | Status | Step | Est. |
 |:---|:---|:---|:---|
 | req | done | ... | ~Nm |
+| req | done | ... | ~Nm |
 | impl | in progress | ... | ~Nh |
+| impl | in progress | ... | ~Nh |
+| impl | in progress | ... | ~Nh |
+| tests | pending | ... | ~Nm |
 | tests | pending | ... | ~Nm |
 | pr | pending | ... | ~Nm |
 
@@ -73,34 +77,35 @@ Statuses:
 - `pending` — not started, no dependency blocking it
 
 Parallelism rules: mark a step `blocked` only if it directly depends on an unresolved async step. Independent steps are unaffected — the nearest independent pending step becomes `in progress`.
+Atomic actions. Choose the smallest step that moves the task forward given current energy.
 
 When `req` is the active phase, render Contact Points directly below the steps table — inferred from the task domain:
+
+### Recommendations
+
+If some steps are blocked there should be a list of alterternatives for in-progress tasks. 
+
+| Est. | Action | Why |
+|:---|:---|:---|
+| Nm | concrete atomic action | reason |
+| Nm | concrete atomic action | reason |
+| Nm | concrete atomic action | reason |
+
+Write `No recommendations identified.` when clean.
+
+### Contact points
 
 | Contact | Why and what |
 |:---|:---|
 | <role or name> | <why and what to clarify with them> |
 
-### Recommendations
-
-One atomic action. Choose the smallest step that moves the task forward given current energy.
-
-| Est. | Action | Why |
-|:---|:---|:---|
-| Nm | concrete atomic action | reason |
-
-If alternatives exist, list them below as plain text — only if the recommended action is blocked:
-
-Alternatives if blocked:
-1. option-1 — <when and why to use it>
-2. option-2 — <when and why to use it>
-
 ### Companions
 
 Tasks outside the current workflow but in the same domain — things that could be affected or that shouldn't be forgotten. Keep it short.
 
-| Item | Where to track |
-|:---|:---|
-| ... | current task / backlog / separate task |
+| Item | Where to track                    |
+|:---|:----------------------------------|
+| ... | task tracker task / side activity |
 
 Write `No companions identified.` when clean.
 
