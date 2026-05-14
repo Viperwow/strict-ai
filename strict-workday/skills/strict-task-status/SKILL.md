@@ -5,7 +5,7 @@ description: Get current status of a task, one atomic next step, and a scope gua
 
 # strict-task-status
 
-Four outputs: **Summary** (task context) · **Steps** (full path with estimates) · **Recommendations** (what to do next) · **Guard** (scope drift).
+Four outputs: **Summary** (task context) · **Steps** (full path of atomic steps with estimates) · **Recommendations** (what to do next if blocked) · **Guard** (scope drift).
 
 Always combines session history with project change history — never skip either.
 
@@ -35,7 +35,7 @@ Prefer time blocks for not more than 30 min for one task step to keep going by s
 ## Output
 
 ### Task link
-If resolvable: `Task: [<key or title>](<url>)` — Jira > GitHub/GitLab > other tracker > local path. Omit if nothing resolves.
+If resolvable: `Task: [<key or title>](<url>)` — Jira > GitHub/GitLab > another tracker > local path. Omit if nothing resolves.
 
 ### Summary
 
@@ -79,11 +79,11 @@ Statuses:
 Parallelism rules: mark a step `blocked` only if it directly depends on an unresolved async step. Independent steps are unaffected — the nearest independent pending step becomes `in progress`.
 Atomic actions. Choose the smallest step that moves the task forward given current energy.
 
-When `req` is the active phase, render Contact Points directly below the steps table — inferred from the task domain:
+When `req` is the active phase, render Contact Points directly below the step table — inferred from the task domain:
 
 ### Recommendations
 
-If some steps are blocked there should be a list of alterternatives for in-progress tasks. 
+If some steps are blocked, there should be a list of alterternatives for in-progress tasks. 
 
 | Est. | Action | Why |
 |:---|:---|:---|
