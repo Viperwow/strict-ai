@@ -117,6 +117,7 @@ Authoring rules:
 7. KISS, DRY, SOLID (S first and foremost).
 8. 80/20: maximum impact, minimum text.
 9. If something appears twice, extract and reference it.
+10. Default placement for any new skill is `strict-labs` unless the user specifies otherwise. Before creating, propose the target plugin and wait for user confirmation.
 
 ## Hooks, plugins, agents, and MCP
 
@@ -157,3 +158,4 @@ Include only directories useful for the package.
 9. When uncertainty remains, ask or place into `strict-labs` first.
 10. Move content into `strict-deprecated` only when a replacement is confirmed and coverage research is complete.
 11. Never invoke skills from `strict-deprecated` directly — route through the replacement, with fallback per the deprecation protocol.
+12. After adding or removing skills in any plugin, sync `marketplace.json` (add plugin if it now has skills and is not yet listed; remove if it has none) and update the availability note in `README.md`.
