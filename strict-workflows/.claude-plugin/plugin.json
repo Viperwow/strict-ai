@@ -1,0 +1,10 @@
+{
+  "name": "strict-workflows",
+  "version": "0.1.0",
+  "description": "Composed end-to-end workflows — reusable multi-step flows that combine lower-level skills from other packages across the full SDLC.",
+  "author": {
+    "name": "Viperwow",
+    "email": "viperkodiak@gmail.com"
+  },
+  "keywords": ["workflows", "sdlc", "automation", "composition", "end-to-end"]
+}

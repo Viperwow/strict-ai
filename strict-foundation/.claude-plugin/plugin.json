@@ -1,0 +1,10 @@
+{
+  "name": "strict-foundation",
+  "version": "0.1.0",
+  "description": "Shared reusable primitives across multiple packages — abstract skills, common rules, policies, templates, and general-purpose building blocks.",
+  "author": {
+    "name": "Viperwow",
+    "email": "viperkodiak@gmail.com"
+  },
+  "keywords": ["foundation", "shared", "primitives", "reusable", "templates", "hooks"]
+}

@@ -5,23 +5,93 @@
     "email": "viperkodiak@gmail.com"
   },
   "metadata": {
-    "description": "Personal Claude Code plugin marketplace",
+    "description": "Opinionated skill collection for professional software engineering workflows — modular, replaceable packages for every phase of daily work and SDLC.",
     "version": "0.1.0"
   },
   "plugins": [
     {
-      "name": "jira",
-      "source": "./plugins/jira",
-      "description": "Jira workflow skills",
+      "name": "strict-workday",
+      "source": "./strict-workday",
+      "description": "Skills for daily work execution — operating rhythm, focus, time management, day planning.",
+      "version": "0.1.0",
+      "category": "productivity"
+    },
+    {
+      "name": "strict-communication",
+      "source": "./strict-communication",
+      "description": "Skills for communication support — drafting messages, Slack/email, summaries.",
+      "version": "0.1.0",
+      "category": "communication"
+    },
+    {
+      "name": "strict-development",
+      "source": "./strict-development",
+      "description": "Skills for engineering implementation — technical design, architecture, coding, PR prep.",
+      "version": "0.1.0",
+      "category": "development"
+    },
+    {
+      "name": "strict-management",
+      "source": "./strict-management",
+      "description": "Skills for management and lead-level planning — decomposition, sprint, prioritization, backlog.",
+      "version": "0.1.0",
+      "category": "management"
+    },
+    {
+      "name": "strict-quality",
+      "source": "./strict-quality",
+      "description": "Skills for product quality and verification — testing, quality gates, validation evidence.",
+      "version": "0.1.0",
+      "category": "quality"
+    },
+    {
+      "name": "strict-security",
+      "source": "./strict-security",
+      "description": "Skills for security practices — security review, secure design, secrets, vulnerability checks.",
+      "version": "0.1.0",
+      "category": "security"
+    },
+    {
+      "name": "strict-workflows",
+      "source": "./strict-workflows",
+      "description": "Composed end-to-end workflows — reusable multi-step flows across the full SDLC.",
+      "version": "0.1.0",
+      "category": "workflows"
+    },
+    {
+      "name": "strict-knowledge",
+      "source": "./strict-knowledge",
+      "description": "Skills for knowledge and procedure handling — playbooks, internal procedures, grounded guidance.",
+      "version": "0.1.0",
+      "category": "knowledge"
+    },
+    {
+      "name": "strict-foundation",
+      "source": "./strict-foundation",
+      "description": "Shared reusable primitives — abstract skills, rules, policies, templates, hooks.",
+      "version": "0.1.0",
+      "category": "foundation"
+    },
+    {
+      "name": "strict-adapters",
+      "source": "./strict-adapters",
+      "description": "Tool-specific knowledge modules — one focused adapter per tool, API, CLI, or SDK.",
       "version": "0.1.0",
       "category": "integrations"
     },
     {
-      "name": "misc",
-      "source": "./plugins/misc",
-      "description": "Miscellaneous utility skills",
+      "name": "strict-labs",
+      "source": "./strict-labs",
+      "description": "Experimental and unstable content — early skills and drafts being evaluated.",
       "version": "0.1.0",
-      "category": "utilities"
+      "category": "labs"
+    },
+    {
+      "name": "strict-deprecated",
+      "source": "./strict-deprecated",
+      "description": "Skills pending removal — each has a confirmed replacement. Not invocable directly.",
+      "version": "0.1.0",
+      "category": "deprecated"
     }
   ]
 }

@@ -1,0 +1,10 @@
+{
+  "name": "strict-adapters",
+  "version": "0.1.0",
+  "description": "Tool-specific knowledge modules — one focused adapter per tool, API, CLI, or SDK. Invocable by other skills only, not directly by users.",
+  "author": {
+    "name": "Viperwow",
+    "email": "viperkodiak@gmail.com"
+  },
+  "keywords": ["adapters", "integrations", "tools", "api", "sdk", "connectors"]
+}

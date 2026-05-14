@@ -1,0 +1,10 @@
+{
+  "name": "strict-deprecated",
+  "version": "0.1.0",
+  "description": "Skills pending removal — each has a confirmed replacement. Not invocable directly. See the linking skill for the replacement and fallback instructions.",
+  "author": {
+    "name": "Viperwow",
+    "email": "viperkodiak@gmail.com"
+  },
+  "keywords": ["deprecated", "legacy", "pending-removal"]
+}

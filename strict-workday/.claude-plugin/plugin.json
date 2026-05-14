@@ -1,0 +1,10 @@
+{
+  "name": "strict-workday",
+  "version": "0.1.0",
+  "description": "Skills for daily work execution — operating rhythm, focus recovery, time management, day planning, and personal workday routines.",
+  "author": {
+    "name": "Viperwow",
+    "email": "viperkodiak@gmail.com"
+  },
+  "keywords": ["workday", "focus", "time-management", "planning", "productivity"]
+}
