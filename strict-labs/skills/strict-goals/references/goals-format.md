@@ -43,8 +43,8 @@ weights:
 
 ## Rules
 
-- `updated`: ISO 8601 date in `YYYY-MM-DD` format (date only, no time component). Goals are considered stale when age ≥ 7 days. Staleness triggers a warning/suggestion to review; it does not reject the file.
-- If `updated` is absent → treat the file as stale and suggest review.
+- `updated` is ISO 8601 date (YYYY-MM-DD). If missing or malformed, treat the file as stale.
+- The file is considered stale when `updated` age ≥ 7 days. Staleness triggers a warning only — the file remains usable.
 - Each goal entry: one sentence, action-oriented ("Deliver X by Q3"). No max length enforced, but keep each to one sentence.
 - Empty goals arrays are valid but the skill will prompt the user to populate them.
 - All six weight keys are required. If a key is missing despite that requirement, parsing defaults to 3 for the missing key.
