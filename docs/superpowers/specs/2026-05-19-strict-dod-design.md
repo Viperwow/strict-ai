@@ -63,11 +63,15 @@ On `yes` → write file. On `edit: <changes>` → apply, redisplay, confirm agai
 ## File Persistence
 
 ### Path
-`./dod/<task-id>-<task-summary>.md` — kebab-case, relative to project root where skill is invoked.
+`./dod/<task-id>-<task-summary>.<status>.md` — kebab-case, relative to project root where skill is invoked.
 
-If no task-id: `./dod/<task-summary>.md`
+If no task-id: `./dod/<task-summary>.<status>.md`
 
-Examples: `dod/task-42-add-user-auth.md`, `dod/migrate-db-schema.md`
+Status values: `active`, `done`. Embedded in filename for fast CLI filtering without opening files.
+
+Examples: `dod/task-42-add-user-auth.active.md`, `dod/migrate-db-schema.done.md`
+
+CLI: `ls dod/*.active.md`, `ls dod/*.done.md`
 
 ### File Contract (strict)
 
@@ -76,7 +80,6 @@ Examples: `dod/task-42-add-user-auth.md`, `dod/migrate-db-schema.md`
 task: task-42
 summary: add user auth
 created: 2026-05-19T14:30:00+03:00
-status: active
 ---
 
 # DoD: Add user auth
@@ -118,7 +121,7 @@ One sentence: what we achieve when done.
 
 | Rule | Description |
 |---|---|
-| Frontmatter | always: `task`, `summary`, `created`, `status` (`active` / `done`) |
+| Frontmatter | always: `task`, `summary`, `created` |
 | Goal | exactly one sentence, no bullets |
 | Done When | only concrete verifiable conditions, `[ ]` format |
 | Out of Scope | minimum 1 item, always populated |
@@ -167,7 +170,7 @@ DoD file exists for this task?
           NO  → guided mode: ask ≤3 questions, then generate
 ```
 
-`--done` sets `status: done` in frontmatter and appends a `— done` changelog entry.
+`--done` renames file from `<name>.active.md` → `<name>.done.md` and appends a `— done` changelog entry.
 
 ## Placement
 

@@ -130,10 +130,12 @@ On user confirmation (`yes`) → write a file. On `edit: <changes>` → apply ed
 
 `./dod/<filename>.md` — relative to current project root (where skill is invoked).
 
-Filename rule: `<task-id>-<task-summary>.md`, all kebab-case.
-- Task ID present: `task-42-add-user-auth.md`
-- No task ID: `add-user-auth.md`
+Filename rule: `<task-id>-<task-summary>.<status>.md`, all kebab-case.
+- Task ID present: `task-42-add-user-auth.active.md`
+- No task ID: `add-user-auth.active.md`
 - Derive summary from goal: max 5 words, kebab-case
+- Status values: `active`, `done`
+- CLI filter examples: `ls dod/*.active.md`, `ls dod/*.done.md`
 
 ### File Contract
 
@@ -144,7 +146,6 @@ Strict. Never deviate from this structure:
 task: task-42
 summary: add user auth
 created: 2026-05-19T14:30:00+03:00
-status: active
 ---
 
 # DoD: Add user auth
@@ -194,4 +195,4 @@ Update body sections (Goal / Done When / Out of Scope). Append a new changelog e
 ### On Completion
 
 Triggered by `/strict-dod --done` or user explicitly confirming the task is finished.
-Set frontmatter `status: done`. Append entry: `— done` with user-provided reason.
+Rename file: `<name>.active.md` → `<name>.done.md`. Append changelog entry: `— done` with user-provided reason.
