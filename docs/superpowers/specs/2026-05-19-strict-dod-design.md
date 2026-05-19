@@ -1,7 +1,7 @@
 # Design: strict-dod
 
 **Date:** 2026-05-19  
-**Status:** draft  
+**Status:** final  
 **Placement:** `strict-workday/skills/strict-dod/SKILL.md`
 
 ## Problem
@@ -16,17 +16,30 @@ Skill generates and persists a Definition of Done for a task. User confirms and 
 
 | Mode | Trigger | Behavior |
 |---|---|---|
-| `auto` | Session has context (task analysis, summary, Jira, prior conversation) | AI reads context → generates DoD → user confirms. 0 questions. |
-| `guided` | Empty session, no context | AI asks ≤3 focused questions → generates DoD → user confirms. |
+| `auto` | Session has context (see checklist below) | AI reads context → generates DoD → user confirms. 0 questions. |
+| `guided` | No context detected | AI asks ≤3 focused questions → generates DoD → user confirms. |
+| `guard` | DoD file already exists for this task | AI reads existing DoD → displays or shows diff → requires reason for changes. |
 
 Mode is auto-detected. Can be overridden with `--auto` / `--guided`.
 
-**Guided questions (≤3, only what's missing):**
-1. What is the task? (if completely absent)
+### Context Detection Checklist (auto mode triggers if ANY true)
+
+- A task description or ticket key was passed as argument
+- Session contains output from a prior skill invocation (task status, planning, analysis, etc.)
+- Session contains data from a task manager (ticket, story, backlog item)
+- Session contains a task breakdown, implementation plan, or PR description
+- Session contains relevant data from communication tools (chat, email, comments)
+- Session contains relevant corporate documentation or knowledge base content
+- Session contains version control context (branch name, commit messages, PR description, diff)
+- User described the task in prior messages this session
+
+### Guided questions (≤3, only what's missing, one at a time)
+
+1. What is the task? (if no description was provided)
 2. How will you know it's done — one concrete signal?
 3. What is explicitly NOT part of this task?
 
-## Output Format (both modes)
+## Output Format (auto and guided modes)
 
 ```
 Goal: <one sentence — what we achieve>
@@ -45,6 +58,8 @@ Confirm? [yes / edit: ...]
 
 No timebox. No estimates. Only the boundary.
 
+On `yes` → write file. On `edit: <changes>` → apply, redisplay, confirm again.
+
 ## File Persistence
 
 ### Path
@@ -56,7 +71,7 @@ Examples: `dod/task-42-add-user-auth.md`, `dod/migrate-db-schema.md`
 
 ### File Contract (strict)
 
-```markdown
+~~~markdown
 ---
 task: task-42
 summary: add user auth
@@ -97,7 +112,7 @@ One sentence: what we achieve when done.
 ~ goal: "Old sentence" → "New sentence"
 ```
 > Reason: PM clarified scope in standup
-```
+~~~
 
 ### Contract Rules
 
@@ -108,16 +123,17 @@ One sentence: what we achieve when done.
 | Done When | only concrete verifiable conditions, `[ ]` format |
 | Out of Scope | minimum 1 item, always populated |
 | Changelog | append-only, never edited |
-| Diff symbols | `+` added, `-` removed, `~` changed (`old` → `new`) |
+| Diff symbols | `+` added, `-` removed, `~` changed (`"old"` → `"new"`) |
 | Grouping | one entry per event, all changes of that event in one diff block |
 | Reason | required on every changelog entry |
 
 ## Guard Behavior
 
-On every skill invocation:
-1. Skill checks if `./dod/<filename>.md` exists
-2. If exists → reads it before generating anything
-3. If new generation differs from existing DoD → shows diff and blocks confirmation:
+On every skill invocation, skill first checks if `./dod/<filename>.md` exists.
+
+If exists → read before generating anything:
+- **No new content provided** (invoked with no args or same task): display existing DoD, ask "Still valid?"
+- **New content or description provided**: compare, show diff, block until reason given
 
 ```
 DoD change detected:
@@ -127,25 +143,15 @@ DoD change detected:
 ! Reason required to proceed:
 ```
 
-User must provide reason. Reason is written to Changelog. Only then DoD updates.
-
-This prevents silent scope creep.
-
-## Refinement
-
-User invokes `/strict-dod refine` mid-task. Skill:
-1. Reads existing DoD file
-2. Re-evaluates with new session context
-3. Shows diff (if any)
-4. Requires reason if changes exist
-5. Writes changelog entry
+User provides reason → DoD updates → changelog entry appended.
 
 ## Skill Invocation
 
 ```
-/strict-dod [task description or Jira key]
-/strict-dod --guided   # force guided mode
+/strict-dod [task description or ticket key]
 /strict-dod --auto     # force auto mode
+/strict-dod --guided   # force guided mode
+/strict-dod --done     # mark task complete (status: done)
 ```
 
 ### Decision Tree (no flags)
@@ -155,14 +161,14 @@ User invokes `/strict-dod refine` mid-task. Skill:
        │
        ▼
 DoD file exists for this task?
-  YES → refine mode: read existing DoD, check for drift, require reason if changes
-  NO  → does session have context?
+  YES → guard mode: read existing DoD, display or diff, require reason if changes
+  NO  → does session have context? (see checklist)
           YES → auto mode: generate from context, 0 questions
           NO  → guided mode: ask ≤3 questions, then generate
 ```
 
-`refine` is not a separate subcommand — it is the natural behavior when a DoD file already exists. Flags `--auto` / `--guided` override only when explicitly needed.
+`--done` sets `status: done` in frontmatter and appends a `— done` changelog entry.
 
 ## Placement
 
-`strict-workday/skills/strict-dod/SKILL.md` — same package as `strict-task-status`.
+`strict-workday/skills/strict-dod/SKILL.md`
