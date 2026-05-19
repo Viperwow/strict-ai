@@ -13,9 +13,10 @@ Fixes the boundary of a task before work starts. You handle cognitive load — u
 /strict-dod [task description or Jira key]
 /strict-dod --auto    # force auto mode
 /strict-dod --guided  # force guided mode
+/strict-dod --done    # mark current task DoD as complete
 ```
 
-No args triggers automatic mode detection.
+No args or description triggers automatic mode detection.
 
 ## Routing Logic
 
@@ -27,12 +28,14 @@ Follow this decision tree on every invocation:
    - No file found → continue
 
 2. **Detect session context** (only when no file found)
-   - Session contains task analysis, prior `/strict-task-status` output, Jira data, a task description, or other task context? → **AUTO mode**
-   - Nothing → **GUIDED mode**
-
-3. **Flag overrides**
-   - `--auto` forces AUTO mode
-   - `--guided` forces GUIDED mode
+   - Context present if ANY of these are true:
+     - A task description or Jira key was passed as argument
+     - Session contains prior `/strict-task-status` output
+     - Session contains a Jira ticket summary or link
+     - Session contains a task breakdown, implementation plan, or PR description
+     - User described the task in prior messages this session
+   - Context present → **AUTO mode**
+   - None of the above → **GUIDED mode**
 
 ---
 
@@ -54,14 +57,14 @@ Context exists. Generate DoD immediately — zero questions.
 
 No context. Ask only what is missing. Maximum 3 questions. One question at a time. Stop asking as soon as you have enough to generate DoD.
 
-**Q1** (ask if task is completely unclear):
+**Q1** (ask when no task description was provided):
 > What is this task? One or two sentences.
 
-**Q2** (ask if done criterion is unclear):
+**Q2** (ask when done criterion is still unclear after Q1):
 > How will you know this task is done — one concrete signal?
 > Example: "the button submits without error", "migration runs clean in staging"
 
-**Q3** (ask if scope boundary is unclear):
+**Q3** (ask when scope boundary is still unclear after Q1–Q2):
 > What is explicitly NOT part of this task right now?
 
 After answers → generate output → wait for confirmation.
@@ -72,24 +75,21 @@ After answers → generate output → wait for confirmation.
 
 DoD file exists. Read it before doing anything else.
 
-1. Read the existing DoD file completely
-2. Determine intent:
-   - **View only** (no new task description, no refinement intent): display current DoD, ask "Still valid?"
-   - **Change detected** (new context, new description, or explicit refinement intent): proceed to diff
+1. **Read and display existing DoD.** Ask "Still valid?" — do this when invoked with no new task description or content.
 
-3. On change detected:
+2. **If new task description or content was provided:** compare against existing DoD and show diff:
 
 ```
 DoD change detected:
 
-[diff block — see Changelog format]
+[diff block — see Changelog Rules]
 
 ! Reason required to proceed:
 ```
 
 Stop until user provides reason. Without reason — do not update.
 
-4. On reason provided → update DoD body → append changelog entry → write file.
+3. On reason provided → update DoD body → follow **File Writing › On Update**.
 
 ---
 
@@ -116,12 +116,12 @@ Rules:
 - **Goal**: one sentence, no bullets
 - **Done When**: 3–5 items, each independently verifiable, no vague language ("works", "is done", "looks good")
 - **Out of Scope**: minimum 1 item, always present
-- On `yes` → write file
-- On `edit: <changes>` → apply edits, redisplay, confirm again
 
 ---
 
 ## File Writing
+
+On user confirmation (`yes`) → write file. On `edit: <changes>` → apply edits, redisplay output, confirm again.
 
 ### Path
 
@@ -180,15 +180,15 @@ One sentence: what we achieve when done.
 - `> Reason: <text>` required on every entry
 - Append-only: never edit existing entries
 
-### On Create (new file)
+### On Create
 
 Write full file. Changelog entry: `— created`, reason: `initial DoD`.
 
 ### On Update (GUARD mode, reason confirmed)
 
-Update body sections (Goal / Done When / Out of Scope). Append new changelog entry. Never edit prior entries.
+Update body sections (Goal / Done When / Out of Scope). Append new changelog entry.
 
 ### On Completion
 
-User signals task is done (explicit confirmation or `/strict-dod --done`).
+Triggered by `/strict-dod --done` or user explicitly confirming the task is finished.
 Set frontmatter `status: done`. Append entry: `— done` with user-provided reason.
