@@ -35,6 +35,7 @@ Follow this decision tree on every invocation:
      - Session contains a task breakdown, implementation plan, or PR description
      - Session contains relevant data from communication tools (chat, email, comments)
      - Session contains relevant corporate documentation or knowledge base content
+     - Session contains version control context (branch name, commit messages, PR description, diff)
      - User described the task in prior messages this session
    - Context present → **AUTO mode**
    - None of the above → **GUIDED mode**
