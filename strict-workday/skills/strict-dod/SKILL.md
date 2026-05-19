@@ -29,10 +29,12 @@ Follow this decision tree on every invocation:
 
 2. **Detect session context** (only when no file found)
    - Context present if ANY of these are true:
-     - A task description or Jira key was passed as argument
-     - Session contains prior `/strict-task-status` output
-     - Session contains a Jira ticket summary or link
+     - A task description or ticket key was passed as argument
+     - Session contains output from a prior skill invocation (task status, planning, analysis, etc.)
+     - Session contains data from a task manager (ticket, story, backlog item)
      - Session contains a task breakdown, implementation plan, or PR description
+     - Session contains relevant data from communication tools (chat, email, comments)
+     - Session contains relevant corporate documentation or knowledge base content
      - User described the task in prior messages this session
    - Context present → **AUTO mode**
    - None of the above → **GUIDED mode**
