@@ -4,7 +4,7 @@ Primary operating guide for any assistant, agent, automation, or contributor in 
 
 ## Core principle
 
-Preserve repository structure as a stable contract. Change only on explicit user request.
+Preserve the repository structure as a stable contract. Change only on explicit user request.
 
 Route new content into the most accurate existing package. When placement confidence is low, prefer `strict-labs`, then ask.
 
@@ -50,7 +50,7 @@ strict/
 
 ## Naming conventions
 
-Top-level packages: `strict-` prefix, kebab-case, stable. Preserve adopted names until user explicitly requests a rename. Add new top-level packages only on explicit user request.
+Top-level packages: `strict-` prefix, kebab-case, stable. Preserve adopted names until the user explicitly requests a rename. Add new top-level packages only on explicit user request.
 
 `strict-adapters` modules are named after the concrete tool:
 
@@ -60,7 +60,7 @@ strict-adapters/
   gitlab/  confluence/  google-calendar/  kubectl/  terraform/
 ```
 
-When a stronger or official skill becomes available, switch implementations while preserving higher-level package structure. When deprecating an adapter skill, follow the **Deprecation protocol** below.
+When a stronger or official skill becomes available, switch implementations while preserving the higher-level package structure. When deprecating an adapter skill, follow the **Deprecation protocol** below.
 
 ## Deprecation protocol
 
