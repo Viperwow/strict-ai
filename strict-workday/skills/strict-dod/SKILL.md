@@ -5,7 +5,7 @@ description: Define and lock the Definition of Done for a task before starting w
 
 # strict-dod
 
-Fixes the boundary of a task before work starts. You handle cognitive load — user confirms and executes.
+Fixes the boundary of a task before work starts. You handle a cognitive load — user confirms and executes.
 
 ## Invocation
 
@@ -27,9 +27,9 @@ Follow this decision tree on every invocation:
    - File found → **GUARD mode**
    - No file found → continue
 
-2. **Detect session context** (only when no file found)
-   - Context present if ANY of these are true:
-     - A task description or ticket key was passed as argument
+2. **Detect session context** (only when no file is found)
+   - Context is present if ANY of these are true:
+     - A task description or ticket key was passed as an argument
      - Session contains output from a prior skill invocation (task status, planning, analysis, etc.)
      - Session contains data from a task manager (ticket, story, backlog item)
      - Session contains a task breakdown, implementation plan, or PR description
@@ -63,11 +63,11 @@ No context. Ask only what is missing. Maximum 3 questions. One question at a tim
 **Q1** (ask when no task description was provided):
 > What is this task? One or two sentences.
 
-**Q2** (ask when done criterion is still unclear after Q1):
+**Q2** (ask when a done criterion is still unclear after Q1):
 > How will you know this task is done — one concrete signal?
 > Example: "the button submits without error", "migration runs clean in staging"
 
-**Q3** (ask when scope boundary is still unclear after Q1–Q2):
+**Q3** (ask when the scope boundary is still unclear after Q1–Q2):
 > What is explicitly NOT part of this task right now?
 
 After answers → generate output → wait for confirmation.
@@ -80,7 +80,7 @@ DoD file exists. Read it before doing anything else.
 
 1. **Read and display existing DoD.** Ask "Still valid?" — do this when invoked with no new task description or content.
 
-2. **If new task description or content was provided:** compare against existing DoD and show diff:
+2. **If a new task description or content was provided:** compare against existing DoD and show diff:
 
 ```
 DoD change detected:
@@ -90,9 +90,9 @@ DoD change detected:
 ! Reason required to proceed:
 ```
 
-Stop until user provides reason. Without reason — do not update.
+Stop until the user provides a reason. Without reason — do not update.
 
-3. On reason provided → update DoD body → follow **File Writing › On Update**.
+3. On the reason provided → update DoD body → follow **File Writing › On Update**.
 
 ---
 
@@ -124,7 +124,7 @@ Rules:
 
 ## File Writing
 
-On user confirmation (`yes`) → write file. On `edit: <changes>` → apply edits, redisplay output, confirm again.
+On user confirmation (`yes`) → write a file. On `edit: <changes>` → apply edits, redisplay output, confirm again.
 
 ### Path
 
@@ -185,11 +185,11 @@ One sentence: what we achieve when done.
 
 ### On Create
 
-Write full file. Changelog entry: `— created`, reason: `initial DoD`.
+Write a full file. Changelog entry: `— created`, reason: `initial DoD`.
 
 ### On Update (GUARD mode, reason confirmed)
 
-Update body sections (Goal / Done When / Out of Scope). Append new changelog entry.
+Update body sections (Goal / Done When / Out of Scope). Append a new changelog entry.
 
 ### On Completion
 
