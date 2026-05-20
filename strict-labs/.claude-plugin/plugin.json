@@ -6,5 +6,15 @@
     "name": "Viperwow",
     "email": "viperkodiak@gmail.com"
   },
-  "keywords": ["labs", "experimental", "draft", "unstable", "wip"]
+  "keywords": ["labs", "experimental", "draft", "unstable", "wip"],
+  "skills": [
+    {
+      "name": "strict-goals",
+      "path": "skills/strict-goals"
+    },
+    {
+      "name": "strict-impact",
+      "path": "skills/strict-impact"
+    }
+  ]
 }
