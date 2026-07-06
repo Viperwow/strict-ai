@@ -5,6 +5,23 @@ description: Use this skill when Bash commands need fast and accurate project/co
 
 # strict-grep
 
+## Invocation
+
+```
+/strict-grep [pattern] [scope]
+```
+
+Auto-activates whenever a Bash command needs project/codebase text search, recursive source inspection, file listing, or pre/post-edit verification.
+
+## Routing decision tree
+
+1. Task is text/code/config search, repo exploration, file listing, or edit verification?
+   - Yes → continue. No → this skill does not apply.
+2. Is `rg` installed? (`command -v rg`)
+   - No → check install per **Availability and installation checks**; if install out of scope → **Grep-compatible fallback**.
+3. Does the task require exact POSIX/GNU grep semantics, stdin-oriented grep, or a user-provided grep-compatible command?
+   - Yes → `command grep`. No → `rg`, using the **Search escalation ladder** to widen scope only as needed.
+
 ## Official reference
 
 Installation reference:
