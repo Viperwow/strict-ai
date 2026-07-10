@@ -9,7 +9,7 @@ Turn the current branch's commits into a keepachangelog changelog, scoped by con
 
 ## Invocation
 
-~~~
+~~~text
 /strict-changelog                    # default: last 7 days
 /strict-changelog --since 2026-06-01 # from a date (inclusive)
 /strict-changelog --from <commit>    # from a commit (exclusive)
@@ -48,10 +48,11 @@ If a fetch fails, fall back to `references/type-map.md` and the rules below.
 5. **Resolve task-id.** Read the git **trailer** first (`Task:`, `Ref:`, `Refs:`), else
    the conventional **scope** if it holds an id. Trailer wins. No id → mark `[???]`.
 
-6. **Collapse.** Commits sharing one task-id become **one line**. Slug from the task
-   title if resolvable, else the most descriptive commit subject. If those commits map
-   to different sections, place the line in the earliest section by keepachangelog order
-   (Added, Changed, Deprecated, Removed, Fixed, Security).
+6. **Collapse.** Within a section, commits sharing one task-id become **one line**. Slug
+   from the task title if resolvable, else the most descriptive commit subject. If a
+   task's commits map to different sections, keep it atomic per section: emit **one line
+   per section** (the same task-id link repeats across sections — that duplication is
+   fine).
 
 7. **Resolve link.** If an integration is available this session (an MCP or skill that
    maps a task-id to a URL), use it. Otherwise ask the user **once** for the base URL
@@ -65,7 +66,7 @@ If a fetch fails, fall back to `references/type-map.md` and the rules below.
 
 ## Line format
 
-~~~
+~~~text
 - <slug> [<task-id as md link>]
 ~~~
 
@@ -73,7 +74,7 @@ Example: `- Streaming upload for large blobs [[PROJ-412](https://tracker/browse/
 
 Unlinked change (no task-id) — same shape, `[???]` in place of the link:
 
-~~~
+~~~text
 - Bump lint config [???]
 ~~~
 
@@ -85,9 +86,11 @@ only under `### Unlinked`. After the main body, print a `### Unlinked` section �
 list of every `[???]` change, no extra prose. Then run two ordered offers, each a clean
 yes/no:
 
-1. "Create tasks for the unlinked changes? (yes/no)" — first, so data can be enriched
-   before it lands in a file. On yes, use an available integration to create them, then
-   re-render.
+1. "Create tasks for the unlinked changes? (yes/no)" — **only offer this if a
+   task-creation integration is available** this session; it comes first so data can be
+   enriched before it lands in a file. On yes, use that integration to create the tasks,
+   then re-render. If no such integration exists, skip the offer and say task creation
+   can't be performed here, then continue to offer 2.
 2. "Write the changelog to CHANGELOG.md? (yes/no)" — on yes, prepend the rendered
    section to `CHANGELOG.md` (create the file if absent).
 
@@ -120,10 +123,10 @@ Output:
 ~~~
 
 Then:
-~~~
+~~~text
 Create tasks for the unlinked changes? (yes/no)
 ~~~
 (after that answer)
-~~~
+~~~text
 Write the changelog to CHANGELOG.md? (yes/no)
 ~~~

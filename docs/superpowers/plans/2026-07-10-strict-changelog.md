@@ -127,8 +127,10 @@ If a fetch fails, fall back to `references/type-map.md` and the rules below.
 2. **Collect.** For each commit read subject, body, and trailers:
    `git log <range> --format='%H%x00%s%x00%b%x00%(trailers:only)%x00'`
 
-3. **Parse conventional commit.** Split subject as `type(scope): description`.
-   Non-conventional subjects have no type/scope — route to Unlinked handling.
+3. **Parse conventional commit.** Grammar: `type[(scope)][!]: description` — scope and
+   the `!` breaking marker are optional. A subject with a valid `type` (e.g. `feat: add
+   support`, no scope) follows the normal section/scope path. Only a subject with **no
+   type at all** (non-conventional) routes to Unlinked handling.
 
 4. **Map type → section.** Use the table in `references/type-map.md`. Dropped types
    (`docs`, `chore`, `test`, `build`, `ci`, `style`) are excluded.
@@ -136,8 +138,10 @@ If a fetch fails, fall back to `references/type-map.md` and the rules below.
 5. **Resolve task-id.** Read the git **trailer** first (`Task:`, `Ref:`, `Refs:`), else
    the conventional **scope** if it holds an id. Trailer wins. No id → mark `[???]`.
 
-6. **Collapse.** Commits sharing one task-id become **one line**. Slug from the task
-   title if resolvable, else the most descriptive commit subject.
+6. **Collapse.** Within a section, commits sharing one task-id become **one line**. Slug
+   from the task title if resolvable, else the most descriptive commit subject. If a
+   task's commits span multiple sections, keep it atomic per section: emit **one line per
+   section** (the same task-id link repeats across sections — that duplication is fine).
 
 7. **Resolve link.** If an integration is available this session (an MCP or skill that
    maps a task-id to a URL), use it. Otherwise ask the user **once** for the base URL
@@ -264,13 +268,13 @@ In `strict-development/.claude-plugin/plugin.json`, change `"version": "0.1.0"` 
 
 In `README.md`, change:
 
-```
+```text
 > **Available in marketplace:** `strict-workday` · `strict-labs`
 ```
 
 to:
 
-```
+```text
 > **Available in marketplace:** `strict-workday` · `strict-development` · `strict-labs`
 ```
 

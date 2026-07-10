@@ -14,7 +14,7 @@ third-party trackers.
 
 ## Invocation
 
-```
+```text
 /strict-changelog                    # default: last 7 days
 /strict-changelog --since 2026-06-01 # from a date (inclusive)
 /strict-changelog --from <commit>    # from a commit (exclusive)
@@ -53,8 +53,10 @@ specs at runtime, so the skill stays current if they change:
 
 4. **task-id resolution** — read from git **trailer** first (`Task:`, `Ref:`,
    `Refs:`), else from the conventional **scope** if it holds an id. Trailer wins.
-5. **Collapse** — commits sharing one task-id become **one line**. Slug taken from
-   the task or the most descriptive commit subject.
+5. **Collapse** — within a section, commits sharing one task-id become **one line**.
+   Slug taken from the task or the most descriptive commit subject. If a task's commits
+   span multiple sections, keep it atomic per section: emit **one line per section** (the
+   same task-id link repeats across sections — that duplication is acceptable).
 6. **Link resolution** — if an integration is available in the session (MCP or
    skill that resolves task URLs), use it to build the link. Otherwise ask the user
    **once** for the base URL pattern. The skill stores nothing about the tracker.
@@ -63,7 +65,7 @@ specs at runtime, so the skill stays current if they change:
 
 ## Line format
 
-```
+```text
 - <slug> [<task-id as md link>]
 ```
 
@@ -71,16 +73,18 @@ Example: `- Streaming upload for large blobs [[PROJ-412](https://…/PROJ-412)]`
 
 Unlinked change (no task-id) — same shape, `[???]` in place of the link:
 
-```
+```text
 - Bump lint config [???]
 ```
 
 ## Unlinked commits (no task-id)
 
-Commits with no resolvable task-id are **kept**, rendered in their normal section
-and scope, with `[???]` in place of the link. After the main body, print a dedicated
-`### Unlinked` section — a plain list of those changes, no extra prose. Then the skill
-runs two ordered offers (each a clean yes/no, no decorative text):
+A **conventional** commit with no resolvable task-id is **kept**, rendered in its normal
+section and scope, with `[???]` in place of the link. A **typeless** (non-conventional)
+commit has no type and therefore no section — it appears **only** under `### Unlinked`.
+After the main body, print a dedicated `### Unlinked` section — a plain list of every
+`[???]` change, no extra prose. Then the skill runs two ordered offers (each a clean
+yes/no, no decorative text):
 
 1. Offer to create tasks for the `[???]` changes. (Comes first, so the data can be
    enriched before it lands in a file.)
@@ -113,7 +117,7 @@ above are the only writes, and only on explicit yes.
 
 ## Files
 
-```
+```text
 strict-development/
   skills/
     strict-changelog/
@@ -134,4 +138,3 @@ Adding this skill requires:
 - No automatic file writes.
 - No release/versioning logic — only the change list.
 - No cross-branch or tag-diff modes.
-```
