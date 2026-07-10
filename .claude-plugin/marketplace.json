@@ -22,6 +22,13 @@
       "description": "Experimental and unstable content — early skills and drafts being evaluated.",
       "version": "0.3.0",
       "category": "labs"
+    },
+    {
+      "name": "strict-development",
+      "source": "./strict-development",
+      "description": "Skills for engineering implementation — changelog generation, technical design, PR preparation.",
+      "version": "0.2.0",
+      "category": "development"
     }
   ]
 }
