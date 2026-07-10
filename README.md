@@ -30,7 +30,7 @@ Swap `strict-workday` for any other available plugin from this marketplace. Upda
 | `strict-labs` | Experimental — under development |
 | `strict-deprecated` | Pending removal — see replacement in each |
 
-> **Available in marketplace:** `strict-workday` · `strict-labs`
+> **Available in marketplace:** `strict-workday` · `strict-development` · `strict-labs`
 > All other plugins are actively being developed and will be released to the marketplace over time.
 
 ## Goal
