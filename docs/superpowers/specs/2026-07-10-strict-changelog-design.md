@@ -60,16 +60,19 @@ specs at runtime, so the skill stays current if they change:
 6. **Link resolution** — if an integration is available in the session (MCP or
    skill that resolves task URLs), use it to build the link. Otherwise ask the user
    **once** for the base URL pattern. The skill stores nothing about the tracker.
-7. **Group & render** — print to chat. keepachangelog sections; inside each section,
-   group lines by conventional scope (`storage`, `monitoring`, …). No scope → `misc`.
+7. **Group & render** — print to chat inside a fenced ` ```markdown ` block.
+   keepachangelog sections; one bullet per change with the conventional scope as a
+   **bold inline prefix** (`- **storage:** …`). No scope → drop the prefix.
 
 ## Line format
 
 ```text
-- <slug> [<task-id as md link>]
+- **<scope>:** <slug> [<task-id as md link>]
 ```
 
-Example: `- Streaming upload for large blobs [[PROJ-412](https://…/PROJ-412)]`
+Scope is the conventional-commit scope, inline and bold. No scope → drop the prefix.
+
+Example: `- **storage:** Streaming upload for large blobs [[PROJ-412](https://…/PROJ-412)]`
 
 Unlinked change (no task-id) — same shape, `[???]` in place of the link:
 
@@ -101,14 +104,11 @@ above are the only writes, and only on explicit yes.
 ## [Unreleased] — 2026-07-03 … 2026-07-10
 
 ### Added
-**storage**
-- Streaming upload for large blobs [[PROJ-412](https://…/PROJ-412)]
-**misc**
+- **storage:** Streaming upload for large blobs [[PROJ-412](https://…/PROJ-412)]
 - Retry backoff on cold start [[PROJ-419](https://…/PROJ-419)]
 
 ### Fixed
-**monitoring**
-- Dropped p99 metric label [[PROJ-421](https://…/PROJ-421)]
+- **monitoring:** Dropped p99 metric label [[PROJ-421](https://…/PROJ-421)]
 
 ### Unlinked
 - Bump lint config [???]

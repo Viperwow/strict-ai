@@ -147,17 +147,17 @@ If a fetch fails, fall back to `references/type-map.md` and the rules below.
    maps a task-id to a URL), use it. Otherwise ask the user **once** for the base URL
    pattern (e.g. `https://tracker/browse/{id}`) and apply it to all ids. Store nothing.
 
-8. **Render.** Print to chat. keepachangelog sections in canonical order; inside each
-   section group lines by conventional scope (`**storage**`, `**monitoring**`, …).
-   No scope → `**misc**`.
+8. **Render.** Print to chat inside a fenced ` ```markdown ` block. keepachangelog
+   sections in canonical order; one bullet per change with the conventional scope as a
+   **bold inline prefix** (`- **storage:** …`). No scope → drop the prefix.
 
 ## Line format
 
-~~~
-- <slug> [<task-id as md link>]
+~~~text
+- **<scope>:** <slug> [<task-id as md link>]
 ~~~
 
-Example: `- Streaming upload for large blobs [[PROJ-412](https://tracker/browse/PROJ-412)]`
+Example: `- **storage:** Streaming upload for large blobs [[PROJ-412](https://tracker/browse/PROJ-412)]`
 
 Unlinked change (no task-id) — same shape, `[???]` in place of the link:
 
@@ -191,14 +191,11 @@ Output:
 ## [Unreleased] — 2026-07-03 … 2026-07-10
 
 ### Added
-**storage**
-- Streaming upload for large blobs [[PROJ-412](https://tracker/browse/PROJ-412)]
-**misc**
+- **storage:** Streaming upload for large blobs [[PROJ-412](https://tracker/browse/PROJ-412)]
 - Retry backoff on cold start [[PROJ-419](https://tracker/browse/PROJ-419)]
 
 ### Fixed
-**monitoring**
-- Dropped p99 metric label [[PROJ-421](https://tracker/browse/PROJ-421)]
+- **monitoring:** Dropped p99 metric label [[PROJ-421](https://tracker/browse/PROJ-421)]
 
 ### Unlinked
 - Bump lint config [???]
