@@ -39,7 +39,8 @@ If a fetch fails, fall back to `references/type-map.md` and the rules below.
    `git log <range> --format='%H%x00%s%x00%b%x00%(trailers:only)%x00'`
 
 3. **Parse conventional commit.** Split subject as `type(scope): description`.
-   Non-conventional subjects have no type/scope — route to Unlinked handling.
+   A **non-conventional** subject (no `type`) goes straight to the `### Unlinked`
+   section — skip section/scope grouping (steps 4 and 8) for it.
 
 4. **Map type → section.** Use the table in `references/type-map.md`. Dropped types
    (`docs`, `chore`, `test`, `build`, `ci`, `style`) are excluded.
@@ -48,15 +49,19 @@ If a fetch fails, fall back to `references/type-map.md` and the rules below.
    the conventional **scope** if it holds an id. Trailer wins. No id → mark `[???]`.
 
 6. **Collapse.** Commits sharing one task-id become **one line**. Slug from the task
-   title if resolvable, else the most descriptive commit subject.
+   title if resolvable, else the most descriptive commit subject. If those commits map
+   to different sections, place the line in the earliest section by keepachangelog order
+   (Added, Changed, Deprecated, Removed, Fixed, Security).
 
 7. **Resolve link.** If an integration is available this session (an MCP or skill that
    maps a task-id to a URL), use it. Otherwise ask the user **once** for the base URL
    pattern (e.g. `https://tracker/browse/{id}`) and apply it to all ids. Store nothing.
 
-8. **Render.** Print to chat. keepachangelog sections in canonical order; inside each
+8. **Render.** Print to chat. Emit the `## [Unreleased] — <start> … <end>` header from
+   the resolved range, then keepachangelog sections in canonical order; inside each
    section group lines by conventional scope (`**storage**`, `**monitoring**`, …).
-   No scope → `**misc**`.
+   No scope → `**misc**`. Prefix a breaking change with `**BREAKING** ` per
+   `references/type-map.md`.
 
 ## Line format
 
@@ -74,9 +79,11 @@ Unlinked change (no task-id) — same shape, `[???]` in place of the link:
 
 ## Unlinked handling
 
-Commits with no resolvable task-id are kept and rendered in their normal section and
-scope with `[???]`. After the main body, print a `### Unlinked` section — a plain list
-of those changes, no extra prose. Then run two ordered offers, each a clean yes/no:
+A **conventional** commit with no resolvable task-id is kept in its normal section and
+scope with `[???]`. A **non-conventional** (typeless) commit has no section — it lives
+only under `### Unlinked`. After the main body, print a `### Unlinked` section — a plain
+list of every `[???]` change, no extra prose. Then run two ordered offers, each a clean
+yes/no:
 
 1. "Create tasks for the unlinked changes? (yes/no)" — first, so data can be enriched
    before it lands in a file. On yes, use an available integration to create them, then
