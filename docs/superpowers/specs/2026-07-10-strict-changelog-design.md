@@ -22,8 +22,19 @@ third-party trackers.
 
 `--since` and `--from` are mutually exclusive. No arg → 7 days.
 
+## Authoritative sources
+
+The format rules are not baked into the skill — they are pulled from the canonical
+specs at runtime, so the skill stays current if they change:
+
+- keepachangelog (sections, ordering): <https://keepachangelog.com/en/1.1.0/>
+- conventional commits (type/scope/subject grammar): <https://www.conventionalcommits.org/en/v1.0.0/>
+
 ## Pipeline
 
+0. **Ground from source** — fetch the two URLs above and derive the current section
+   set and parse grammar from them. They change rarely; fetch on each run (KISS — no
+   cache). If a fetch fails, fall back to the pinned rules in this spec / `type-map.md`.
 1. **Collect** — `git log <range>` on the current branch. For each commit capture
    subject, body, and trailers.
 2. **Parse conventional commit** — `type(scope): subject`. Non-conventional commits
