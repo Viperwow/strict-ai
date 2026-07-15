@@ -43,8 +43,9 @@ If a fetch fails, fall back to `references/type-map.md` and the rules below.
    `git log <range> --format='%H%x00%s%x00%b%x00%(trailers:only)%x00'`
 
 3. **Parse conventional commit.** Split subject as `type(scope): description`. A
-   **non-conventional** subject (no `type`) has no scope; per `references/type-map.md`
-   it's treated as **Changed**, with the whole subject as the slug.
+   **non-conventional** subject (no `type`) has no scope; judge which keepachangelog
+   section actually fits the change it describes, per `references/type-map.md`'s
+   rules — no catch-all bucket. The whole subject is the slug.
 
 4. **Map type → section.** Use the table in `references/type-map.md`. Dropped types
    (`docs`, `chore`, `test`, `build`, `ci`, `style`) are excluded.
@@ -192,10 +193,10 @@ _2026-07-03 … 2026-07-10_
 ### Fixed
 - **monitoring:** Dropped p99 metric label [[PROJ-421](https://tracker/browse/PROJ-421)]
 - Fix race condition on shutdown
+- Fix typo in readme
 
 ### Changed
-- Bump lint config
-- Fix typo in readme
+- Improve caching strategy for hot paths
 ~~~
 
 Then:
