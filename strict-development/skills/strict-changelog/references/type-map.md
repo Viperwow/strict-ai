@@ -21,4 +21,6 @@ Default mapping. Override by editing this table; the skill reads it as the sourc
 - A breaking change (`!` after type/scope, or `BREAKING CHANGE:` trailer) that removes
   public surface maps to **Removed**; otherwise it stays in its type's section but the
   slug is prefixed `**BREAKING** `.
-- A type absent from both tables above is treated as **Changed**.
+- A type absent from both tables above is treated as **Changed**. A commit with no
+  conventional type at all (non-conventional subject) is treated the same way —
+  **Changed**, unscoped.
