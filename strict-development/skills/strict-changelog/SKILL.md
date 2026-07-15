@@ -35,8 +35,8 @@ If a fetch fails, fall back to `references/type-map.md` and the rules below.
 1. **Resolve branch, then range.** Resolved branch = `--branch <name>` if given, else
    the currently checked-out branch (`HEAD`). All git commands below run against the
    resolved branch, not necessarily literal `HEAD`.
-   - no arg → `git log --since="7 days ago"`
-   - `--since <date>` → `git log --since="<date>"`
+   - no arg → `git log <resolved branch> --since="7 days ago"`
+   - `--since <date>` → `git log <resolved branch> --since="<date>"`
    - `--from <commit>` → `git log <commit>..<resolved branch>`
 
 2. **Collect.** For each commit read subject, body, and trailers:
@@ -69,9 +69,8 @@ If a fetch fails, fall back to `references/type-map.md` and the rules below.
      line: `_<start> … <end>_` for a date-based range, or `_Since commit: <commit-id>_`
      for `--from <commit>`.
    - **`## [Unreleased]`** — always printed, even with nothing under it. Holds
-     `### Pending`, `### Drafts`, and its own `### Unlinked` (see `## Pending changes`
-     below and `## Unlinked handling`); each omitted individually if empty, but the
-     `## [Unreleased]` heading itself is never omitted.
+     `### Pending` and `### Drafts` (see `## Pending changes` below); each omitted
+     individually if empty, but the `## [Unreleased]` heading itself is never omitted.
    - **`## [Released]`** — only when it has content. Holds the keepachangelog sections
      in canonical order, then `### Unlinked` last. One bullet per change, with the
      conventional scope as a **bold inline prefix**: `- **<scope>:** <slug> [<link>]`.
@@ -96,14 +95,14 @@ Unlinked change (no task-id) — same shape, bracket simply omitted:
 
 ## Unlinked handling
 
-Applies to both blocks, each with its own `### Unlinked`: `## [Released]` (commits with
-no resolvable task-id) and `## [Unreleased]` (`Pending`/`Drafts` changes with no
-resolvable task-id, per `## Pending changes` step 8). Within `## [Released]`, a
-**conventional** commit with no resolvable task-id is kept in its normal section and
-scope with no task bracket; a **non-conventional** (typeless) commit has no section —
-it lives only under that block's `### Unlinked`. Each `### Unlinked` is a plain list of
-its own unresolved changes, no extra prose. After both blocks render, run two ordered
-offers covering every unresolved change found in **either** block, each a clean yes/no:
+Applies only to `## [Released]`. A **conventional** commit with no resolvable task-id
+is kept in its normal section and scope with no task bracket; a **non-conventional**
+(typeless) commit has no section — it lives only under `### Unlinked`. `### Unlinked`
+is a plain list of its own unresolved changes, no extra prose. (`## [Unreleased]`
+handles its own unresolved `Pending`/`Drafts` changes differently — see
+`## Pending changes` step 7 — no separate `Unlinked` block there.) After `## [Released]`
+renders, run two ordered offers covering every unresolved change in it, each a clean
+yes/no:
 
 1. "Create tasks for the unlinked changes? (yes/no)" — **only offer this if a
    task-creation integration is available** this session; it comes first so data can be
@@ -146,20 +145,18 @@ Render, step 8). Surfaces work that hasn't landed on the branch yet:
    descriptive commit subject on the branch.
 6. **Resolve PR/MR link.** A matching open PR/MR renders as `#<number>` linked to it.
    A branch with no PR/MR has no PR marker at all.
-7. **Render.** Same line shape as the main sections, but — unlike `Unlinked` —
-   **omit** any bracket/paren that didn't resolve; never print a placeholder here:
-   `- **<scope>:** <slug> [<task-id link>] (PR #<number>) ⚠️`
+7. **Render.** Same line shape as the main sections, but — unlike `## [Released]`'s
+   `Unlinked` — **omit** any bracket/paren that didn't resolve; never print a
+   placeholder here: `- **<scope>:** <slug> [<task-id link>] (PR #<number>) ⚠️`
    - No task-id resolved → omit `[...]`.
    - No PR/MR → omit `(...)`.
    - No conflict → omit `⚠️`.
    - No scope → omit the bold prefix, same as the main sections.
-8. **Unlinked duplication.** A `Pending`/`Drafts` change with no resolved task-id is
-   also listed in this block's own `### Unlinked` (after `Drafts`), rendered as plain
-   `- <slug>` — same convention as `## [Released]`'s `### Unlinked`. Its main
-   `Pending`/`Drafts` line already omits the bracket, per step 7.
-9. **Skip when empty.** No pending work → omit `### Pending` entirely. No drafts →
-   omit `### Drafts` entirely. No unlinked pending items → omit this block's
-   `### Unlinked` entirely. Never print an empty section header.
+   - **Sort order:** within each of `### Pending` and `### Drafts`, items with a
+     resolved task-id come first; items without one are sorted to the end of that
+     same list. No separate `Unlinked` section for this block.
+8. **Skip when empty.** No pending work → omit `### Pending` entirely. No drafts →
+   omit `### Drafts` entirely. Never print an empty section header.
 
 ## Output
 
@@ -182,11 +179,8 @@ _2026-07-03 … 2026-07-10_
 - Rework internal queue consumer (PR #47)
 
 ### Drafts
-- **api:** New webhook endpoint (PR #50)
+- **api:** New GraphQL gateway [[PROJ-470](https://tracker/browse/PROJ-470)] (PR #50)
 - Rework caching layer (PR #51) ⚠️
-
-### Unlinked
-- Rework internal queue consumer
 
 ## [Released]
 
