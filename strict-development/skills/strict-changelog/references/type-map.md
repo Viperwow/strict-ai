@@ -11,17 +11,21 @@ Default mapping. Override by editing this table; the skill reads it as the sourc
 | `remove`          | Removed                |
 | `security`        | Security               |
 | `deprecate`       | Deprecated             |
+| `docs`            | Changed                |
+| `chore`           | Changed                |
+| `test`            | Changed                |
+| `build`           | Changed                |
+| `ci`              | Changed                |
+| `style`           | Changed                |
 
-## Dropped types (not user-facing — excluded from the changelog)
-
-`docs`, `chore`, `test`, `build`, `ci`, `style`.
+No dropped types — every commit lands in a section.
 
 ## Rules
 
 - A breaking change (`!` after type/scope, or `BREAKING CHANGE:` trailer) that removes
   public surface maps to **Removed**; otherwise it stays in its type's section but the
   slug is prefixed `**BREAKING** `.
-- A **typed** commit whose type is absent from both tables above is treated as
+- A **typed** commit whose type is absent from the table above is treated as
   **Changed**.
 - A **typeless** (non-conventional) subject has no type token to look up, but its
   content almost always fits one of the sections above (a typo/bug fix → Fixed, a new

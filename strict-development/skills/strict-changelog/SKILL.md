@@ -48,8 +48,8 @@ If a fetch fails, fall back to `references/type-map.md` and the rules below.
    `references/type-map.md`'s rules — not dropped, and not defaulted to one bucket.
    The whole subject is the slug.
 
-4. **Map type → section.** Use the table in `references/type-map.md`. Dropped types
-   (`docs`, `chore`, `test`, `build`, `ci`, `style`) are excluded.
+4. **Map type → section.** Use the table in `references/type-map.md`. No dropped
+   types — every typed commit lands in a section.
 
 5. **Resolve task-id.** Read the git **trailer** first (`Task:`, `Ref:`, `Refs:`), else
    the conventional **scope** if it holds an id. Trailer wins. No id → unresolved: the
