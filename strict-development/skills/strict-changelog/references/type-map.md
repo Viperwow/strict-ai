@@ -14,7 +14,9 @@ Default mapping. Override by editing this table; the skill reads it as the sourc
 
 ## Dropped types (not user-facing — excluded from the changelog)
 
-`docs`, `chore`, `test`, `build`, `ci`, `style`
+`docs`, `chore`, `test`, `build`, `ci`, `style`. A **typeless** (non-conventional)
+subject — no `type:` token at all — carries no conventional-commit signal and is
+dropped the same way; never guessed into a section.
 
 ## Rules
 
@@ -23,7 +25,3 @@ Default mapping. Override by editing this table; the skill reads it as the sourc
   slug is prefixed `**BREAKING** `.
 - A **typed** commit whose type is absent from both tables above is treated as
   **Changed**.
-- A **typeless** (non-conventional) subject has no type token to look up at all — judge
-  which of the sections above actually fits the change it describes (a typo/bug fix →
-  Fixed, a new capability → Added, etc.), same as a human curator would. No catch-all
-  bucket for these. A typeless subject has no scope; the slug is the whole subject.

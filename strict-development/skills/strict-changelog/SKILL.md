@@ -43,9 +43,9 @@ If a fetch fails, fall back to `references/type-map.md` and the rules below.
    `git log <range> --format='%H%x00%s%x00%b%x00%(trailers:only)%x00'`
 
 3. **Parse conventional commit.** Split subject as `type(scope): description`. A
-   **non-conventional** subject (no `type`) has no scope; judge which keepachangelog
-   section actually fits the change it describes, per `references/type-map.md`'s
-   rules — no catch-all bucket. The whole subject is the slug.
+   **non-conventional** subject (no `type`) carries no conventional-commit signal at
+   all — it's dropped from the changelog, the same as the dropped types in
+   `references/type-map.md`. Never guessed into a section.
 
 4. **Map type → section.** Use the table in `references/type-map.md`. Dropped types
    (`docs`, `chore`, `test`, `build`, `ci`, `style`) are excluded.
@@ -95,7 +95,7 @@ A change with no resolvable task-id — same shape, bracket simply omitted, sort
 end of its section (see Render, step 8):
 
 ~~~text
-- Bump lint config
+- Fix race condition on shutdown
 ~~~
 
 ## Unresolved task-id handling
@@ -141,10 +141,13 @@ Render, step 8). Surfaces work that hasn't landed on the branch yet:
    append `⚠️` to the very end of that line — regardless of whether the line is under
    `Pending` or `Drafts`. No PR/MR integration, or no matching PR/MR → conflict status
    is unknown, no marker.
-5. **Resolve task-id, scope, slug.** Same rules as the main pipeline (steps 3, 5): git
-   trailer on the branch's own commits first, else conventional scope, else an id
-   pattern in the branch name. Slug from the PR/MR title if available, else the most
-   descriptive commit subject on the branch.
+5. **Resolve task-id, scope, slug.** Same grammar as the main pipeline (steps 3, 5) for
+   *parsing* — trailer on the branch's own commits first, else conventional scope, else
+   an id pattern in the branch name. Slug from the PR/MR title if available, else the
+   most descriptive commit subject on the branch. This is parsing only — the main
+   pipeline's drop-if-typeless rule (step 3) does **not** apply here; a `Pending`/
+   `Drafts` entry is never dropped for lacking a type, only its scope prefix is
+   omitted (step 7).
 6. **Resolve PR/MR link.** A matching open PR/MR renders as `#<number>` linked to it.
    A branch with no PR/MR has no PR marker at all.
 7. **Render.** Same line shape as the main sections: `- **<scope>:** <slug>
@@ -193,10 +196,6 @@ _2026-07-03 … 2026-07-10_
 ### Fixed
 - **monitoring:** Dropped p99 metric label [[PROJ-421](https://tracker/browse/PROJ-421)]
 - Fix race condition on shutdown
-- Fix typo in readme
-
-### Changed
-- Improve caching strategy for hot paths
 ~~~
 
 Then:
