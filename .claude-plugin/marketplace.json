@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Opinionated skill collection for professional software engineering workflows — modular, replaceable packages for every phase of daily work and SDLC.",
-    "version": "0.7.0"
+    "version": "0.8.0"
   },
   "plugins": [
     {
@@ -29,6 +29,13 @@
       "description": "Skills for engineering implementation — changelog generation, technical design, PR preparation.",
       "version": "0.3.0",
       "category": "development"
+    },
+    {
+      "name": "strict-agents",
+      "source": "./strict-agents",
+      "description": "Create scoped Claude Code subagents from a task or role, with a mandatory golden eval contract.",
+      "version": "0.1.0",
+      "category": "agents"
     }
   ]
 }
