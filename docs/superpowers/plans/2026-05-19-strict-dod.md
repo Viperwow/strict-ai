@@ -244,9 +244,7 @@ git commit -m "feat(strict-workday): add strict-dod skill for Definition of Done
 
 Skill routes between auto/guided/guard modes based on session context
 and existence of a persisted DoD file. Fixes task boundary before work
-starts to prevent scope creep and perfectionism.
-
-Co-Authored-By: Claude Sonnet 4.6 <noreply@anthropic.com>"
+starts to prevent scope creep and perfectionism."
 ```
 
 ---

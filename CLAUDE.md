@@ -22,6 +22,7 @@ strict/
   strict-knowledge/
   strict-foundation/
   strict-adapters/
+  strict-agents/
   strict-labs/
   strict-deprecated/
 ```
@@ -40,6 +41,7 @@ strict/
 | `strict-knowledge` | internal procedures, playbooks, knowledge-grounded guidance                                                                   |
 | `strict-foundation` | shared reusable primitives across multiple packages — rules, policies, templates, hooks                                       |
 | `strict-adapters` | one specific tool/API/CLI/SDK only; replaceable; invocable by other skills only, not directly by users                        |
+| `strict-agents` | creating custom subagents from a task/role — composing skills into an agent `.md`, its tools, model, and eval contract         |
 | `strict-labs` | experimental, still stabilizing, or searching for a permanent home                                                            |
 | `strict-deprecated` | confirmed replacement exists; removal scheduled; not the recommended path for any use case                                    |
 
