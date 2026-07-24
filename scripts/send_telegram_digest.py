@@ -50,6 +50,35 @@ def split_chunks(text: str, limit: int = MAX_MESSAGE_CHARS) -> list[str]:
     return chunks
 
 
+def get_me(token: str) -> dict:
+    url = f"{API_ROOT}/bot{token}/getMe"
+    try:
+        with urllib.request.urlopen(url, timeout=30) as resp:
+            body = json.loads(resp.read().decode("utf-8"))
+    except urllib.error.HTTPError as exc:
+        detail = exc.read().decode("utf-8", errors="replace")
+        raise SystemExit(f"Telegram getMe HTTP {exc.code}: {detail}") from exc
+    except urllib.error.URLError as exc:
+        raise SystemExit(f"Telegram getMe failed: {exc}") from exc
+    if not body.get("ok"):
+        raise SystemExit(f"Telegram getMe error: {body}")
+    return body["result"]
+
+
+def assert_chat_is_reachable(token: str, chat_id: str) -> None:
+    """Fail fast when TELEGRAM_CHAT_ID points at the bot itself (common misconfig)."""
+    me = get_me(token)
+    bot_username = (me.get("username") or "").lower()
+    bot_id = str(me.get("id") or "")
+    normalized = chat_id[1:].lower() if chat_id.startswith("@") else chat_id
+    if chat_id == bot_id or (bot_username and normalized == bot_username):
+        raise SystemExit(
+            "TELEGRAM_CHAT_ID points at this bot itself; bots cannot message bots. "
+            "Set TELEGRAM_CHAT_ID to a user id, group id, or channel id where the bot can post "
+            "(user must /start the bot first for DMs)."
+        )
+
+
 def send_message(token: str, chat_id: str, text: str, parse_mode: str | None) -> dict:
     url = f"{API_ROOT}/bot{token}/sendMessage"
     payload: dict[str, object] = {
@@ -71,7 +100,13 @@ def send_message(token: str, chat_id: str, text: str, parse_mode: str | None) ->
             body = json.loads(resp.read().decode("utf-8"))
     except urllib.error.HTTPError as exc:
         detail = exc.read().decode("utf-8", errors="replace")
-        raise SystemExit(f"Telegram API HTTP {exc.code}: {detail}") from exc
+        hint = ""
+        if exc.code == 403 and "can't send messages to the bot" in detail:
+            hint = (
+                " Hint: TELEGRAM_CHAT_ID must be a user/group/channel, "
+                "not this bot's @username."
+            )
+        raise SystemExit(f"Telegram API HTTP {exc.code}: {detail}{hint}") from exc
     except urllib.error.URLError as exc:
         raise SystemExit(f"Telegram API request failed: {exc}") from exc
 
@@ -110,6 +145,7 @@ def main() -> None:
 
     token = require_env("TELEGRAM_BOT_TOKEN")
     chat_id = require_env("TELEGRAM_CHAT_ID")
+    assert_chat_is_reachable(token, chat_id)
 
     for i, chunk in enumerate(chunks, 1):
         prefix = f"({i}/{len(chunks)})\n" if len(chunks) > 1 else ""
