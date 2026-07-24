@@ -35,8 +35,25 @@ Written to `.claude/agent-evals/<name>/case-01.md` (or the `~/.claude` equivalen
 - <Tool that must NOT be called, e.g. Bash rm, any external send.>
 ```
 
+## First-attempt grading (required when a run exists)
+
+Grade the *first* attempt in the trajectory, not the final self-repaired state.
+
+- If the agent only satisfies an assertion after a silent self-corrective edit in the same run, mark that assertion **FAIL** and set `self_corrected: true`.
+- Track self-correction explicitly; do not treat “eventually fixed” as a pass.
+- Keep efficiency (tools / tokens / time) out of the pass/fail gate.
+
+This matches the AEVAL first-attempt rule for agentic skill workflows (arXiv:2607.16345): anecdotal demo-watching and self-grading inflate pass rates.
+
+## Executor / grader separation
+
+- **Executor** — the agent or skill under test. Produces a trajectory and artifacts.
+- **Grader** — a separate context or harness that asserts on final state + tool calls.
+
+Never let the executor grade itself. For a manual run protocol and result template, use `strict-quality` → `strict-skill-eval`.
+
 ## What the case is, and is not
 
 Write it so a machine *could* check it: a final-state assertion plus required and forbidden tool calls, with no prose judgment needed.
 
-Be clear-eyed about what ships, though. This skill produces the contract, not a runner. Nothing here executes the case or blocks anything on its own — you check it by hand, or you point a harness you supply at it. The value is that "correct" stops being an opinion and becomes something written down before the agent runs, in a shape a runner can consume later.
+Be clear-eyed about what ships, though. This skill produces the contract, not a runner. Nothing here executes the case or blocks anything on its own — you check it by hand, via `strict-skill-eval`, or you point a harness you supply at it. The value is that "correct" stops being an opinion and becomes something written down before the agent runs, in a shape a runner can consume later.

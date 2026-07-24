@@ -1,7 +1,7 @@
 {
   "name": "strict-quality",
-  "version": "0.1.0",
-  "description": "Skills for product quality and verification — test case generation, verification flows, quality gates, regression planning, and validation evidence.",
+  "version": "0.2.0",
+  "description": "Skills for product quality and verification — deterministic skill/agent evals, quality gates, regression planning, and validation evidence.",
   "author": {
     "name": "Viperwow",
     "email": "viperkodiak@gmail.com"
