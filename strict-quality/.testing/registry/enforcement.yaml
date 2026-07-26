@@ -1,0 +1,25 @@
+coverage_diff:
+  V0: block
+  V1: block
+  V2: warn
+  V3: warn
+
+checklist_missing:
+  V0: block
+  V1: block
+  V2: warn
+  V3: warn
+
+Q-mut:
+  default: warn
+  after_baseline_days: 30
+  then:
+    L-dom:
+      V0: block
+      V1: block
+
+human_verification:
+  TC_required_when:
+    - enforcement: block
+      severity: V0
+      checklist_automation: manual-only

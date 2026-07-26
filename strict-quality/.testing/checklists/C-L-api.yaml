@@ -1,0 +1,25 @@
+layer_id: L-api
+title: API / docs contract layer checklist
+test_types_ref: strict-quality/docs/reference/testing-structure-overview.md
+
+items:
+  - id: C-api-01
+    title: PRD and ADR docs present for governance changes
+    test_types: [static, confirmation]
+    required_severity: V1
+    automation: manual-only
+    linked_cases: [TC-0004]
+
+  - id: C-api-02
+    title: Human test cases link to valid checklist IDs
+    test_types: [confirmation, retesting]
+    required_severity: V0
+    automation: manual-only
+    linked_cases: [TC-0005, TC-0006]
+
+  - id: C-api-03
+    title: Backward compatibility for registry schema
+    test_types: [backward-compatibility]
+    required_severity: V2
+    automation: manual-only
+    linked_cases: []

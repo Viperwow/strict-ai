@@ -1,0 +1,24 @@
+# V0 = most critical. Numeric order used in ADR-003 comparisons.
+
+definitions:
+  V0:
+    name: critical
+    description: Auth, money, PII, irreversible migrations, safety.
+  V1:
+    name: high
+    description: Core product paths, public API behavior.
+  V2:
+    name: medium
+    description: Internal workflows, non-customer-facing logic.
+  V3:
+    name: low
+    description: Utilities, dev tooling, docs-only code paths.
+
+# Overrides: effective(S,L) uses min(scope default, override if present)
+overrides:
+  - scope: S-qual
+    layer: L-dom
+    severity: V0
+  - scope: S-qual
+    layer: L-api
+    severity: V1

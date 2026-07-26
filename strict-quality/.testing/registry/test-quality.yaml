@@ -1,0 +1,17 @@
+gates:
+  Q-mut:
+    description: Mutation testing kill rate on changed code in layer.
+    by_layer_severity:
+      - layer: L-dom
+        severity: V0
+        min_kill_rate: 0.70
+      - layer: L-dom
+        severity: V1
+        min_kill_rate: 0.65
+  Q-assert:
+    description: Automated tests must contain real assertions (linter/heuristic).
+    by_severity:
+      V0: required
+      V1: required
+      V2: recommended
+      V3: optional

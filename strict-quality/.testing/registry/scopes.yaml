@@ -1,0 +1,33 @@
+# Reference scopes for strict-quality plugin (strict-ai monorepo paths).
+
+scopes:
+  - id: S-qual
+    name: strict-quality
+    default_severity: V1
+    paths:
+      - "strict-quality/**"
+    layers:
+      - id: L-dom
+        paths:
+          - "strict-quality/.testing/registry/**"
+          - "strict-quality/.testing/checklists/**"
+      - id: L-api
+        paths:
+          - "strict-quality/docs/**"
+      - id: L-inf
+        paths:
+          - "strict-quality/.claude-plugin/**"
+
+  - id: S-fnd
+    name: strict-foundation
+    default_severity: V2
+    paths:
+      - "strict-foundation/**"
+    layers:
+      - id: L-dom
+        paths:
+          - "strict-foundation/**"
+
+excluded_paths:
+  - "**/node_modules/**"
+  - "**/.git/**"

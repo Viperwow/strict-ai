@@ -1,0 +1,33 @@
+layer_id: L-dom
+title: Domain layer checklist
+test_types_ref: strict-quality/docs/reference/testing-structure-overview.md
+
+items:
+  - id: C-dom-01
+    title: Unit tests for domain invariants
+    test_types: [unit, confirmation]
+    required_severity: V2
+    automation: ci-job
+    linked_cases: [TC-0001]
+
+  - id: C-dom-02
+    title: Property-based tests for algebraic rules
+    test_types: [property-based]
+    required_severity: V1
+    automation: ci-job
+    linked_cases: []
+
+  - id: C-dom-03
+    title: Mutation testing on changed domain code
+    test_types: [mutation]
+    required_severity: V1
+    automation: ci-job
+    quality_gate: Q-mut
+    linked_cases: [TC-0002]
+
+  - id: C-dom-04
+    title: Registry IDs unique and paths non-overlapping
+    test_types: [static, confirmation]
+    required_severity: V0
+    automation: manual-only
+    linked_cases: [TC-0001, TC-0003]
