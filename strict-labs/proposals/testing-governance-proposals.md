@@ -19,3 +19,4 @@ Single source for ideas under discussion. Add items in chat; inline expansions f
 - Use semantic / static tools: opengrep, semgrep, fuzz, eslint, … (perspective tools from dialog and from the internet).
 - Adapt relevant data for AI (e.g. json, vectorized, yaml).
 - Human-readable form nearby in another file ("specificity for a reader" first approach).
+- "Reverse diff" method: usage and quality gates — large-looking change that in fact trims excess while tests and metrics stay green unchanged (behavior / coverage / checklist evidence must not regress).
