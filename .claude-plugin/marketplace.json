@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Opinionated skill collection for professional software engineering workflows — modular, replaceable packages for every phase of daily work and SDLC.",
-    "version": "0.8.0"
+    "version": "0.9.0"
   },
   "plugins": [
     {
@@ -20,7 +20,7 @@
       "name": "strict-labs",
       "source": "./strict-labs",
       "description": "Experimental and unstable content — early skills and drafts being evaluated.",
-      "version": "0.3.0",
+      "version": "0.4.0",
       "category": "labs"
     },
     {
