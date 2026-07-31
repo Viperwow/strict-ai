@@ -1,6 +1,8 @@
-# Report format
+# Report format (research)
 
 File: `docs/research/results/YYYY-MM-DD-<slug>.md`
+
+Use when queue item `kind: research` (or missing `kind`). Experiments use `experiment-format.md`.
 
 `<slug>` = kebab-case of the title, max ~60 chars.
 
@@ -10,6 +12,7 @@ File: `docs/research/results/YYYY-MM-DD-<slug>.md`
 # <Title>
 
 - **id:** r-NNN
+- **kind:** research
 - **date:** YYYY-MM-DD
 - **status:** answered | partial | blocked
 - **sources:** N primary · M secondary

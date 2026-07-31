@@ -1,6 +1,7 @@
 # How should Cursor Automations be documented inside a skills marketplace repo?
 
 - **id:** r-001
+- **kind:** research
 - **date:** 2026-07-31
 - **status:** answered
 - **sources:** 4 primary · 2 secondary
