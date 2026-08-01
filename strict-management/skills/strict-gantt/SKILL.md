@@ -36,12 +36,14 @@ Header is **`Resource | Work (days)`**. Cells stay short:
 | Form | Example | Key needed? |
 |---|---|---|
 | Task id | `Task 31` · `31,32` · `PROJ-12` | No — ids are self-explanatory |
-| 1–2 words | `36 start` · `follow-up` | No |
+| 1–2 words | `36 Start` · `Follow-up` | No |
 | Abbreviation / acronym | `ADR` · `RFC` | **Yes** — expand at least once in `Key:` |
+
+**Capitalize** every label: first letter of the label and of each space/comma-separated word (`follow-up` → `Follow-up`, `ADR draft` → `ADR Draft`). The script does this in `normalizeTask` / `capitalizeLabel`.
 
 Abbreviations are short letter-codes whose expansion is usually several long words (often **more than two** parts), e.g. `ADR = Architectural Design Requirements`. Do **not** put task numbers like `31` / `Task 31` into `Key:`.
 
-Never put the full multi-word expansion into the grid cell — keep the abbr in the cell, expansion under the chart.
+Never put the full multi-word expansion into the grid cell — keep the abbr in the cell, expansion under the chart. Always capitalize labels.
 
 
 ## Chart layout (required)
@@ -51,7 +53,7 @@ Resource | Work (days)  01 02 03 04 05 06 07 08 09 10
                         Mo Tu We Th Fr Sa Su Mo Tu We
 ────────────────────────────────────────────────────
 Me       | Task 31      ██
-Me       | ADR draft          ██
+Me       | ADR Draft         ██
 
 Key:
   ADR = Architectural Design Requirements
@@ -92,7 +94,7 @@ Normalize every row to `{ resource?, label, start, duration, kind? }`:
 | Field | Meaning |
 |---|---|
 | `resource` | Person/team. Empty string if unknown |
-| `label` | Short task id / 1–2 words / abbreviation (see Labels) |
+| `label` | Short task id / 1–2 words / abbreviation; always Capitalized |
 | `start` | Zero-based period index (inclusive) |
 | `duration` | Number of periods (≥ 1) |
 | `kind` | `work` (default) or `leave` |
@@ -118,7 +120,7 @@ Do not invent dependencies or reorder rows unless asked; preserve input order.
 2. Prefer the skill script — from this skill directory:
    ~~~bash
    npx --yes tsx scripts/draw-gantt.ts
-   echo '{"tasks":[{"resource":"Me","label":"ADR draft","start":0,"duration":2}],"glossary":{"ADR":"Architectural Design Requirements"}}' \
+   echo '{"tasks":[{"resource":"Me","label":"ADR Draft","start":0,"duration":2}],"glossary":{"ADR":"Architectural Design Requirements"}}' \
      | npx --yes tsx scripts/draw-gantt.ts
    npx --yes tsx scripts/draw-gantt.ts --color
    ~~~
@@ -147,11 +149,11 @@ Resource | Work (days)  01 02 03 04 05 06 07 08 09
 ──────────────────────────────────────────────────
 Me       | Task 31      ██                        
 Me       | Task 32         ██                     
-Me       | ADR draft          ██                  
-Me       | 36 start              ██               
+Me       | ADR Draft          ██                  
+Me       | 36 Start              ██               
 Me       | 36,37,38                 ██            
 Me       | Leave                       ▒▒ ▒▒      
-Me       | follow-up                         ██ ██
+Me       | Follow-up                         ██ ██
 
 Key:
   ADR = Architectural Design Requirements
@@ -164,6 +166,7 @@ Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
 | Mistake | Fix |
 |---|---|
 | Putting full expansions in the grid | Keep abbr in the cell; put multi-word expansion in `Key:` |
+| Lowercase labels (`follow-up`) | Capitalize: `Follow-up` |
 | Long sentences in the grid | Shorten to id / 1–2 words; put detail in `Key:` |
 | Abbreviation/acronym with no expansion | Always print `Key:` once (e.g. `ADR = Architectural Design Requirements`) |
 | Putting `Task 31` / bare ids into `Key:` | Key is only for abbrs/acronyms, not task numbers |

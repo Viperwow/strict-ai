@@ -201,7 +201,14 @@ function formatGlossary(glossary: Glossary): string[] {
   ];
 }
 
-/** Accept `label` or legacy `name`. */
+/** Capitalize the first letter of the label and of each space/comma-separated word. */
+export function capitalizeLabel(label: string): string {
+  return label.replace(/(^|[\s,/])(\p{L})/gu, (_m, sep: string, ch: string) => {
+    return sep + ch.toUpperCase();
+  });
+}
+
+/** Accept `label` or legacy `name`. Always capitalizes the label. */
 function normalizeTask(
   raw: Task | (Omit<Task, "label"> & { name?: string; label?: string }),
 ): Task {
@@ -211,7 +218,7 @@ function normalizeTask(
   }
   return {
     resource: raw.resource,
-    label,
+    label: capitalizeLabel(label.trim()),
     start: raw.start,
     duration: raw.duration,
     kind: raw.kind,
@@ -315,11 +322,11 @@ export function drawGantt(
 const DEMO_TASKS: Task[] = [
   { resource: "Me", label: "Task 31", start: 0, duration: 1 },
   { resource: "Me", label: "Task 32", start: 1, duration: 1 },
-  { resource: "Me", label: "ADR draft", start: 2, duration: 1 },
-  { resource: "Me", label: "36 start", start: 3, duration: 1 },
+  { resource: "Me", label: "ADR Draft", start: 2, duration: 1 },
+  { resource: "Me", label: "36 Start", start: 3, duration: 1 },
   { resource: "Me", label: "36,37,38", start: 4, duration: 1 },
   { resource: "Me", label: "Leave", start: 5, duration: 2, kind: "leave" },
-  { resource: "Me", label: "follow-up", start: 7, duration: 2 },
+  { resource: "Me", label: "Follow-up", start: 7, duration: 2 },
 ];
 
 /** Only true abbreviations/acronyms — not bare task numbers. */
