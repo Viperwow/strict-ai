@@ -60,8 +60,6 @@ Task 31, Task 32, ADR Draft, 36 Start…  ██ ██ ██ ██ ██ ▒
 
 Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
 
-Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
-
 Key:
   ADR = Architectural Design Requirements
 ~~~
