@@ -17,7 +17,7 @@ Render a text Gantt chart in chat (or console) so a schedule is scannable at a g
 
 Script UI is **English only** (headers, weekdays, legend, key). Row labels may be whatever the user provided.
 
-**One resource = one row:** merge every task for the same subject onto a single timeline. Never repeat a resource on multiple body rows. The Work (days) cell lists that subject's short labels (comma-separated; truncate with `…` if long).
+**One track = one person (resource):** each body row belongs to exactly one person. A person may have **many** task rows — keep that person's rows contiguous (group by resource). Never put two people on one row. Do **not** merge a person's tasks into a single timeline row.
 
 ## Invocation
 
@@ -39,7 +39,7 @@ Default header is **`Work (days)`**. Prefix **`Resource |`** only with **2+ dist
 |---|---|---|
 | Task id | `Task 31` · `31,32` · `PROJ-12` | No — ids are self-explanatory |
 | 1–2 words | `36 Start` · `Follow-up` | No |
-| Abbreviation / acronym | `ADR` · `RFC` | **Yes** — expand at least once in `Key:` |
+| Abbreviation / acronym | `US` · `CB` · `ADR` · `S1` | **Yes** — expand at least once in `Key:` |
 
 **Capitalize** every label: first letter of the label and of each space/comma-separated word (`follow-up` → `Follow-up`, `ADR draft` → `ADR Draft`). The script does this in `normalizeTask` / `capitalizeLabel`.
 
@@ -50,39 +50,45 @@ Never put the full multi-word expansion into the grid cell — keep the abbr in 
 
 ## Chart layout (required)
 
-Single subject (Resource hidden; **one row**):
+Multiple people (Resource shown; each person is a track with many task rows):
 
 ~~~text
-Work (days)                             01 02 03 04 05 06 07 08 09
-                                        Mo Tu We Th Fr Sa Su Mo Tu
-──────────────────────────────────────────────────────────────────
-Task 31, Task 32, ADR Draft, 36 Start…  ██ ██ ██ ██ ██ ▒▒ ▒▒ ██ ██
+Resource | Work (days)  01 02 03 04 05 06 07 08 09 10 11 12
+                        Mo Tu We Th Fr Sa Su Mo Tu We Th Fr
+────────────────────────────────────────────────────────────
+S1       | E2-A US      ██
+S1       | E1-A US         ██
+S1       | Stabilize          ██
+S2       | E2-D US      ██
+M        | DB Fix W1    ██
+J1       | CB Fix W1    ██ ██ ██ ██ ██
 
 Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
 
 Key:
-  ADR = Architectural Design Requirements
+  US = User Story
+  S1 = Senior Developer 1
 ~~~
 
-Multiple subjects (**one row each**):
+Single person (Resource column hidden; still one row per task):
 
 ~~~text
-Resource | Work (days)  01 02 03 …
-                        Mo Tu We …
-Me       | Task 31      ██ ██
-Ann      | Task 32         ██ ██
+Work (days)  01 02 03 …
+             Mo Tu We …
+Task 31      ██
+ADR Draft       ██
 ~~~
 
 | Part | Rule |
 |---|---|
 | Resource | Show **only** if `distinctResources(tasks).length > 1` |
-| Work (days) | Always shown; labels for that resource joined on the one row |
+| Work (days) | Always shown; **one short label per task row** |
 | Row 1 | Period numbers (`01 02 …`) |
 | Row 2 | Weekdays (`Mo Tu We Th Fr Sa Su`) |
 | Separator | `─` to the width of row 1 |
-| Body | **One row per resource** — never two rows for the same subject |
+| Body | **One row per task**; group rows by person (track). Never two people on one row |
 | Legend | **Always** under the table |
-| Key | Abbreviations/acronyms only — after Legend |
+| Key | Abbreviations/acronyms (incl. resource codes) — after Legend |
 
 Weekday of period 0: `--week-start 0..6` (Mon=0 … Sun=6, default `0`).
 With a real `projectStart` date, use `weekStartFromDate(projectStart)`.
@@ -115,7 +121,7 @@ Normalize every row to `{ resource?, label, start, duration, kind? }`:
 | `duration` | Number of periods (≥ 1) |
 | `kind` | `work` (default) or `leave` |
 
-Optional `glossary: { [abbr]: expansion }` — only for abbreviations/acronyms (e.g. ADR), printed as `Key:` **after** Legend. Skip task ids. Legacy stdin field `name` is accepted as `label`.
+Optional `glossary: { [abbr]: expansion }` — abbreviations/acronyms (e.g. US, CB, S1), printed as `Key:` **after** Legend. Skip bare task numbers. Legacy stdin field `name` is accepted as `label`.
 
 When the user gives **dates**, convert with `tasksFromDates` / `periodsBetween` from `scripts/draw-gantt.ts`:
 
@@ -128,7 +134,7 @@ When the user gives **dates**, convert with `tasksFromDates` / `periodsBetween` 
 
 Cell priority per period: **leave → weekend-work (`▓▓`) → weekday-work (`██`) → empty**. Empty weekends stay blank.
 
-Do not invent dependencies. Preserve first-seen resource order. Never emit two rows for the same resource.
+Do not invent dependencies. Preserve first-seen resource order and group that person's task rows together. Never put two people on one row.
 
 ## How to draw
 
@@ -157,18 +163,58 @@ Do **not** write files unless the user asks. Do **not** open FigJam/diagram tool
 
 ## Example
 
-`npx --yes tsx scripts/draw-gantt.ts` (one resource → one row):
+`npx --yes tsx scripts/draw-gantt.ts` (one track = one person; many task rows):
 
 ~~~text
-Work (days)                             01 02 03 04 05 06 07 08 09
-                                        Mo Tu We Th Fr Sa Su Mo Tu
-──────────────────────────────────────────────────────────────────
-Task 31, Task 32, ADR Draft, 36 Start…  ██ ██ ██ ██ ██ ▒▒ ▒▒ ██ ██
+Resource | Work (days)  01 02 03 04 05 06 07 08 09 10 11
+                        Mo Tu We Th Fr Sa Su Mo Tu We Th
+────────────────────────────────────────────────────────
+S1       | E2-A US      ██                              
+S1       | E1-A US         ██                           
+S1       | Stabilize          ██                        
+S1       | E2-B US               ██                     
+S1       | E1-B US                  ██                  
+S1       | Stabilize                         ██         
+S1       | E3-A US                              ██      
+S1       | E2-C US                                 ██   
+S1       | Stabilize                                  ██
+S2       | E2-D US      ██                              
+S2       | E1-C US         ██                           
+S2       | Stabilize          ██                        
+S2       | E2-E US               ██                     
+S2       | E1-D US                  ██                  
+S2       | Stabilize                         ██         
+S2       | E3-B US                              ██      
+S2       | E2-F US                                 ██   
+S2       | Stabilize                                  ██
+M        | DB Fix W1    ██                              
+M        | CB Fix W1       ██                           
+M        | TD-1               ██                        
+M        | DB Fix W1             ██                     
+M        | CB Fix W1                ██                  
+M        | TD-2                              ██         
+M        | DB Fix W2                            ██      
+M        | CB Fix W2                               ██   
+J1       | CB Fix W1    ██ ██ ██ ██ ██                  
+J1       | CB Fix W2                         ██ ██ ██ ██
+J2       | DB Fix W1    ██ ██ ██ ██ ██                  
+J2       | DB Fix W2                         ██ ██ ██ ██
 
 Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
 
 Key:
-  ADR = Architectural Design Requirements
+  US = User Story
+  DB = Developer-Introduced Bug
+  CB = Client-Reported Bug
+  TD = Technical Debt Task, Epic 4
+  E1 = Epic priority Highest
+  E2 = Epic priority Medium
+  E3 = Epic priority Medium
+  S1 = Senior Developer 1
+  S2 = Senior Developer 2
+  M = Middle Developer
+  J1 = Junior Developer 1
+  J2 = Junior Developer 2
 ~~~
 
 ## Common mistakes
@@ -192,4 +238,4 @@ Key:
 | Painting leave as `██` | Set `kind: "leave"` → `▒▒` |
 | Coloring by default | Color only with `--color` |
 | Reordering by start date silently | Keep first-seen resource order |
-| One task per row for the same person | **One resource = one row** — merge their tasks onto one timeline |
+| Merging all of one person's tasks into a single row | **One track = one person** — many task rows per person, grouped together |
