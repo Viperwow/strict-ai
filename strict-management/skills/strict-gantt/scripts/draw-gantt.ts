@@ -16,8 +16,9 @@
  *   Key: ADR = …   (abbreviations only)
  *   Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
  *
- * One resource = one row (merge that subject's tasks onto one timeline).
- * Show Resource column only when there are 2+ distinct subjects.
+ * One track = one person (resource): each body row belongs to exactly one
+ * person; a person may have many task rows (grouped together). Never put
+ * two people on one row. Show Resource column when 2+ distinct subjects.
  * Run demo: npx --yes tsx scripts/draw-gantt.ts
  * Flags: --color  --week-start 0  --weekends 5,6
  */
@@ -144,33 +145,23 @@ export function weekStartFromDate(projectStart: Date): number {
   return (projectStart.getDay() + 6) % 7;
 }
 
-function resolveCellForTasks(
+function resolveCell(
   period: number,
-  tasks: readonly Task[],
+  task: Task,
   weekends: ReadonlySet<number>,
 ): CellKind {
-  let hasLeave = false;
-  let hasWork = false;
-  for (const task of tasks) {
-    const active = period >= task.start && period < task.start + task.duration;
-    if (!active) continue;
-    if (task.kind === "leave") hasLeave = true;
-    else hasWork = true;
-  }
-  if (hasLeave) return "leave";
-  if (hasWork && weekends.has(period)) return "weekend";
-  if (hasWork) return "work";
-  return "empty";
+  const active = period >= task.start && period < task.start + task.duration;
+  if (!active) return "empty";
+  if (task.kind === "leave") return "leave";
+  if (weekends.has(period)) return "weekend";
+  return "work";
 }
 
-export type ResourceRow = {
-  resource: string;
-  label: string;
-  tasks: Task[];
-};
-
-/** Group tasks into one row per resource (first-seen order). */
-export function rowsByResource(tasks: readonly Task[]): ResourceRow[] {
+/**
+ * Keep each person's task rows contiguous (first-seen resource order).
+ * Does not merge tasks — one body row per task.
+ */
+export function orderTasksByResource(tasks: readonly Task[]): Task[] {
   const order: string[] = [];
   const groups = new Map<string, Task[]>();
 
@@ -183,30 +174,7 @@ export function rowsByResource(tasks: readonly Task[]): ResourceRow[] {
     groups.get(key)!.push(task);
   }
 
-  return order.map((key) => {
-    const group = groups.get(key)!;
-    const labels = [...new Set(group.map((t) => t.label))];
-    return {
-      resource: key,
-      label: joinLabels(labels),
-      tasks: group,
-    };
-  });
-}
-
-/** Join labels for a resource row; truncate with … when long. */
-export function joinLabels(labels: readonly string[], maxLen = 40): string {
-  const full = labels.join(", ");
-  if (full.length <= maxLen) return full;
-
-  let out = "";
-  for (const label of labels) {
-    const next = out ? `${out}, ${label}` : label;
-    if (next.length > maxLen - 1) break;
-    out = next;
-  }
-  if (!out) out = labels[0].slice(0, Math.max(1, maxLen - 1));
-  return `${out}…`;
+  return order.flatMap((key) => groups.get(key)!);
 }
 
 function renderCell(
@@ -310,11 +278,11 @@ export function drawGantt(
 
   if (normalized.length === 0) return "(no tasks)";
 
-  // One resource = one row.
-  const rows = rowsByResource(normalized);
+  // One track = one person: group rows by resource; still one row per task.
+  const ordered = orderTasksByResource(normalized);
 
   const span = Math.max(
-    ...normalized.map((task) => task.start + task.duration),
+    ...ordered.map((task) => task.start + task.duration),
     0,
   );
 
@@ -326,19 +294,19 @@ export function drawGantt(
   const weekendMax = weekends.size ? Math.max(...weekends) + 1 : 0;
   const periods = Math.max(span, weekendMax);
 
-  const resources = distinctResources(normalized);
+  const resources = distinctResources(ordered);
   const showResource = resources.length > 1;
 
   const resourceWidth = showResource
     ? Math.max(
         resourceHeader.length,
-        ...rows.map((r) => r.resource.length),
+        ...ordered.map((t) => (t.resource ?? "").length),
         1,
       )
     : 0;
   const labelWidth = Math.max(
     workHeader.length,
-    ...rows.map((r) => r.label.length),
+    ...ordered.map((t) => t.label.length),
     1,
   );
 
@@ -363,17 +331,17 @@ export function drawGantt(
 
   const lines = [dates, days, "─".repeat(dates.length)];
 
-  rows.forEach((row, rowIndex) => {
+  ordered.forEach((task, taskIndex) => {
     const left = leftLabel(
-      row.label,
+      task.label,
       labelWidth,
       showResource
-        ? { value: row.resource, width: resourceWidth }
+        ? { value: task.resource ?? "", width: resourceWidth }
         : undefined,
     );
     const timeline = Array.from({ length: periods }, (_, period) => {
-      const kind = resolveCellForTasks(period, row.tasks, weekends);
-      return renderCell(kind, rowIndex, color);
+      const kind = resolveCell(period, task, weekends);
+      return renderCell(kind, taskIndex, color);
     }).join(" ");
 
     lines.push(left + timeline);
@@ -392,18 +360,52 @@ export function drawGantt(
 }
 
 const DEMO_TASKS: Task[] = [
-  { resource: "Me", label: "Task 31", start: 0, duration: 1 },
-  { resource: "Me", label: "Task 32", start: 1, duration: 1 },
-  { resource: "Me", label: "ADR Draft", start: 2, duration: 1 },
-  { resource: "Me", label: "36 Start", start: 3, duration: 1 },
-  { resource: "Me", label: "36,37,38", start: 4, duration: 1 },
-  { resource: "Me", label: "Leave", start: 5, duration: 2, kind: "leave" },
-  { resource: "Me", label: "Follow-up", start: 7, duration: 2 },
+  { resource: "S1", label: "E2-A US", start: 0, duration: 1 },
+  { resource: "S1", label: "E1-A US", start: 1, duration: 1 },
+  { resource: "S1", label: "Stabilize", start: 2, duration: 1 },
+  { resource: "S1", label: "E2-B US", start: 3, duration: 1 },
+  { resource: "S1", label: "E1-B US", start: 4, duration: 1 },
+  { resource: "S1", label: "Stabilize", start: 7, duration: 1 },
+  { resource: "S1", label: "E3-A US", start: 8, duration: 1 },
+  { resource: "S1", label: "E2-C US", start: 9, duration: 1 },
+  { resource: "S1", label: "Stabilize", start: 10, duration: 1 },
+  { resource: "S2", label: "E2-D US", start: 0, duration: 1 },
+  { resource: "S2", label: "E1-C US", start: 1, duration: 1 },
+  { resource: "S2", label: "Stabilize", start: 2, duration: 1 },
+  { resource: "S2", label: "E2-E US", start: 3, duration: 1 },
+  { resource: "S2", label: "E1-D US", start: 4, duration: 1 },
+  { resource: "S2", label: "Stabilize", start: 7, duration: 1 },
+  { resource: "S2", label: "E3-B US", start: 8, duration: 1 },
+  { resource: "S2", label: "E2-F US", start: 9, duration: 1 },
+  { resource: "S2", label: "Stabilize", start: 10, duration: 1 },
+  { resource: "M", label: "DB Fix W1", start: 0, duration: 1 },
+  { resource: "M", label: "CB Fix W1", start: 1, duration: 1 },
+  { resource: "M", label: "TD-1", start: 2, duration: 1 },
+  { resource: "M", label: "DB Fix W1", start: 3, duration: 1 },
+  { resource: "M", label: "CB Fix W1", start: 4, duration: 1 },
+  { resource: "M", label: "TD-2", start: 7, duration: 1 },
+  { resource: "M", label: "DB Fix W2", start: 8, duration: 1 },
+  { resource: "M", label: "CB Fix W2", start: 9, duration: 1 },
+  { resource: "J1", label: "CB Fix W1", start: 0, duration: 5 },
+  { resource: "J1", label: "CB Fix W2", start: 7, duration: 4 },
+  { resource: "J2", label: "DB Fix W1", start: 0, duration: 5 },
+  { resource: "J2", label: "DB Fix W2", start: 7, duration: 4 },
 ];
 
-/** Only true abbreviations/acronyms — not bare task numbers. */
+/** Abbreviations/acronyms only — not bare task numbers. */
 const DEMO_GLOSSARY: Glossary = {
-  ADR: "Architectural Design Requirements",
+  US: "User Story",
+  DB: "Developer-Introduced Bug",
+  CB: "Client-Reported Bug",
+  TD: "Technical Debt Task, Epic 4",
+  E1: "Epic priority Highest",
+  E2: "Epic priority Medium",
+  E3: "Epic priority Medium",
+  S1: "Senior Developer 1",
+  S2: "Senior Developer 2",
+  M: "Middle Developer",
+  J1: "Junior Developer 1",
+  J2: "Junior Developer 2",
 };
 
 async function readStdin(): Promise<string> {
