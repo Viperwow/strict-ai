@@ -4,14 +4,16 @@
  * UI strings are English only — no translations in this script.
  *
  * Layout:
- *   Resource | Work (days)  01 02 03 ...
- *                           Mo Tu We ...
+ *   Resource |           01 02 03 ...
+ *                        Mo Tu We ...
  *   ─────────────────────────
- *   Me       | Task         ██
+ *   Me       | 31,32     ██
  *
+ *   Key: B1a = …   (when abbreviations need expansion)
  *   Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
  *   (empty weekends stay blank — weekday row marks Sa/Su)
  *
+ * Labels are short: task id/ref, 1–2 words, or abbreviation.
  * Run demo: npx --yes tsx scripts/draw-gantt.ts
  * Flags: --color  --week-start 0  --weekends 5,6
  */
@@ -22,7 +24,8 @@ export type TaskKind = "work" | "leave";
 
 export type Task = {
   resource?: string;
-  name: string;
+  /** Short label: task id/ref, 1–2 words, or abbreviation. */
+  label: string;
   start: number; // zero-based period index, inclusive
   duration: number; // periods, >= 1
   kind?: TaskKind; // default: work
@@ -30,16 +33,20 @@ export type Task = {
 
 export type DateTask = {
   resource?: string;
-  name: string;
+  label: string;
   start: Date;
   end: Date; // exclusive
   kind?: TaskKind;
 };
 
+/** Abbreviation → expansion. Printed once under the chart when non-empty. */
+export type Glossary = Record<string, string>;
+
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 const RESOURCE_HEADER = "Resource";
-const WORK_HEADER = "Work (days)";
+/** Second column has no title — labels are task ids / short text / abbrs. */
+const LABEL_HEADER = "";
 const WEEKDAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"] as const;
 const LEGEND = "Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work";
 
@@ -85,7 +92,7 @@ export function tasksFromDates(
     const end = periodsBetween(projectStart, row.end, unitDays);
     return {
       resource: row.resource,
-      name: row.name,
+      label: row.label,
       start,
       duration: Math.max(1, end - start),
       kind: row.kind ?? "work",
@@ -176,11 +183,39 @@ function weekdayLabel(index: number, weekStart: number): string {
 
 function leftLabel(
   resource: string,
-  work: string,
+  label: string,
   resourceWidth: number,
-  workWidth: number,
+  labelWidth: number,
 ): string {
-  return `${resource.padEnd(resourceWidth)} | ${work.padEnd(workWidth)}  `;
+  return `${resource.padEnd(resourceWidth)} | ${label.padEnd(labelWidth)}  `;
+}
+
+function formatGlossary(glossary: Glossary): string[] {
+  const entries = Object.entries(glossary).filter(
+    ([abbr, meaning]) => abbr.trim() && meaning.trim(),
+  );
+  if (entries.length === 0) return [];
+  return [
+    "Key:",
+    ...entries.map(([abbr, meaning]) => `  ${abbr} = ${meaning}`),
+  ];
+}
+
+/** Accept `label` or legacy `name`. */
+function normalizeTask(
+  raw: Task | (Omit<Task, "label"> & { name?: string; label?: string }),
+): Task {
+  const label = raw.label ?? (raw as { name?: string }).name;
+  if (!label) {
+    throw new Error("each task needs a short label (or legacy name)");
+  }
+  return {
+    resource: raw.resource,
+    label,
+    start: raw.start,
+    duration: raw.duration,
+    kind: raw.kind,
+  };
 }
 
 export function drawGantt(
@@ -191,18 +226,20 @@ export function drawGantt(
     /** Weekday index of period 0: Mon=0 … Sun=6. Default 0 (Monday). */
     weekStart?: number;
     resourceHeader?: string;
-    workHeader?: string;
+    /** Expansions for abbreviations used in labels — printed once under the chart. */
+    glossary?: Glossary;
   } = {},
 ): string {
   const color = options.color ?? false;
   const weekStart = options.weekStart ?? 0;
   const resourceHeader = options.resourceHeader ?? RESOURCE_HEADER;
-  const workHeader = options.workHeader ?? WORK_HEADER;
+  const labelHeader = LABEL_HEADER;
+  const normalized = tasks.map((t) => normalizeTask(t));
 
-  if (tasks.length === 0) return "(no tasks)";
+  if (normalized.length === 0) return "(no tasks)";
 
   const span = Math.max(
-    ...tasks.map((task) => task.start + task.duration),
+    ...normalized.map((task) => task.start + task.duration),
     0,
   );
 
@@ -216,20 +253,20 @@ export function drawGantt(
 
   const resourceWidth = Math.max(
     resourceHeader.length,
-    ...tasks.map((t) => (t.resource ?? "").length),
+    ...normalized.map((t) => (t.resource ?? "").length),
     1,
   );
-  const workWidth = Math.max(
-    workHeader.length,
-    ...tasks.map((t) => t.name.length),
+  const labelWidth = Math.max(
+    labelHeader.length,
+    ...normalized.map((t) => t.label.length),
     1,
   );
 
   const leftHeader = leftLabel(
     resourceHeader,
-    workHeader,
+    labelHeader,
     resourceWidth,
-    workWidth,
+    labelWidth,
   );
   const leftPad = " ".repeat(leftHeader.length);
 
@@ -247,12 +284,12 @@ export function drawGantt(
 
   const lines = [dates, days, "─".repeat(dates.length)];
 
-  tasks.forEach((task, taskIndex) => {
+  normalized.forEach((task, taskIndex) => {
     const left = leftLabel(
       task.resource ?? "",
-      task.name,
+      task.label,
       resourceWidth,
-      workWidth,
+      labelWidth,
     );
     const timeline = Array.from({ length: periods }, (_, period) => {
       const kind = resolveCell(period, task, weekends);
@@ -262,6 +299,12 @@ export function drawGantt(
     lines.push(left + timeline);
   });
 
+  const keyLines = formatGlossary(options.glossary ?? {});
+  if (keyLines.length) {
+    lines.push("");
+    lines.push(...keyLines);
+  }
+
   lines.push("");
   lines.push(LEGEND);
 
@@ -269,14 +312,26 @@ export function drawGantt(
 }
 
 const DEMO_TASKS: Task[] = [
-  { resource: "Me", name: "31,32 epics", start: 0, duration: 1 },
-  { resource: "Me", name: "B1a,B1b own (epic)", start: 1, duration: 1 },
-  { resource: "Me", name: "B2a,B2b own (epic)", start: 2, duration: 1 },
-  { resource: "Me", name: "36 start", start: 3, duration: 1 },
-  { resource: "Me", name: "36,37,38", start: 4, duration: 1 },
-  { resource: "Me", name: "Leave", start: 5, duration: 2, kind: "leave" },
-  { resource: "Me", name: "follow-up", start: 7, duration: 2 },
+  { resource: "Me", label: "31,32", start: 0, duration: 1 },
+  { resource: "Me", label: "B1a,B1b", start: 1, duration: 1 },
+  { resource: "Me", label: "B2a,B2b", start: 2, duration: 1 },
+  { resource: "Me", label: "36 start", start: 3, duration: 1 },
+  { resource: "Me", label: "36,37,38", start: 4, duration: 1 },
+  { resource: "Me", label: "Leave", start: 5, duration: 2, kind: "leave" },
+  { resource: "Me", label: "follow-up", start: 7, duration: 2 },
 ];
+
+const DEMO_GLOSSARY: Glossary = {
+  B1a: "Backend slice 1a",
+  B1b: "Backend slice 1b",
+  B2a: "Backend slice 2a",
+  B2b: "Backend slice 2b",
+  "31": "Epic 31",
+  "32": "Epic 32",
+  "36": "Task 36",
+  "37": "Task 37",
+  "38": "Task 38",
+};
 
 async function readStdin(): Promise<string> {
   const chunks: Buffer[] = [];
@@ -313,7 +368,8 @@ async function main(): Promise<void> {
   const weekStart = parseWeekStart(args);
   const weekends = parseWeekends(args);
 
-  let tasks = DEMO_TASKS;
+  let tasks: Task[] = DEMO_TASKS;
+  let glossary: Glossary | undefined = DEMO_GLOSSARY;
   let weekendOverride = weekends;
   let weekStartOpt = weekStart;
 
@@ -323,14 +379,17 @@ async function main(): Promise<void> {
       const parsed = JSON.parse(raw) as
         | Task[]
         | {
-            tasks: Task[];
+            tasks: Array<Task | { name?: string; label?: string }>;
             weekends?: number[];
             weekStart?: number;
+            glossary?: Glossary;
           };
       if (Array.isArray(parsed)) {
-        tasks = parsed;
+        tasks = parsed.map((t) => normalizeTask(t as Task));
+        glossary = undefined;
       } else if (parsed && Array.isArray(parsed.tasks)) {
-        tasks = parsed.tasks;
+        tasks = parsed.tasks.map((t) => normalizeTask(t as Task));
+        glossary = parsed.glossary;
         if (weekendOverride === undefined && parsed.weekends) {
           weekendOverride = parsed.weekends;
         }
@@ -339,7 +398,7 @@ async function main(): Promise<void> {
         }
       } else {
         throw new Error(
-          "stdin JSON must be Task[] or { tasks, weekends?, weekStart? }",
+          "stdin JSON must be Task[] or { tasks, weekends?, weekStart?, glossary? }",
         );
       }
     }
@@ -350,6 +409,7 @@ async function main(): Promise<void> {
       color,
       weekends: weekendOverride,
       weekStart: weekStartOpt,
+      glossary,
     }),
   );
 }

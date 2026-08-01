@@ -5,8 +5,8 @@ description: >
   timelines. Use when the user asks for a Gantt chart, timeline visualization,
   schedule overview, dependency overview, or period-based task bars in text or
   console. Accepts period indexes or real dates; shows weekday row; marks leave
-  and weekends; always prints a legend; optional ANSI color bars. Triggers on
-  /strict-gantt.
+  and weekends; always prints a legend; expands abbreviations at least once;
+  optional ANSI color bars. Triggers on /strict-gantt.
 ---
 
 # strict-gantt
@@ -15,7 +15,7 @@ Render a text Gantt chart in chat (or console) so a schedule is scannable at a g
 
 **Canonical script:** `scripts/draw-gantt.ts` — prefer running or adapting it over reinventing the renderer.
 
-Script UI is **English only** (headers, weekdays, legend). Task `resource` / `name` values may be whatever the user provided.
+Script UI is **English only** (headers, weekdays, legend, key). Row labels may be whatever the user provided.
 
 ## Invocation
 
@@ -26,36 +26,52 @@ Script UI is **English only** (headers, weekdays, legend). Task `resource` / `na
 ~~~
 
 No tasks in the invocation → collect from session context (plan, backlog, sprint board).
-Still missing → ask once for: resource, work name, start + end (or start + duration).
+Still missing → ask once for: resource, short label, start + end (or start + duration).
 Ask for leave ranges and which weekday period 0 is (default Monday) when the calendar matters.
+
+## Labels (not a "Work" column)
+
+The second column is a **short label**, not a "Work (days)" / work-description field. Do not title or describe it as a work column.
+
+Each label is one of:
+
+| Form | Example | Rule |
+|---|---|---|
+| Task id / ref | `31,32` · `PROJ-12` | Prefer tracker ids when known |
+| 1–2 words | `36 start` · `follow-up` | Keep tight — no sentences |
+| Abbreviation | `B1a,B1b` | **Expand at least once** in a `Key:` block under the chart |
+
+Never put long titles, epics prose, or "work package" blurbs in the grid. Put expansions in `glossary` / `Key:`, not in the cell.
 
 ## Chart layout (required)
 
-Two header rows above the separator, then task rows, then the legend:
-
 ~~~text
-Resource | Work (days)  01 02 03 04 05 06 07 08 09 10
-                        Mo Tu We Th Fr Sa Su Mo Tu We
-────────────────────────────────────────────────────
-Me       | 31,32 epics  ██
-Me       | B1a,B1b …       ██
+Resource |           01 02 03 04 05 06 07 08 09 10
+                     Mo Tu We Th Fr Sa Su Mo Tu We
+─────────────────────────────────────────────────
+Me       | 31,32     ██
+Me       | B1a,B1b      ██
+
+Key:
+  B1a = Backend slice 1a
+  B1b = Backend slice 1b
+Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
 ~~~
 
 | Part | Rule |
 |---|---|
-| Left columns | `Resource \| Work (days)` — pad each side |
-| Row 1 | Date / period numbers (`01 02 …`) |
-| Row 2 | Weekday abbreviations under every period (`Mo Tu We Th Fr Sa Su`) |
+| Left | `Resource \| <label>` — second header cell is **blank** (no "Work (days)") |
+| Row 1 | Period numbers (`01 02 …`) |
+| Row 2 | Weekdays (`Mo Tu We Th Fr Sa Su`) |
 | Separator | `─` to the width of row 1 |
-| Body | One row per task: `resource \| name` + cells |
-| Footer | **Always** the legend (never omit) |
+| Body | One row per item |
+| Key | Required when any abbreviation appears — once under the table |
+| Legend | **Always** under the table (after Key if present) |
 
 Weekday of period 0: `--week-start 0..6` (Mon=0 … Sun=6, default `0`).
 With a real `projectStart` date, use `weekStartFromDate(projectStart)`.
 
 ## Legend (required)
-
-Always append under the chart, inside the same ` ```text ` fence:
 
 | Glyph | Meaning |
 |---|---|
@@ -71,15 +87,17 @@ Weekend columns with **no** work/leave stay empty — the weekday row (`Sa`/`Su`
 
 ## Task model
 
-Normalize every task to `{ resource?, name, start, duration, kind? }`:
+Normalize every row to `{ resource?, label, start, duration, kind? }`:
 
 | Field | Meaning |
 |---|---|
-| `resource` | Left column (person/team). Empty string if unknown |
-| `name` | Work label |
+| `resource` | Person/team. Empty string if unknown |
+| `label` | Short task id / 1–2 words / abbreviation (see Labels) |
 | `start` | Zero-based period index (inclusive) |
 | `duration` | Number of periods (≥ 1) |
 | `kind` | `work` (default) or `leave` |
+
+Optional `glossary: { [abbr]: expansion }` — printed once as `Key:` under the chart. Legacy stdin field `name` is accepted as `label`.
 
 When the user gives **dates**, convert with `tasksFromDates` / `periodsBetween` from `scripts/draw-gantt.ts`:
 
@@ -92,20 +110,20 @@ When the user gives **dates**, convert with `tasksFromDates` / `periodsBetween` 
 
 Cell priority per period: **leave → weekend-work (`▓▓`) → weekday-work (`██`) → empty**. Empty weekends stay blank.
 
-Do not invent dependencies or reorder tasks unless asked; preserve input order.
+Do not invent dependencies or reorder rows unless asked; preserve input order.
 
 ## How to draw
 
-1. Build a `Task[]` (dates → offsets first when needed); set `weekStart` / `weekends`.
+1. Build a `Task[]` with short `label`s; set `weekStart` / `weekends` / `glossary` for abbreviations.
 2. Prefer the skill script — from this skill directory:
    ~~~bash
    npx --yes tsx scripts/draw-gantt.ts
-   echo '{"tasks":[{"resource":"Me","name":"A","start":0,"duration":2}],"weekStart":0}' \
+   echo '{"tasks":[{"resource":"Me","label":"B1a","start":0,"duration":2}],"glossary":{"B1a":"Backend slice 1a"}}' \
      | npx --yes tsx scripts/draw-gantt.ts
    npx --yes tsx scripts/draw-gantt.ts --color
    ~~~
-   Or call `drawGantt(tasks, { color, weekends, weekStart })` and paste the return value.
-3. Wrap the **full chart including weekday row and legend** in one ` ```text ` fence.
+   Or call `drawGantt(tasks, { color, weekends, weekStart, glossary })` and paste the return value.
+3. Wrap the **full chart including weekday row, Key (if any), and legend** in one ` ```text ` fence.
 
 Color only when the user asked or passed `--color`. Default is monochrome glyphs.
 
@@ -113,9 +131,9 @@ Color only when the user asked or passed `--color`. Default is monochrome glyphs
 
 Always emit:
 
-1. One-line summary: period unit, range (indexes or dates), task count.
-2. The chart (date row + weekday row + body + legend) in a ` ```text ` fence.
-3. Optional notes only when useful: overlaps, zero-duration clamps, truncated long names (> 40 chars → truncate with `…`).
+1. One-line summary: period unit, range (indexes or dates), row count.
+2. The chart (date row + weekday row + body + Key if needed + legend) in a ` ```text ` fence.
+3. Optional notes only when useful: overlaps, zero-duration clamps, truncated labels (> 24 chars → shorten; put detail in Key).
 
 Do **not** write files unless the user asks. Do **not** open FigJam/diagram tools — this skill is console/text only.
 
@@ -124,16 +142,27 @@ Do **not** write files unless the user asks. Do **not** open FigJam/diagram tool
 `npx --yes tsx scripts/draw-gantt.ts`:
 
 ~~~text
-Resource | Work (days)         01 02 03 04 05 06 07 08 09
-                               Mo Tu We Th Fr Sa Su Mo Tu
-─────────────────────────────────────────────────────────
-Me       | 31,32 epics         ██                        
-Me       | B1a,B1b own (epic)     ██                     
-Me       | B2a,B2b own (epic)        ██                  
-Me       | 36 start                     ██               
-Me       | 36,37,38                        ██            
-Me       | Leave                              ▒▒ ▒▒      
-Me       | follow-up                                ██ ██
+Resource |            01 02 03 04 05 06 07 08 09
+                      Mo Tu We Th Fr Sa Su Mo Tu
+────────────────────────────────────────────────
+Me       | 31,32      ██                        
+Me       | B1a,B1b       ██                     
+Me       | B2a,B2b          ██                  
+Me       | 36 start            ██               
+Me       | 36,37,38               ██            
+Me       | Leave                     ▒▒ ▒▒      
+Me       | follow-up                       ██ ██
+
+Key:
+  31 = Epic 31
+  32 = Epic 32
+  36 = Task 36
+  37 = Task 37
+  38 = Task 38
+  B1a = Backend slice 1a
+  B1b = Backend slice 1b
+  B2a = Backend slice 2a
+  B2b = Backend slice 2b
 
 Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
 ~~~
@@ -142,12 +171,14 @@ Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
 
 | Mistake | Fix |
 |---|---|
+| Titling the label column "Work (days)" / work package | Leave the second header blank; labels are task ids / short text / abbrs |
+| Long sentences in the grid | Shorten to id / 1–2 words; put detail in `Key:` |
+| Abbreviation with no expansion | Always print `Key:` at least once for that abbr |
 | Reimplementing the bar grid from scratch | Use `scripts/draw-gantt.ts` |
-| Translating script UI (headers/legend/weekdays) | Keep English; only task data may be non-English |
 | Omitting the weekday row | Always print abbreviations under period numbers |
 | Filling empty weekends with `▓▓` | Leave blank; `▓▓` only when there is work on that weekend |
 | Omitting the legend | Always print the three-glyph legend under the table |
-| Single name column only | Use `Resource \| Work` left columns |
+| Translating script UI | Keep English; only row labels may be non-English |
 | Using cards/tables instead of a monospace chart | Always use a ` ```text ` fence |
 | Mixing date strings into the bar grid | Convert dates → period offsets first |
 | End-inclusive duration off-by-one | Half-open `[start, start+duration)` |
