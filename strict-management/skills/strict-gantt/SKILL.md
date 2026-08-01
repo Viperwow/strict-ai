@@ -60,10 +60,12 @@ Always append under the chart, inside the same ` ```text ` fence:
 |---|---|
 | `██` | Planned work |
 | `▒▒` | Leave / vacation |
-| `▓▓` | Weekend |
+| `▓▓` | Work on a weekend |
 
-- `en`: `Legend: ██ planned work, ▒▒ leave, ▓▓ weekend`
-- `ru`: `Легенда: ██ работа по плану, ▒▒ отпуск, ▓▓ выходные`
+- `en`: `Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work`
+- `ru`: `Легенда: ██ работа по плану, ▒▒ отпуск, ▓▓ работа в выходные`
+
+Weekend columns with **no** work/leave stay empty — weekdays (`Сб`/`Вс`) already mark them.
 
 ## Task model
 
@@ -86,7 +88,7 @@ When the user gives **dates**, convert with `tasksFromDates` / `periodsBetween` 
 
 **Weekends:** default from `weekStart` via `weekendPeriodsFromWeekStart` (Sat/Sun). Override with `weekends[]` / `--weekends 5,6`. With real dates and `--unit day`, use `weekendPeriods(projectStart, totalPeriods, 1)`.
 
-Cell priority per period: **leave → weekend → work → empty** (leave stays visible on weekend columns; empty weekend cells still show `▓▓`).
+Cell priority per period: **leave → weekend-work (`▓▓`) → weekday-work (`██`) → empty**. Empty weekends stay blank.
 
 Do not invent dependencies or reorder tasks unless asked; preserve input order.
 
@@ -123,15 +125,15 @@ Do **not** write files unless the user asks. Do **not** open FigJam/diagram tool
 Ресурс | Работа (дни)         01 02 03 04 05 06 07 08 09
                               Пн Вт Ср Чт Пт Сб Вс Пн Вт
 ────────────────────────────────────────────────────────
-Я      | 31,32 эпики          ██             ▓▓ ▓▓      
-Я      | B1a,B1b своя (эпик)     ██          ▓▓ ▓▓      
-Я      | B2a,B2b своя (эпик)        ██       ▓▓ ▓▓      
-Я      | 36 старт                      ██    ▓▓ ▓▓      
-Я      | 36,37,38                         ██ ▓▓ ▓▓      
+Я      | 31,32 эпики          ██                        
+Я      | B1a,B1b своя (эпик)     ██                     
+Я      | B2a,B2b своя (эпик)        ██                  
+Я      | 36 старт                      ██               
+Я      | 36,37,38                         ██            
 Я      | Отпуск                              ▒▒ ▒▒      
-Я      | продолжение                         ▓▓ ▓▓ ██ ██
+Я      | продолжение                               ██ ██
 
-Легенда: ██ работа по плану, ▒▒ отпуск, ▓▓ выходные
+Легенда: ██ работа по плану, ▒▒ отпуск, ▓▓ работа в выходные
 ~~~
 
 ## Common mistakes
@@ -140,6 +142,7 @@ Do **not** write files unless the user asks. Do **not** open FigJam/diagram tool
 |---|---|
 | Reimplementing the bar grid from scratch | Use `scripts/draw-gantt.ts` |
 | Omitting the weekday row | Always print abbreviations under period numbers |
+| Filling empty weekends with `▓▓` | Leave blank; `▓▓` only when there is work on that weekend |
 | Omitting the legend | Always print the three-glyph legend under the table |
 | Single name column only | Use `Resource \| Work` left columns |
 | Using cards/tables instead of a monospace chart | Always use a ` ```text ` fence |

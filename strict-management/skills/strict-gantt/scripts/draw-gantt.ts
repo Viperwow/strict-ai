@@ -8,7 +8,8 @@
  *   ─────────────────────────
  *   Me       | Task         ██
  *
- *   Legend: ██ planned work, ▒▒ leave, ▓▓ weekend
+ *   Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
+ *   (empty weekends stay blank — weekday row marks Сб/Вс)
  *
  * Run demo: npx --yes tsx scripts/draw-gantt.ts
  * Flags: --color  --locale en|ru  --week-start 0  --weekends 5,6
@@ -49,13 +50,13 @@ const LOCALE = {
     resourceHeader: "Resource",
     workHeader: "Work (days)",
     weekdays: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"] as const,
-    legend: "Legend: ██ planned work, ▒▒ leave, ▓▓ weekend",
+    legend: "Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work",
   },
   ru: {
     resourceHeader: "Ресурс",
     workHeader: "Работа (дни)",
     weekdays: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"] as const,
-    legend: "Легенда: ██ работа по плану, ▒▒ отпуск, ▓▓ выходные",
+    legend: "Легенда: ██ работа по плану, ▒▒ отпуск, ▓▓ работа в выходные",
   },
 } as const;
 
@@ -150,10 +151,11 @@ function resolveCell(
   weekends: ReadonlySet<number>,
 ): CellKind {
   const active = period >= task.start && period < task.start + task.duration;
-  if (active && task.kind === "leave") return "leave";
+  if (!active) return "empty";
+  if (task.kind === "leave") return "leave";
+  // Weekend columns stay blank unless there is work; then mark ▓▓.
   if (weekends.has(period)) return "weekend";
-  if (active) return "work";
-  return "empty";
+  return "work";
 }
 
 function renderCell(
