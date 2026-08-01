@@ -58,7 +58,7 @@ Work (days)                             01 02 03 04 05 06 07 08 09
 ──────────────────────────────────────────────────────────────────
 Task 31, Task 32, ADR Draft, 36 Start…  ██ ██ ██ ██ ██ ▒▒ ▒▒ ██ ██
 
-Legend: ██ planned work, ▒▒ leave, �36 Start…  ██ ██ ██ ██ ██ ▒▒ ▒▒ ██ ██
+Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
 
 Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
 
