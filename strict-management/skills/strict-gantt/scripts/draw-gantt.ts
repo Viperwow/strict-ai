@@ -1,6 +1,7 @@
 /**
  * Canonical renderer for strict-gantt.
  * Half-open intervals: [start, start + duration).
+ * UI strings are English only — no translations in this script.
  *
  * Layout:
  *   Resource | Work (days)  01 02 03 ...
@@ -9,10 +10,10 @@
  *   Me       | Task         ██
  *
  *   Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
- *   (empty weekends stay blank — weekday row marks Сб/Вс)
+ *   (empty weekends stay blank — weekday row marks Sa/Su)
  *
  * Run demo: npx --yes tsx scripts/draw-gantt.ts
- * Flags: --color  --locale en|ru  --week-start 0  --weekends 5,6
+ * Flags: --color  --week-start 0  --weekends 5,6
  */
 
 export type CellKind = "work" | "leave" | "weekend" | "empty";
@@ -35,30 +36,18 @@ export type DateTask = {
   kind?: TaskKind;
 };
 
-export type Locale = "en" | "ru";
-
 const DAY_MS = 24 * 60 * 60 * 1000;
+
+const RESOURCE_HEADER = "Resource";
+const WORK_HEADER = "Work (days)";
+const WEEKDAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"] as const;
+const LEGEND = "Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work";
 
 const GLYPH: Record<Exclude<CellKind, "empty">, string> = {
   work: "██",
   leave: "▒▒",
   weekend: "▓▓",
 };
-
-const LOCALE = {
-  en: {
-    resourceHeader: "Resource",
-    workHeader: "Work (days)",
-    weekdays: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"] as const,
-    legend: "Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work",
-  },
-  ru: {
-    resourceHeader: "Ресурс",
-    workHeader: "Работа (дни)",
-    weekdays: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"] as const,
-    legend: "Легенда: ██ работа по плану, ▒▒ отпуск, ▓▓ работа в выходные",
-  },
-} as const;
 
 /** ANSI fills for --color (work rotates; leave/weekend fixed). */
 const WORK_PALETTE = [
@@ -181,12 +170,8 @@ function periodLabel(index: number, totalPeriods: number): string {
   return String(n).padStart(2, "0");
 }
 
-function weekdayLabel(
-  index: number,
-  weekStart: number,
-  weekdays: readonly string[],
-): string {
-  return weekdays[(weekStart + index) % 7];
+function weekdayLabel(index: number, weekStart: number): string {
+  return WEEKDAYS[(weekStart + index) % 7];
 }
 
 function leftLabel(
@@ -201,7 +186,6 @@ function leftLabel(
 export function drawGantt(
   tasks: Task[],
   options: {
-    locale?: Locale;
     color?: boolean;
     weekends?: readonly number[];
     /** Weekday index of period 0: Mon=0 … Sun=6. Default 0 (Monday). */
@@ -210,12 +194,10 @@ export function drawGantt(
     workHeader?: string;
   } = {},
 ): string {
-  const locale = options.locale ?? "en";
-  const L = LOCALE[locale];
   const color = options.color ?? false;
   const weekStart = options.weekStart ?? 0;
-  const resourceHeader = options.resourceHeader ?? L.resourceHeader;
-  const workHeader = options.workHeader ?? L.workHeader;
+  const resourceHeader = options.resourceHeader ?? RESOURCE_HEADER;
+  const workHeader = options.workHeader ?? WORK_HEADER;
 
   if (tasks.length === 0) return "(no tasks)";
 
@@ -260,7 +242,7 @@ export function drawGantt(
   const days =
     leftPad +
     Array.from({ length: periods }, (_, index) =>
-      weekdayLabel(index, weekStart, L.weekdays),
+      weekdayLabel(index, weekStart),
     ).join(" ");
 
   const lines = [dates, days, "─".repeat(dates.length)];
@@ -281,34 +263,20 @@ export function drawGantt(
   });
 
   lines.push("");
-  lines.push(L.legend);
+  lines.push(LEGEND);
 
   return lines.join("\n");
 }
 
-function demoTasks(locale: Locale): Task[] {
-  const me = locale === "ru" ? "Я" : "Me";
-  if (locale === "ru") {
-    return [
-      { resource: me, name: "31,32 эпики", start: 0, duration: 1 },
-      { resource: me, name: "B1a,B1b своя (эпик)", start: 1, duration: 1 },
-      { resource: me, name: "B2a,B2b своя (эпик)", start: 2, duration: 1 },
-      { resource: me, name: "36 старт", start: 3, duration: 1 },
-      { resource: me, name: "36,37,38", start: 4, duration: 1 },
-      { resource: me, name: "Отпуск", start: 5, duration: 2, kind: "leave" },
-      { resource: me, name: "продолжение", start: 7, duration: 2 },
-    ];
-  }
-  return [
-    { resource: me, name: "31,32 epics", start: 0, duration: 1 },
-    { resource: me, name: "B1a,B1b own (epic)", start: 1, duration: 1 },
-    { resource: me, name: "B2a,B2b own (epic)", start: 2, duration: 1 },
-    { resource: me, name: "36 start", start: 3, duration: 1 },
-    { resource: me, name: "36,37,38", start: 4, duration: 1 },
-    { resource: me, name: "Leave", start: 5, duration: 2, kind: "leave" },
-    { resource: me, name: "follow-up", start: 7, duration: 2 },
-  ];
-}
+const DEMO_TASKS: Task[] = [
+  { resource: "Me", name: "31,32 epics", start: 0, duration: 1 },
+  { resource: "Me", name: "B1a,B1b own (epic)", start: 1, duration: 1 },
+  { resource: "Me", name: "B2a,B2b own (epic)", start: 2, duration: 1 },
+  { resource: "Me", name: "36 start", start: 3, duration: 1 },
+  { resource: "Me", name: "36,37,38", start: 4, duration: 1 },
+  { resource: "Me", name: "Leave", start: 5, duration: 2, kind: "leave" },
+  { resource: "Me", name: "follow-up", start: 7, duration: 2 },
+];
 
 async function readStdin(): Promise<string> {
   const chunks: Buffer[] = [];
@@ -329,14 +297,6 @@ function parseWeekends(args: string[]): number[] | undefined {
     .filter((n) => Number.isInteger(n) && n >= 0);
 }
 
-function parseLocale(args: string[]): Locale | undefined {
-  const idx = args.indexOf("--locale");
-  if (idx < 0 || !args[idx + 1]) return undefined;
-  const v = args[idx + 1];
-  if (v === "en" || v === "ru") return v;
-  throw new Error("--locale must be en or ru");
-}
-
 function parseWeekStart(args: string[]): number | undefined {
   const idx = args.indexOf("--week-start");
   if (idx < 0 || !args[idx + 1]) return undefined;
@@ -350,11 +310,10 @@ function parseWeekStart(args: string[]): number | undefined {
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
   const color = args.includes("--color");
-  const locale = parseLocale(args) ?? "en";
   const weekStart = parseWeekStart(args);
   const weekends = parseWeekends(args);
 
-  let tasks = demoTasks(locale);
+  let tasks = DEMO_TASKS;
   let weekendOverride = weekends;
   let weekStartOpt = weekStart;
 
@@ -388,7 +347,6 @@ async function main(): Promise<void> {
 
   console.log(
     drawGantt(tasks, {
-      locale,
       color,
       weekends: weekendOverride,
       weekStart: weekStartOpt,

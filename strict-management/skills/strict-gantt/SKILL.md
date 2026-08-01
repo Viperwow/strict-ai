@@ -15,6 +15,8 @@ Render a text Gantt chart in chat (or console) so a schedule is scannable at a g
 
 **Canonical script:** `scripts/draw-gantt.ts` — prefer running or adapting it over reinventing the renderer.
 
+Script UI is **English only** (headers, weekdays, legend). Task `resource` / `name` values may be whatever the user provided.
+
 ## Invocation
 
 ~~~text
@@ -32,23 +34,22 @@ Ask for leave ranges and which weekday period 0 is (default Monday) when the cal
 Two header rows above the separator, then task rows, then the legend:
 
 ~~~text
-Ресурс | Работа (дни)  01 02 03 04 05 06 07 08 09 10
-                       Пн Вт Ср Чт Пт Сб Вс Пн Вт Ср
+Resource | Work (days)  01 02 03 04 05 06 07 08 09 10
+                        Mo Tu We Th Fr Sa Su Mo Tu We
 ────────────────────────────────────────────────────
-Я      | 31,32 эпики   ██
-Я      | B1a,B1b …        ██
+Me       | 31,32 epics  ██
+Me       | B1a,B1b …       ██
 ~~~
 
 | Part | Rule |
 |---|---|
-| Left columns | `Resource \| Work` — pad each side; English defaults `Resource \| Work (days)`, Russian `Ресурс \| Работа (дни)` |
+| Left columns | `Resource \| Work (days)` — pad each side |
 | Row 1 | Date / period numbers (`01 02 …`) |
-| Row 2 | Weekday abbreviations under every period (`Пн Вт …` / `Mo Tu …`) |
+| Row 2 | Weekday abbreviations under every period (`Mo Tu We Th Fr Sa Su`) |
 | Separator | `─` to the width of row 1 |
 | Body | One row per task: `resource \| name` + cells |
 | Footer | **Always** the legend (never omit) |
 
-Locale: `--locale en|ru` (Russian when the conversation is Russian).
 Weekday of period 0: `--week-start 0..6` (Mon=0 … Sun=6, default `0`).
 With a real `projectStart` date, use `weekStartFromDate(projectStart)`.
 
@@ -58,14 +59,15 @@ Always append under the chart, inside the same ` ```text ` fence:
 
 | Glyph | Meaning |
 |---|---|
-| `██` | Planned work |
+| `██` | Planned work (weekday) |
 | `▒▒` | Leave / vacation |
 | `▓▓` | Work on a weekend |
 
-- `en`: `Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work`
-- `ru`: `Легенда: ██ работа по плану, ▒▒ отпуск, ▓▓ работа в выходные`
+```text
+Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
+```
 
-Weekend columns with **no** work/leave stay empty — weekdays (`Сб`/`Вс`) already mark them.
+Weekend columns with **no** work/leave stay empty — the weekday row (`Sa`/`Su`) already marks them.
 
 ## Task model
 
@@ -97,12 +99,12 @@ Do not invent dependencies or reorder tasks unless asked; preserve input order.
 1. Build a `Task[]` (dates → offsets first when needed); set `weekStart` / `weekends`.
 2. Prefer the skill script — from this skill directory:
    ~~~bash
-   npx --yes tsx scripts/draw-gantt.ts --locale ru
-   echo '{"tasks":[{"resource":"Я","name":"A","start":0,"duration":2}],"weekStart":0}' \
-     | npx --yes tsx scripts/draw-gantt.ts --locale ru
-   npx --yes tsx scripts/draw-gantt.ts --color --locale en
+   npx --yes tsx scripts/draw-gantt.ts
+   echo '{"tasks":[{"resource":"Me","name":"A","start":0,"duration":2}],"weekStart":0}' \
+     | npx --yes tsx scripts/draw-gantt.ts
+   npx --yes tsx scripts/draw-gantt.ts --color
    ~~~
-   Or call `drawGantt(tasks, { locale, color, weekends, weekStart })` and paste the return value.
+   Or call `drawGantt(tasks, { color, weekends, weekStart })` and paste the return value.
 3. Wrap the **full chart including weekday row and legend** in one ` ```text ` fence.
 
 Color only when the user asked or passed `--color`. Default is monochrome glyphs.
@@ -119,21 +121,21 @@ Do **not** write files unless the user asks. Do **not** open FigJam/diagram tool
 
 ## Example
 
-`npx --yes tsx scripts/draw-gantt.ts --locale ru`:
+`npx --yes tsx scripts/draw-gantt.ts`:
 
 ~~~text
-Ресурс | Работа (дни)         01 02 03 04 05 06 07 08 09
-                              Пн Вт Ср Чт Пт Сб Вс Пн Вт
-────────────────────────────────────────────────────────
-Я      | 31,32 эпики          ██                        
-Я      | B1a,B1b своя (эпик)     ██                     
-Я      | B2a,B2b своя (эпик)        ██                  
-Я      | 36 старт                      ██               
-Я      | 36,37,38                         ██            
-Я      | Отпуск                              ▒▒ ▒▒      
-Я      | продолжение                               ██ ██
+Resource | Work (days)         01 02 03 04 05 06 07 08 09
+                               Mo Tu We Th Fr Sa Su Mo Tu
+─────────────────────────────────────────────────────────
+Me       | 31,32 epics         ██                        
+Me       | B1a,B1b own (epic)     ██                     
+Me       | B2a,B2b own (epic)        ██                  
+Me       | 36 start                     ██               
+Me       | 36,37,38                        ██            
+Me       | Leave                              ▒▒ ▒▒      
+Me       | follow-up                                ██ ██
 
-Легенда: ██ работа по плану, ▒▒ отпуск, ▓▓ работа в выходные
+Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
 ~~~
 
 ## Common mistakes
@@ -141,6 +143,7 @@ Do **not** write files unless the user asks. Do **not** open FigJam/diagram tool
 | Mistake | Fix |
 |---|---|
 | Reimplementing the bar grid from scratch | Use `scripts/draw-gantt.ts` |
+| Translating script UI (headers/legend/weekdays) | Keep English; only task data may be non-English |
 | Omitting the weekday row | Always print abbreviations under period numbers |
 | Filling empty weekends with `▓▓` | Leave blank; `▓▓` only when there is work on that weekend |
 | Omitting the legend | Always print the three-glyph legend under the table |
