@@ -323,14 +323,14 @@ export function drawGantt(
     lines.push(left + timeline);
   });
 
+  lines.push("");
+  lines.push(LEGEND);
+
   const keyLines = formatGlossary(options.glossary ?? {});
   if (keyLines.length) {
     lines.push("");
     lines.push(...keyLines);
   }
-
-  lines.push("");
-  lines.push(LEGEND);
 
   return lines.join("\n");
 }
