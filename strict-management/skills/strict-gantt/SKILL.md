@@ -94,14 +94,16 @@ Do **not** write files unless the user asks. Do **not** open FigJam/diagram tool
 
 ## Example
 
+Demo from `scripts/draw-gantt.ts` (leave task + weekends on periods 6–7):
+
 ~~~text
-Task            01 02 03 04 05 06 07 08 09 10 11
-────────────────────────────────────────────────
-Analysis        ██ ██ ██
-Design                ██ ██ ██
-Leave                       ▒▒ ▒▒
-Development                    ██ ▓▓ ▓▓ ██ ██
-Testing                                    ██ ██
+Task         01 02 03 04 05 06 07 08 09 10 11
+─────────────────────────────────────────────
+Analysis     ██ ██ ██          ▓▓ ▓▓
+Design             ██ ██ ██    ▓▓ ▓▓
+Leave                    ▒▒ ▒▒ ▓▓ ▓▓
+Development                 ██ ▓▓ ▓▓ ██
+Testing                        ▓▓ ▓▓    ██ ██
 
 Legend: ██ planned work, ▒▒ leave, ▓▓ weekend
 ~~~
