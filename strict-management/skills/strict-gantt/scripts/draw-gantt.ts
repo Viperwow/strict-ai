@@ -16,7 +16,8 @@
  *   Key: ADR = …   (abbreviations only)
  *   Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
  *
- * Show Resource only when there are 2+ distinct subjects.
+ * One resource = one row (merge that subject's tasks onto one timeline).
+ * Show Resource column only when there are 2+ distinct subjects.
  * Run demo: npx --yes tsx scripts/draw-gantt.ts
  * Flags: --color  --week-start 0  --weekends 5,6
  */
@@ -143,17 +144,69 @@ export function weekStartFromDate(projectStart: Date): number {
   return (projectStart.getDay() + 6) % 7;
 }
 
-function resolveCell(
+function resolveCellForTasks(
   period: number,
-  task: Task,
+  tasks: readonly Task[],
   weekends: ReadonlySet<number>,
 ): CellKind {
-  const active = period >= task.start && period < task.start + task.duration;
-  if (!active) return "empty";
-  if (task.kind === "leave") return "leave";
-  // Weekend columns stay blank unless there is work; then mark ▓▓.
-  if (weekends.has(period)) return "weekend";
-  return "work";
+  let hasLeave = false;
+  let hasWork = false;
+  for (const task of tasks) {
+    const active = period >= task.start && period < task.start + task.duration;
+    if (!active) continue;
+    if (task.kind === "leave") hasLeave = true;
+    else hasWork = true;
+  }
+  if (hasLeave) return "leave";
+  if (hasWork && weekends.has(period)) return "weekend";
+  if (hasWork) return "work";
+  return "empty";
+}
+
+export type ResourceRow = {
+  resource: string;
+  label: string;
+  tasks: Task[];
+};
+
+/** Group tasks into one row per resource (first-seen order). */
+export function rowsByResource(tasks: readonly Task[]): ResourceRow[] {
+  const order: string[] = [];
+  const groups = new Map<string, Task[]>();
+
+  for (const task of tasks) {
+    const key = (task.resource ?? "").trim();
+    if (!groups.has(key)) {
+      groups.set(key, []);
+      order.push(key);
+    }
+    groups.get(key)!.push(task);
+  }
+
+  return order.map((key) => {
+    const group = groups.get(key)!;
+    const labels = [...new Set(group.map((t) => t.label))];
+    return {
+      resource: key,
+      label: joinLabels(labels),
+      tasks: group,
+    };
+  });
+}
+
+/** Join labels for a resource row; truncate with … when long. */
+export function joinLabels(labels: readonly string[], maxLen = 40): string {
+  const full = labels.join(", ");
+  if (full.length <= maxLen) return full;
+
+  let out = "";
+  for (const label of labels) {
+    const next = out ? `${out}, ${label}` : label;
+    if (next.length > maxLen - 1) break;
+    out = next;
+  }
+  if (!out) out = labels[0].slice(0, Math.max(1, maxLen - 1));
+  return `${out}…`;
 }
 
 function renderCell(
@@ -257,6 +310,9 @@ export function drawGantt(
 
   if (normalized.length === 0) return "(no tasks)";
 
+  // One resource = one row.
+  const rows = rowsByResource(normalized);
+
   const span = Math.max(
     ...normalized.map((task) => task.start + task.duration),
     0,
@@ -276,13 +332,13 @@ export function drawGantt(
   const resourceWidth = showResource
     ? Math.max(
         resourceHeader.length,
-        ...normalized.map((t) => (t.resource ?? "").length),
+        ...rows.map((r) => r.resource.length),
         1,
       )
     : 0;
   const labelWidth = Math.max(
     workHeader.length,
-    ...normalized.map((t) => t.label.length),
+    ...rows.map((r) => r.label.length),
     1,
   );
 
@@ -307,17 +363,17 @@ export function drawGantt(
 
   const lines = [dates, days, "─".repeat(dates.length)];
 
-  normalized.forEach((task, taskIndex) => {
+  rows.forEach((row, rowIndex) => {
     const left = leftLabel(
-      task.label,
+      row.label,
       labelWidth,
       showResource
-        ? { value: task.resource ?? "", width: resourceWidth }
+        ? { value: row.resource, width: resourceWidth }
         : undefined,
     );
     const timeline = Array.from({ length: periods }, (_, period) => {
-      const kind = resolveCell(period, task, weekends);
-      return renderCell(kind, taskIndex, color);
+      const kind = resolveCellForTasks(period, row.tasks, weekends);
+      return renderCell(kind, rowIndex, color);
     }).join(" ");
 
     lines.push(left + timeline);
