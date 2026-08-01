@@ -57,9 +57,10 @@ Work (days)  01 02 03 04 05 06 07 08 09 10
 Task 31      ██
 ADR Draft          ██
 
+Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
+
 Key:
   ADR = Architectural Design Requirements
-Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
 ~~~
 
 Multiple subjects:
@@ -79,8 +80,8 @@ Ann      | Task 32         ██
 | Row 2 | Weekdays (`Mo Tu We Th Fr Sa Su`) |
 | Separator | `─` to the width of row 1 |
 | Body | One row per item |
-| Key | Only for abbreviations/acronyms (not task ids) — once under the table |
-| Legend | **Always** under the table (after Key if present) |
+| Legend | **Always** under the table |
+| Key | Abbreviations/acronyms only — after Legend |
 
 Weekday of period 0: `--week-start 0..6` (Mon=0 … Sun=6, default `0`).
 With a real `projectStart` date, use `weekStartFromDate(projectStart)`.
@@ -99,6 +100,8 @@ Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
 
 Weekend columns with **no** work/leave stay empty — the weekday row (`Sa`/`Su`) already marks them.
 
+Print **Legend** first, then **Key** (when needed).
+
 ## Task model
 
 Normalize every row to `{ resource?, label, start, duration, kind? }`:
@@ -111,7 +114,7 @@ Normalize every row to `{ resource?, label, start, duration, kind? }`:
 | `duration` | Number of periods (≥ 1) |
 | `kind` | `work` (default) or `leave` |
 
-Optional `glossary: { [abbr]: expansion }` — only for abbreviations/acronyms (e.g. ADR), printed once as `Key:`. Skip task ids. Legacy stdin field `name` is accepted as `label`.
+Optional `glossary: { [abbr]: expansion }` — only for abbreviations/acronyms (e.g. ADR), printed as `Key:` **after** Legend. Skip task ids. Legacy stdin field `name` is accepted as `label`.
 
 When the user gives **dates**, convert with `tasksFromDates` / `periodsBetween` from `scripts/draw-gantt.ts`:
 
@@ -137,7 +140,7 @@ Do not invent dependencies or reorder rows unless asked; preserve input order.
    npx --yes tsx scripts/draw-gantt.ts --color
    ~~~
    Or call `drawGantt(tasks, { color, weekends, weekStart, glossary })` and paste the return value.
-3. Wrap the **full chart including weekday row, Key (if any), and legend** in one ` ```text ` fence.
+3. Wrap the **full chart including weekday row, legend, and Key (if any)** in one ` ```text ` fence.
 
 Color only when the user asked or passed `--color`. Default is monochrome glyphs.
 
@@ -146,7 +149,7 @@ Color only when the user asked or passed `--color`. Default is monochrome glyphs
 Always emit:
 
 1. One-line summary: period unit, range (indexes or dates), row count.
-2. The chart (date row + weekday row + body + Key if needed + legend) in a ` ```text ` fence.
+2. The chart (date row + weekday row + body + legend + Key if needed) in a ` ```text ` fence.
 3. Optional notes only when useful: overlaps, zero-duration clamps, truncated labels (> 24 chars → shorten; put detail in Key).
 
 Do **not** write files unless the user asks. Do **not** open FigJam/diagram tools — this skill is console/text only.
@@ -167,10 +170,10 @@ ADR Draft          ██
 Leave                       ▒▒ ▒▒      
 Follow-up                         ██ ██
 
+Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
+
 Key:
   ADR = Architectural Design Requirements
-
-Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
 ~~~
 
 ## Common mistakes
