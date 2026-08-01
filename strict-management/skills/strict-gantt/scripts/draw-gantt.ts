@@ -4,16 +4,16 @@
  * UI strings are English only — no translations in this script.
  *
  * Layout:
- *   Resource | Task      01 02 03 ...
- *                        Mo Tu We ...
+ *   Resource | Work (days)  01 02 03 ...
+ *                           Mo Tu We ...
  *   ─────────────────────────
- *   Me       | 31,32     ██
+ *   Me       | 31,32        ██
  *
  *   Key: B1a = …   (when abbreviations need expansion)
  *   Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
  *   (empty weekends stay blank — weekday row marks Sa/Su)
  *
- * Task column header is "Task"; cell content is short:
+ * Column header is "Work (days)"; cell content is short:
  * task id/ref, 1–2 words, or abbreviation (not long titles).
  * Run demo: npx --yes tsx scripts/draw-gantt.ts
  * Flags: --color  --week-start 0  --weekends 5,6
@@ -226,7 +226,7 @@ export function drawGantt(
     /** Weekday index of period 0: Mon=0 … Sun=6. Default 0 (Monday). */
     weekStart?: number;
     resourceHeader?: string;
-    taskHeader?: string;
+    workHeader?: string;
     /** Expansions for abbreviations used in labels — printed once under the chart. */
     glossary?: Glossary;
   } = {},
@@ -234,7 +234,7 @@ export function drawGantt(
   const color = options.color ?? false;
   const weekStart = options.weekStart ?? 0;
   const resourceHeader = options.resourceHeader ?? RESOURCE_HEADER;
-  const taskHeader = options.taskHeader ?? TASK_HEADER;
+  const workHeader = options.workHeader ?? WORK_HEADER;
   const normalized = tasks.map((t) => normalizeTask(t));
 
   if (normalized.length === 0) return "(no tasks)";
@@ -258,14 +258,14 @@ export function drawGantt(
     1,
   );
   const labelWidth = Math.max(
-    taskHeader.length,
+    workHeader.length,
     ...normalized.map((t) => t.label.length),
     1,
   );
 
   const leftHeader = leftLabel(
     resourceHeader,
-    taskHeader,
+    workHeader,
     resourceWidth,
     labelWidth,
   );
