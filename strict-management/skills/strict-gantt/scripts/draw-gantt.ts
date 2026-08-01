@@ -4,7 +4,7 @@
  * UI strings are English only — no translations in this script.
  *
  * Layout:
- *   Resource |           01 02 03 ...
+ *   Resource | Task      01 02 03 ...
  *                        Mo Tu We ...
  *   ─────────────────────────
  *   Me       | 31,32     ██
@@ -13,7 +13,8 @@
  *   Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
  *   (empty weekends stay blank — weekday row marks Sa/Su)
  *
- * Labels are short: task id/ref, 1–2 words, or abbreviation.
+ * Task column header is "Task"; cell content is short:
+ * task id/ref, 1–2 words, or abbreviation (not long titles).
  * Run demo: npx --yes tsx scripts/draw-gantt.ts
  * Flags: --color  --week-start 0  --weekends 5,6
  */
@@ -45,8 +46,7 @@ export type Glossary = Record<string, string>;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 const RESOURCE_HEADER = "Resource";
-/** Second column has no title — labels are task ids / short text / abbrs. */
-const LABEL_HEADER = "";
+const TASK_HEADER = "Task";
 const WEEKDAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"] as const;
 const LEGEND = "Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work";
 
@@ -226,6 +226,7 @@ export function drawGantt(
     /** Weekday index of period 0: Mon=0 … Sun=6. Default 0 (Monday). */
     weekStart?: number;
     resourceHeader?: string;
+    taskHeader?: string;
     /** Expansions for abbreviations used in labels — printed once under the chart. */
     glossary?: Glossary;
   } = {},
@@ -233,7 +234,7 @@ export function drawGantt(
   const color = options.color ?? false;
   const weekStart = options.weekStart ?? 0;
   const resourceHeader = options.resourceHeader ?? RESOURCE_HEADER;
-  const labelHeader = LABEL_HEADER;
+  const taskHeader = options.taskHeader ?? TASK_HEADER;
   const normalized = tasks.map((t) => normalizeTask(t));
 
   if (normalized.length === 0) return "(no tasks)";
@@ -257,14 +258,14 @@ export function drawGantt(
     1,
   );
   const labelWidth = Math.max(
-    labelHeader.length,
+    taskHeader.length,
     ...normalized.map((t) => t.label.length),
     1,
   );
 
   const leftHeader = leftLabel(
     resourceHeader,
-    labelHeader,
+    taskHeader,
     resourceWidth,
     labelWidth,
   );

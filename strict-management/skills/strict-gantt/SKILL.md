@@ -29,11 +29,11 @@ No tasks in the invocation → collect from session context (plan, backlog, spri
 Still missing → ask once for: resource, short label, start + end (or start + duration).
 Ask for leave ranges and which weekday period 0 is (default Monday) when the calendar matters.
 
-## Labels (not a "Work" column)
+## Task column
 
-The second column is a **short label**, not a "Work (days)" / work-description field. Do not title or describe it as a work column.
+Header is **`Task`**. Cell content is short — not long work titles or "Work (days)" blurbs.
 
-Each label is one of:
+Each cell is one of:
 
 | Form | Example | Rule |
 |---|---|---|
@@ -46,7 +46,7 @@ Never put long titles, epics prose, or "work package" blurbs in the grid. Put ex
 ## Chart layout (required)
 
 ~~~text
-Resource |           01 02 03 04 05 06 07 08 09 10
+Resource | Task      01 02 03 04 05 06 07 08 09 10
                      Mo Tu We Th Fr Sa Su Mo Tu We
 ─────────────────────────────────────────────────
 Me       | 31,32     ██
@@ -60,7 +60,7 @@ Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
 
 | Part | Rule |
 |---|---|
-| Left | `Resource \| <label>` — second header cell is **blank** (no "Work (days)") |
+| Left | `Resource \| Task` — header required; cells hold short labels |
 | Row 1 | Period numbers (`01 02 …`) |
 | Row 2 | Weekdays (`Mo Tu We Th Fr Sa Su`) |
 | Separator | `─` to the width of row 1 |
@@ -142,7 +142,7 @@ Do **not** write files unless the user asks. Do **not** open FigJam/diagram tool
 `npx --yes tsx scripts/draw-gantt.ts`:
 
 ~~~text
-Resource |            01 02 03 04 05 06 07 08 09
+Resource | Task       01 02 03 04 05 06 07 08 09
                       Mo Tu We Th Fr Sa Su Mo Tu
 ────────────────────────────────────────────────
 Me       | 31,32      ██                        
@@ -171,7 +171,7 @@ Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
 
 | Mistake | Fix |
 |---|---|
-| Titling the label column "Work (days)" / work package | Leave the second header blank; labels are task ids / short text / abbrs |
+| Putting long work titles in the Task column | Keep header `Task`; cells are ids / 1–2 words / abbrs (+ Key) |
 | Long sentences in the grid | Shorten to id / 1–2 words; put detail in `Key:` |
 | Abbreviation with no expansion | Always print `Key:` at least once for that abbr |
 | Reimplementing the bar grid from scratch | Use `scripts/draw-gantt.ts` |
