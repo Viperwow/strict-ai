@@ -17,6 +17,8 @@ Render a text Gantt chart in chat (or console) so a schedule is scannable at a g
 
 Script UI is **English only** (headers, weekdays, legend, key). Row labels may be whatever the user provided.
 
+**One resource = one row:** merge every task for the same subject onto a single timeline. Never repeat a resource on multiple body rows. The Work (days) cell lists that subject's short labels (comma-separated; truncate with `…` if long).
+
 ## Invocation
 
 ~~~text
@@ -48,14 +50,15 @@ Never put the full multi-word expansion into the grid cell — keep the abbr in 
 
 ## Chart layout (required)
 
-Single subject (Resource hidden):
+Single subject (Resource hidden; **one row**):
 
 ~~~text
-Work (days)  01 02 03 04 05 06 07 08 09 10
-             Mo Tu We Th Fr Sa Su Mo Tu We
-──────────────────────────────────────────
-Task 31      ██
-ADR Draft          ██
+Work (days)                             01 02 03 04 05 06 07 08 09
+                                        Mo Tu We Th Fr Sa Su Mo Tu
+──────────────────────────────────────────────────────────────────
+Task 31, Task 32, ADR Draft, 36 Start…  ██ ██ ██ ██ ██ ▒▒ ▒▒ ██ ██
+
+Legend: ██ planned work, ▒▒ leave, �36 Start…  ██ ██ ██ ██ ██ ▒▒ ▒▒ ██ ██
 
 Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
 
@@ -63,23 +66,23 @@ Key:
   ADR = Architectural Design Requirements
 ~~~
 
-Multiple subjects:
+Multiple subjects (**one row each**):
 
 ~~~text
 Resource | Work (days)  01 02 03 …
                         Mo Tu We …
-Me       | Task 31      ██
-Ann      | Task 32         ██
+Me       | Task 31      ██ ██
+Ann      | Task 32         ██ ██
 ~~~
 
 | Part | Rule |
 |---|---|
 | Resource | Show **only** if `distinctResources(tasks).length > 1` |
-| Work (days) | Always shown |
+| Work (days) | Always shown; labels for that resource joined on the one row |
 | Row 1 | Period numbers (`01 02 …`) |
 | Row 2 | Weekdays (`Mo Tu We Th Fr Sa Su`) |
 | Separator | `─` to the width of row 1 |
-| Body | One row per item |
+| Body | **One row per resource** — never two rows for the same subject |
 | Legend | **Always** under the table |
 | Key | Abbreviations/acronyms only — after Legend |
 
@@ -127,7 +130,7 @@ When the user gives **dates**, convert with `tasksFromDates` / `periodsBetween` 
 
 Cell priority per period: **leave → weekend-work (`▓▓`) → weekday-work (`██`) → empty**. Empty weekends stay blank.
 
-Do not invent dependencies or reorder rows unless asked; preserve input order.
+Do not invent dependencies. Preserve first-seen resource order. Never emit two rows for the same resource.
 
 ## How to draw
 
@@ -156,19 +159,13 @@ Do **not** write files unless the user asks. Do **not** open FigJam/diagram tool
 
 ## Example
 
-`npx --yes tsx scripts/draw-gantt.ts` (single subject — no Resource column):
+`npx --yes tsx scripts/draw-gantt.ts` (one resource → one row):
 
 ~~~text
-Work (days)  01 02 03 04 05 06 07 08 09
-             Mo Tu We Th Fr Sa Su Mo Tu
-───────────────────────────────────────
-Task 31      ██                        
-Task 32         ██                     
-ADR Draft          ██                  
-36 Start              ██               
-36,37,38                 ██            
-Leave                       ▒▒ ▒▒      
-Follow-up                         ██ ██
+Work (days)                             01 02 03 04 05 06 07 08 09
+                                        Mo Tu We Th Fr Sa Su Mo Tu
+──────────────────────────────────────────────────────────────────
+Task 31, Task 32, ADR Draft, 36 Start…  ██ ██ ██ ██ ██ ▒▒ ▒▒ ██ ██
 
 Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
 
@@ -196,4 +193,5 @@ Key:
 | End-inclusive duration off-by-one | Half-open `[start, start+duration)` |
 | Painting leave as `██` | Set `kind: "leave"` → `▒▒` |
 | Coloring by default | Color only with `--color` |
-| Reordering by start date silently | Keep input order; offer a sorted redraw only if asked |
+| Reordering by start date silently | Keep first-seen resource order |
+| One task per row for the same person | **One resource = one row** — merge their tasks onto one timeline |
