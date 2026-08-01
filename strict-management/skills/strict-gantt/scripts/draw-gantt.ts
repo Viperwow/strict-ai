@@ -2,14 +2,16 @@
  * Canonical renderer for strict-gantt.
  * Half-open intervals: [start, start + duration).
  *
- * Cell legend:
- *   ██ planned work
- *   ▒▒ leave
- *   ▓▓ weekend
+ * Layout:
+ *   Resource | Work (days)  01 02 03 ...
+ *                           Mo Tu We ...
+ *   ─────────────────────────
+ *   Me       | Task         ██
+ *
+ *   Legend: ██ planned work, ▒▒ leave, ▓▓ weekend
  *
  * Run demo: npx --yes tsx scripts/draw-gantt.ts
- * Run with JSON stdin: echo '[...]' | npx --yes tsx scripts/draw-gantt.ts
- * Flags: --color  --header <label>  --weekends 5,6  --legend en|ru
+ * Flags: --color  --locale en|ru  --week-start 0  --weekends 5,6
  */
 
 export type CellKind = "work" | "leave" | "weekend" | "empty";
@@ -17,6 +19,7 @@ export type CellKind = "work" | "leave" | "weekend" | "empty";
 export type TaskKind = "work" | "leave";
 
 export type Task = {
+  resource?: string;
   name: string;
   start: number; // zero-based period index, inclusive
   duration: number; // periods, >= 1
@@ -24,13 +27,14 @@ export type Task = {
 };
 
 export type DateTask = {
+  resource?: string;
   name: string;
   start: Date;
   end: Date; // exclusive
   kind?: TaskKind;
 };
 
-export type LegendLocale = "en" | "ru";
+export type Locale = "en" | "ru";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -40,20 +44,30 @@ const GLYPH: Record<Exclude<CellKind, "empty">, string> = {
   weekend: "▓▓",
 };
 
-const LEGEND: Record<LegendLocale, string> = {
-  en: "Legend: ██ planned work, ▒▒ leave, ▓▓ weekend",
-  ru: "Легенда: ██ работа по плану, ▒▒ отпуск, ▓▓ выходные",
-};
+const LOCALE = {
+  en: {
+    resourceHeader: "Resource",
+    workHeader: "Work (days)",
+    weekdays: ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"] as const,
+    legend: "Legend: ██ planned work, ▒▒ leave, ▓▓ weekend",
+  },
+  ru: {
+    resourceHeader: "Ресурс",
+    workHeader: "Работа (дни)",
+    weekdays: ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"] as const,
+    legend: "Легенда: ██ работа по плану, ▒▒ отпуск, ▓▓ выходные",
+  },
+} as const;
 
 /** ANSI fills for --color (work rotates; leave/weekend fixed). */
 const WORK_PALETTE = [
-  "\x1b[42m  \x1b[0m", // green
-  "\x1b[44m  \x1b[0m", // blue
-  "\x1b[45m  \x1b[0m", // magenta
-  "\x1b[46m  \x1b[0m", // cyan
+  "\x1b[42m  \x1b[0m",
+  "\x1b[44m  \x1b[0m",
+  "\x1b[45m  \x1b[0m",
+  "\x1b[46m  \x1b[0m",
 ];
-const LEAVE_COLOR = "\x1b[43m  \x1b[0m"; // yellow
-const WEEKEND_COLOR = "\x1b[100m  \x1b[0m"; // bright black
+const LEAVE_COLOR = "\x1b[43m  \x1b[0m";
+const WEEKEND_COLOR = "\x1b[100m  \x1b[0m";
 
 export function periodsBetween(
   projectStart: Date,
@@ -80,6 +94,7 @@ export function tasksFromDates(
     const start = periodsBetween(projectStart, row.start, unitDays);
     const end = periodsBetween(projectStart, row.end, unitDays);
     return {
+      resource: row.resource,
       name: row.name,
       start,
       duration: Math.max(1, end - start),
@@ -89,8 +104,24 @@ export function tasksFromDates(
 }
 
 /**
- * Period indexes that fall on Sat/Sun when each period is one day
- * (`unitDays === 1`). No-op for week-sized periods.
+ * Period indexes that fall on Sat/Sun when each period is one day.
+ * `weekStart`: weekday index of period 0 in Mon=0 … Sun=6.
+ */
+export function weekendPeriodsFromWeekStart(
+  totalPeriods: number,
+  weekStart = 0,
+): number[] {
+  const out: number[] = [];
+  for (let i = 0; i < totalPeriods; i++) {
+    const wd = (weekStart + i) % 7;
+    if (wd === 5 || wd === 6) out.push(i);
+  }
+  return out;
+}
+
+/**
+ * Period indexes that fall on Sat/Sun from a calendar start date
+ * when `unitDays === 1`.
  */
 export function weekendPeriods(
   projectStart: Date,
@@ -102,10 +133,15 @@ export function weekendPeriods(
   const out: number[] = [];
   for (let i = 0; i < totalPeriods; i++) {
     const day = new Date(projectStart.getTime() + i * DAY_MS);
-    const wd = day.getDay();
+    const wd = day.getDay(); // 0=Sun … 6=Sat
     if (wd === 0 || wd === 6) out.push(i);
   }
   return out;
+}
+
+/** Map JS getDay() (Sun=0) → Mon=0 … Sun=6. */
+export function weekStartFromDate(projectStart: Date): number {
+  return (projectStart.getDay() + 6) % 7;
 }
 
 function resolveCell(
@@ -113,11 +149,11 @@ function resolveCell(
   task: Task,
   weekends: ReadonlySet<number>,
 ): CellKind {
-  if (weekends.has(period)) return "weekend";
-
   const active = period >= task.start && period < task.start + task.duration;
-  if (!active) return "empty";
-  return task.kind === "leave" ? "leave" : "work";
+  if (active && task.kind === "leave") return "leave";
+  if (weekends.has(period)) return "weekend";
+  if (active) return "work";
+  return "empty";
 }
 
 function renderCell(
@@ -143,22 +179,41 @@ function periodLabel(index: number, totalPeriods: number): string {
   return String(n).padStart(2, "0");
 }
 
+function weekdayLabel(
+  index: number,
+  weekStart: number,
+  weekdays: readonly string[],
+): string {
+  return weekdays[(weekStart + index) % 7];
+}
+
+function leftLabel(
+  resource: string,
+  work: string,
+  resourceWidth: number,
+  workWidth: number,
+): string {
+  return `${resource.padEnd(resourceWidth)} | ${work.padEnd(workWidth)}  `;
+}
+
 export function drawGantt(
   tasks: Task[],
   options: {
-    nameHeader?: string;
+    locale?: Locale;
     color?: boolean;
     weekends?: readonly number[];
-    legend?: LegendLocale | false;
+    /** Weekday index of period 0: Mon=0 … Sun=6. Default 0 (Monday). */
+    weekStart?: number;
+    resourceHeader?: string;
+    workHeader?: string;
   } = {},
 ): string {
-  const nameHeader = options.nameHeader ?? "Task";
+  const locale = options.locale ?? "en";
+  const L = LOCALE[locale];
   const color = options.color ?? false;
-  const weekends = new Set(options.weekends ?? []);
-  const legend =
-    options.legend === false
-      ? null
-      : (options.legend ?? (nameHeader === "Задача" ? "ru" : "en"));
+  const weekStart = options.weekStart ?? 0;
+  const resourceHeader = options.resourceHeader ?? L.resourceHeader;
+  const workHeader = options.workHeader ?? L.workHeader;
 
   if (tasks.length === 0) return "(no tasks)";
 
@@ -166,47 +221,92 @@ export function drawGantt(
     ...tasks.map((task) => task.start + task.duration),
     0,
   );
+
+  const autoWeekends = weekendPeriodsFromWeekStart(span, weekStart);
+  const weekends = new Set(
+    options.weekends !== undefined ? options.weekends : autoWeekends,
+  );
+
   const weekendMax = weekends.size ? Math.max(...weekends) + 1 : 0;
   const periods = Math.max(span, weekendMax);
 
-  const nameWidth =
-    Math.max(...tasks.map((task) => task.name.length), nameHeader.length) + 2;
+  const resourceWidth = Math.max(
+    resourceHeader.length,
+    ...tasks.map((t) => (t.resource ?? "").length),
+    1,
+  );
+  const workWidth = Math.max(
+    workHeader.length,
+    ...tasks.map((t) => t.name.length),
+    1,
+  );
 
-  const header =
-    nameHeader.padEnd(nameWidth) +
+  const leftHeader = leftLabel(
+    resourceHeader,
+    workHeader,
+    resourceWidth,
+    workWidth,
+  );
+  const leftPad = " ".repeat(leftHeader.length);
+
+  const dates =
+    leftHeader +
     Array.from({ length: periods }, (_, index) =>
       periodLabel(index, periods),
     ).join(" ");
 
-  const lines = [header, "─".repeat(header.length)];
+  const days =
+    leftPad +
+    Array.from({ length: periods }, (_, index) =>
+      weekdayLabel(index, weekStart, L.weekdays),
+    ).join(" ");
+
+  const lines = [dates, days, "─".repeat(dates.length)];
 
   tasks.forEach((task, taskIndex) => {
+    const left = leftLabel(
+      task.resource ?? "",
+      task.name,
+      resourceWidth,
+      workWidth,
+    );
     const timeline = Array.from({ length: periods }, (_, period) => {
       const kind = resolveCell(period, task, weekends);
       return renderCell(kind, taskIndex, color);
     }).join(" ");
 
-    lines.push(task.name.padEnd(nameWidth) + timeline);
+    lines.push(left + timeline);
   });
 
-  if (legend) {
-    lines.push("");
-    lines.push(LEGEND[legend]);
-  }
+  lines.push("");
+  lines.push(L.legend);
 
   return lines.join("\n");
 }
 
-const DEMO_TASKS: Task[] = [
-  { name: "Analysis", start: 0, duration: 3 },
-  { name: "Design", start: 2, duration: 3 },
-  { name: "Leave", start: 4, duration: 2, kind: "leave" },
-  { name: "Development", start: 5, duration: 4 },
-  { name: "Testing", start: 9, duration: 2 },
-];
-
-/** Demo weekends: periods 6 and 7 (columns 07–08). */
-const DEMO_WEEKENDS = [6, 7];
+function demoTasks(locale: Locale): Task[] {
+  const me = locale === "ru" ? "Я" : "Me";
+  if (locale === "ru") {
+    return [
+      { resource: me, name: "31,32 эпики", start: 0, duration: 1 },
+      { resource: me, name: "B1a,B1b своя (эпик)", start: 1, duration: 1 },
+      { resource: me, name: "B2a,B2b своя (эпик)", start: 2, duration: 1 },
+      { resource: me, name: "36 старт", start: 3, duration: 1 },
+      { resource: me, name: "36,37,38", start: 4, duration: 1 },
+      { resource: me, name: "Отпуск", start: 5, duration: 2, kind: "leave" },
+      { resource: me, name: "продолжение", start: 7, duration: 2 },
+    ];
+  }
+  return [
+    { resource: me, name: "31,32 epics", start: 0, duration: 1 },
+    { resource: me, name: "B1a,B1b own (epic)", start: 1, duration: 1 },
+    { resource: me, name: "B2a,B2b own (epic)", start: 2, duration: 1 },
+    { resource: me, name: "36 start", start: 3, duration: 1 },
+    { resource: me, name: "36,37,38", start: 4, duration: 1 },
+    { resource: me, name: "Leave", start: 5, duration: 2, kind: "leave" },
+    { resource: me, name: "follow-up", start: 7, duration: 2 },
+  ];
+}
 
 async function readStdin(): Promise<string> {
   const chunks: Buffer[] = [];
@@ -216,9 +316,9 @@ async function readStdin(): Promise<string> {
   return Buffer.concat(chunks).toString("utf8").trim();
 }
 
-function parseWeekends(args: string[]): number[] {
+function parseWeekends(args: string[]): number[] | undefined {
   const idx = args.indexOf("--weekends");
-  if (idx < 0 || !args[idx + 1]) return [];
+  if (idx < 0 || !args[idx + 1]) return undefined;
   return args[idx + 1]
     .split(",")
     .map((s) => s.trim())
@@ -227,56 +327,69 @@ function parseWeekends(args: string[]): number[] {
     .filter((n) => Number.isInteger(n) && n >= 0);
 }
 
-function parseLegend(args: string[]): LegendLocale | undefined {
-  const idx = args.indexOf("--legend");
+function parseLocale(args: string[]): Locale | undefined {
+  const idx = args.indexOf("--locale");
   if (idx < 0 || !args[idx + 1]) return undefined;
   const v = args[idx + 1];
   if (v === "en" || v === "ru") return v;
-  throw new Error("--legend must be en or ru");
+  throw new Error("--locale must be en or ru");
+}
+
+function parseWeekStart(args: string[]): number | undefined {
+  const idx = args.indexOf("--week-start");
+  if (idx < 0 || !args[idx + 1]) return undefined;
+  const n = Number(args[idx + 1]);
+  if (!Number.isInteger(n) || n < 0 || n > 6) {
+    throw new Error("--week-start must be 0..6 (Mon=0 … Sun=6)");
+  }
+  return n;
 }
 
 async function main(): Promise<void> {
   const args = process.argv.slice(2);
   const color = args.includes("--color");
-  const headerIdx = args.indexOf("--header");
-  const nameHeader =
-    headerIdx >= 0 && args[headerIdx + 1] ? args[headerIdx + 1] : "Task";
+  const locale = parseLocale(args) ?? "en";
+  const weekStart = parseWeekStart(args);
   const weekends = parseWeekends(args);
-  const legend = parseLegend(args);
 
-  let tasks = DEMO_TASKS;
-  let weekendList = weekends.length ? weekends : DEMO_WEEKENDS;
+  let tasks = demoTasks(locale);
+  let weekendOverride = weekends;
+  let weekStartOpt = weekStart;
 
   if (!process.stdin.isTTY) {
     const raw = await readStdin();
     if (raw) {
       const parsed = JSON.parse(raw) as
         | Task[]
-        | { tasks: Task[]; weekends?: number[] };
+        | {
+            tasks: Task[];
+            weekends?: number[];
+            weekStart?: number;
+          };
       if (Array.isArray(parsed)) {
         tasks = parsed;
       } else if (parsed && Array.isArray(parsed.tasks)) {
         tasks = parsed.tasks;
-        if (!weekends.length && parsed.weekends) {
-          weekendList = parsed.weekends;
+        if (weekendOverride === undefined && parsed.weekends) {
+          weekendOverride = parsed.weekends;
+        }
+        if (weekStartOpt === undefined && parsed.weekStart !== undefined) {
+          weekStartOpt = parsed.weekStart;
         }
       } else {
         throw new Error(
-          "stdin JSON must be Task[] or { tasks: Task[], weekends?: number[] }",
+          "stdin JSON must be Task[] or { tasks, weekends?, weekStart? }",
         );
-      }
-      if (!weekends.length && Array.isArray(parsed)) {
-        weekendList = [];
       }
     }
   }
 
   console.log(
     drawGantt(tasks, {
-      nameHeader,
+      locale,
       color,
-      weekends: weekendList,
-      legend,
+      weekends: weekendOverride,
+      weekStart: weekStartOpt,
     }),
   );
 }
