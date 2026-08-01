@@ -12,7 +12,7 @@ description: >
 
 Render a text Gantt chart in chat (or console) so a schedule is scannable at a glance.
 
-**Reference script:** `references/draw-gantt.ts` — canonical algorithm. Prefer running or adapting it over reinventing the renderer.
+**Canonical script:** `scripts/draw-gantt.ts` — prefer running or adapting it over reinventing the renderer.
 
 ## Invocation
 
@@ -35,7 +35,7 @@ Normalize every task to `{ name, start, duration }`:
 | `start` | Zero-based period index (inclusive) |
 | `duration` | Number of periods (≥ 1) |
 
-When the user gives **dates**, convert with `tasksFromDates` / `periodsBetween` from `references/draw-gantt.ts`:
+When the user gives **dates**, convert with `tasksFromDates` / `periodsBetween` from `scripts/draw-gantt.ts`:
 
 - `--unit day` → `unitDays = 1`
 - `--unit week` → `unitDays = 7`
@@ -47,12 +47,12 @@ Do not invent dependencies or reorder tasks unless asked; preserve input order.
 ## How to draw
 
 1. Build a `Task[]` (dates → offsets first when needed).
-2. Prefer the reference script:
+2. Prefer the skill script:
    - **Terminal / verification:** run from this skill directory:
      ~~~bash
-     npx --yes tsx references/draw-gantt.ts
-     echo '[{"name":"A","start":0,"duration":2}]' | npx --yes tsx references/draw-gantt.ts --header Task
-     npx --yes tsx references/draw-gantt.ts --color
+     npx --yes tsx scripts/draw-gantt.ts
+     echo '[{"name":"A","start":0,"duration":2}]' | npx --yes tsx scripts/draw-gantt.ts --header Task
+     npx --yes tsx scripts/draw-gantt.ts --color
      ~~~
    - **Chat output:** call `drawGantt(tasks, { nameHeader, color })` (read the script, or run it and paste stdout).
 3. Wrap the chart in a fenced ` ```text ` block so alignment survives chat rendering.
@@ -72,7 +72,7 @@ Do **not** write files unless the user asks. Do **not** open FigJam/diagram tool
 
 ## Example
 
-Input → `drawGantt` (see demo tasks in `references/draw-gantt.ts`):
+Input → `drawGantt` (see demo tasks in `scripts/draw-gantt.ts`):
 
 ~~~text
 Task            01 02 03 04 05 06 07 08 09 10
@@ -87,7 +87,7 @@ Testing                                 ██ ██
 
 | Mistake | Fix |
 |---|---|
-| Reimplementing the bar grid from scratch | Use `references/draw-gantt.ts` |
+| Reimplementing the bar grid from scratch | Use `scripts/draw-gantt.ts` |
 | Using cards/tables instead of a monospace chart | Always use a ` ```text ` fence |
 | Mixing date strings into the bar grid | Convert dates → period offsets first |
 | End-inclusive duration off-by-one | Half-open `[start, start+duration)` |

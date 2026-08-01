@@ -1,9 +1,9 @@
 /**
- * Reference implementation for strict-gantt.
+ * Canonical renderer for strict-gantt.
  * Half-open intervals: [start, start + duration).
  *
- * Run demo: npx --yes tsx references/draw-gantt.ts
- * Run with JSON stdin: echo '[...]' | npx --yes tsx references/draw-gantt.ts
+ * Run demo: npx --yes tsx scripts/draw-gantt.ts
+ * Run with JSON stdin: echo '[...]' | npx --yes tsx scripts/draw-gantt.ts
  * Flags: --color  --header <label>
  */
 
