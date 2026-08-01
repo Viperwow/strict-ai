@@ -31,17 +31,18 @@ Ask for leave ranges and which weekday period 0 is (default Monday) when the cal
 
 ## Work (days) column
 
-Header is **`Resource | Work (days)`**. Cells stay short (ids / 1–2 words / abbreviations) — the header name does not mean long work titles in the grid.
+Header is **`Resource | Work (days)`**. Cells stay short:
 
-Each cell is one of:
-
-| Form | Example | Rule |
+| Form | Example | Key needed? |
 |---|---|---|
-| Task id / ref | `31,32` · `PROJ-12` | Prefer tracker ids when known |
-| 1–2 words | `36 start` · `follow-up` | Keep tight — no sentences |
-| Abbreviation | `B1a,B1b` | **Expand at least once** in a `Key:` block under the chart |
+| Task id | `Task 31` · `31,32` · `PROJ-12` | No — ids are self-explanatory |
+| 1–2 words | `36 start` · `follow-up` | No |
+| Abbreviation / acronym | `ADR` · `RFC` | **Yes** — expand at least once in `Key:` |
 
-Never put long titles or epic prose in the grid. Put expansions in `glossary` / `Key:`, not in the cell.
+Abbreviations are short letter-codes whose expansion is usually several long words (often **more than two** parts), e.g. `ADR = Architectural Design Requirements`. Do **not** put task numbers like `31` / `Task 31` into `Key:`.
+
+Never put the full multi-word expansion into the grid cell — keep the abbr in the cell, expansion under the chart.
+
 
 ## Chart layout (required)
 
@@ -49,12 +50,11 @@ Never put long titles or epic prose in the grid. Put expansions in `glossary` / 
 Resource | Work (days)  01 02 03 04 05 06 07 08 09 10
                         Mo Tu We Th Fr Sa Su Mo Tu We
 ────────────────────────────────────────────────────
-Me       | 31,32        ██
-Me       | B1a,B1b         ██
+Me       | Task 31      ██
+Me       | ADR draft          ██
 
 Key:
-  B1a = Backend slice 1a
-  B1b = Backend slice 1b
+  ADR = Architectural Design Requirements
 Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
 ~~~
 
@@ -65,7 +65,7 @@ Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
 | Row 2 | Weekdays (`Mo Tu We Th Fr Sa Su`) |
 | Separator | `─` to the width of row 1 |
 | Body | One row per item |
-| Key | Required when any abbreviation appears — once under the table |
+| Key | Only for abbreviations/acronyms (not task ids) — once under the table |
 | Legend | **Always** under the table (after Key if present) |
 
 Weekday of period 0: `--week-start 0..6` (Mon=0 … Sun=6, default `0`).
@@ -97,7 +97,7 @@ Normalize every row to `{ resource?, label, start, duration, kind? }`:
 | `duration` | Number of periods (≥ 1) |
 | `kind` | `work` (default) or `leave` |
 
-Optional `glossary: { [abbr]: expansion }` — printed once as `Key:` under the chart. Legacy stdin field `name` is accepted as `label`.
+Optional `glossary: { [abbr]: expansion }` — only for abbreviations/acronyms (e.g. ADR), printed once as `Key:`. Skip task ids. Legacy stdin field `name` is accepted as `label`.
 
 When the user gives **dates**, convert with `tasksFromDates` / `periodsBetween` from `scripts/draw-gantt.ts`:
 
@@ -118,7 +118,7 @@ Do not invent dependencies or reorder rows unless asked; preserve input order.
 2. Prefer the skill script — from this skill directory:
    ~~~bash
    npx --yes tsx scripts/draw-gantt.ts
-   echo '{"tasks":[{"resource":"Me","label":"B1a","start":0,"duration":2}],"glossary":{"B1a":"Backend slice 1a"}}' \
+   echo '{"tasks":[{"resource":"Me","label":"ADR draft","start":0,"duration":2}],"glossary":{"ADR":"Architectural Design Requirements"}}' \
      | npx --yes tsx scripts/draw-gantt.ts
    npx --yes tsx scripts/draw-gantt.ts --color
    ~~~
@@ -145,24 +145,16 @@ Do **not** write files unless the user asks. Do **not** open FigJam/diagram tool
 Resource | Work (days)  01 02 03 04 05 06 07 08 09
                         Mo Tu We Th Fr Sa Su Mo Tu
 ──────────────────────────────────────────────────
-Me       | 31,32        ██                        
-Me       | B1a,B1b         ██                     
-Me       | B2a,B2b            ██                  
+Me       | Task 31      ██                        
+Me       | Task 32         ██                     
+Me       | ADR draft          ██                  
 Me       | 36 start              ██               
 Me       | 36,37,38                 ██            
 Me       | Leave                       ▒▒ ▒▒      
 Me       | follow-up                         ██ ██
 
 Key:
-  31 = Epic 31
-  32 = Epic 32
-  36 = Task 36
-  37 = Task 37
-  38 = Task 38
-  B1a = Backend slice 1a
-  B1b = Backend slice 1b
-  B2a = Backend slice 2a
-  B2b = Backend slice 2b
+  ADR = Architectural Design Requirements
 
 Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
 ~~~
@@ -171,9 +163,10 @@ Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
 
 | Mistake | Fix |
 |---|---|
-| Putting long titles under Work (days) | Keep header `Work (days)`; cells are ids / 1–2 words / abbrs (+ Key) |
+| Putting full expansions in the grid | Keep abbr in the cell; put multi-word expansion in `Key:` |
 | Long sentences in the grid | Shorten to id / 1–2 words; put detail in `Key:` |
-| Abbreviation with no expansion | Always print `Key:` at least once for that abbr |
+| Abbreviation/acronym with no expansion | Always print `Key:` once (e.g. `ADR = Architectural Design Requirements`) |
+| Putting `Task 31` / bare ids into `Key:` | Key is only for abbrs/acronyms, not task numbers |
 | Reimplementing the bar grid from scratch | Use `scripts/draw-gantt.ts` |
 | Omitting the weekday row | Always print abbreviations under period numbers |
 | Filling empty weekends with `▓▓` | Leave blank; `▓▓` only when there is work on that weekend |

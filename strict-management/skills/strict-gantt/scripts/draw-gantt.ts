@@ -313,25 +313,18 @@ export function drawGantt(
 }
 
 const DEMO_TASKS: Task[] = [
-  { resource: "Me", label: "31,32", start: 0, duration: 1 },
-  { resource: "Me", label: "B1a,B1b", start: 1, duration: 1 },
-  { resource: "Me", label: "B2a,B2b", start: 2, duration: 1 },
+  { resource: "Me", label: "Task 31", start: 0, duration: 1 },
+  { resource: "Me", label: "Task 32", start: 1, duration: 1 },
+  { resource: "Me", label: "ADR draft", start: 2, duration: 1 },
   { resource: "Me", label: "36 start", start: 3, duration: 1 },
   { resource: "Me", label: "36,37,38", start: 4, duration: 1 },
   { resource: "Me", label: "Leave", start: 5, duration: 2, kind: "leave" },
   { resource: "Me", label: "follow-up", start: 7, duration: 2 },
 ];
 
+/** Only true abbreviations/acronyms — not bare task numbers. */
 const DEMO_GLOSSARY: Glossary = {
-  B1a: "Backend slice 1a",
-  B1b: "Backend slice 1b",
-  B2a: "Backend slice 2a",
-  B2b: "Backend slice 2b",
-  "31": "Epic 31",
-  "32": "Epic 32",
-  "36": "Task 36",
-  "37": "Task 37",
-  "38": "Task 38",
+  ADR: "Architectural Design Requirements",
 };
 
 async function readStdin(): Promise<string> {
