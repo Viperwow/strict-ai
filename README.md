@@ -31,7 +31,7 @@ Swap `strict-workday` for any other available plugin from this marketplace. Upda
 | `strict-agents` | Create custom subagents from a task/role, with eval contract |
 | `strict-deprecated` | Pending removal — see replacement in each |
 
-> **Available in marketplace:** `strict-workday` · `strict-development` · `strict-labs` · `strict-agents`
+> **Available in marketplace:** `strict-workday` · `strict-development` · `strict-management` · `strict-labs` · `strict-agents`
 > The remaining plugins, apart from `strict-deprecated`, are actively being developed and will be released to the marketplace over time. `strict-deprecated` holds skills that are on their way out — see the replacement named in each.
 
 ## Goal

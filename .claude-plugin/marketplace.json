@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Opinionated skill collection for professional software engineering workflows — modular, replaceable packages for every phase of daily work and SDLC.",
-    "version": "0.8.0"
+    "version": "0.9.0"
   },
   "plugins": [
     {
@@ -29,6 +29,13 @@
       "description": "Skills for engineering implementation — changelog generation, technical design, PR preparation.",
       "version": "0.3.0",
       "category": "development"
+    },
+    {
+      "name": "strict-management",
+      "source": "./strict-management",
+      "description": "Skills for management and lead-level planning — schedules, Gantt charts, sprint prep, prioritization, backlog shaping.",
+      "version": "0.1.0",
+      "category": "management"
     },
     {
       "name": "strict-agents",
