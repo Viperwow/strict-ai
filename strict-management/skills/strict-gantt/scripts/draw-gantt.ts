@@ -3,18 +3,20 @@
  * Half-open intervals: [start, start + duration).
  * UI strings are English only — no translations in this script.
  *
- * Layout:
+ * Layout (multi-resource — 2+ distinct subjects):
  *   Resource | Work (days)  01 02 03 ...
  *                           Mo Tu We ...
- *   ─────────────────────────
- *   Me       | 31,32        ██
+ *   Me       | Task 31      ██
  *
- *   Key: B1a = …   (when abbreviations need expansion)
+ * Layout (single resource — Resource column omitted):
+ *   Work (days)  01 02 03 ...
+ *                Mo Tu We ...
+ *   Task 31      ██
+ *
+ *   Key: ADR = …   (abbreviations only)
  *   Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
- *   (empty weekends stay blank — weekday row marks Sa/Su)
  *
- * Column header is "Work (days)"; cell content is short:
- * task id/ref, 1–2 words, or abbreviation (not long titles).
+ * Show Resource only when there are 2+ distinct subjects.
  * Run demo: npx --yes tsx scripts/draw-gantt.ts
  * Flags: --color  --week-start 0  --weekends 5,6
  */
@@ -182,12 +184,21 @@ function weekdayLabel(index: number, weekStart: number): string {
 }
 
 function leftLabel(
-  resource: string,
   label: string,
-  resourceWidth: number,
   labelWidth: number,
+  resource?: { value: string; width: number },
 ): string {
-  return `${resource.padEnd(resourceWidth)} | ${label.padEnd(labelWidth)}  `;
+  const task = label.padEnd(labelWidth);
+  if (!resource) return `${task}  `;
+  return `${resource.value.padEnd(resource.width)} | ${task}  `;
+}
+
+/** Distinct non-empty resources; empty/missing counts as one anonymous subject. */
+export function distinctResources(tasks: readonly Task[]): string[] {
+  const set = new Set(
+    tasks.map((t) => (t.resource ?? "").trim()).filter(Boolean),
+  );
+  return [...set];
 }
 
 function formatGlossary(glossary: Glossary): string[] {
@@ -259,11 +270,16 @@ export function drawGantt(
   const weekendMax = weekends.size ? Math.max(...weekends) + 1 : 0;
   const periods = Math.max(span, weekendMax);
 
-  const resourceWidth = Math.max(
-    resourceHeader.length,
-    ...normalized.map((t) => (t.resource ?? "").length),
-    1,
-  );
+  const resources = distinctResources(normalized);
+  const showResource = resources.length > 1;
+
+  const resourceWidth = showResource
+    ? Math.max(
+        resourceHeader.length,
+        ...normalized.map((t) => (t.resource ?? "").length),
+        1,
+      )
+    : 0;
   const labelWidth = Math.max(
     workHeader.length,
     ...normalized.map((t) => t.label.length),
@@ -271,10 +287,9 @@ export function drawGantt(
   );
 
   const leftHeader = leftLabel(
-    resourceHeader,
     workHeader,
-    resourceWidth,
     labelWidth,
+    showResource ? { value: resourceHeader, width: resourceWidth } : undefined,
   );
   const leftPad = " ".repeat(leftHeader.length);
 
@@ -294,10 +309,11 @@ export function drawGantt(
 
   normalized.forEach((task, taskIndex) => {
     const left = leftLabel(
-      task.resource ?? "",
       task.label,
-      resourceWidth,
       labelWidth,
+      showResource
+        ? { value: task.resource ?? "", width: resourceWidth }
+        : undefined,
     );
     const timeline = Array.from({ length: periods }, (_, period) => {
       const kind = resolveCell(period, task, weekends);

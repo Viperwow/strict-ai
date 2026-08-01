@@ -31,7 +31,7 @@ Ask for leave ranges and which weekday period 0 is (default Monday) when the cal
 
 ## Work (days) column
 
-Header is **`Resource | Work (days)`**. Cells stay short:
+Default header is **`Work (days)`**. Prefix **`Resource |`** only with **2+ distinct subjects** (me + colleague, etc.); one subject → no Resource column. Cells stay short:
 
 | Form | Example | Key needed? |
 |---|---|---|
@@ -48,21 +48,33 @@ Never put the full multi-word expansion into the grid cell — keep the abbr in 
 
 ## Chart layout (required)
 
+Single subject (Resource hidden):
+
 ~~~text
-Resource | Work (days)  01 02 03 04 05 06 07 08 09 10
-                        Mo Tu We Th Fr Sa Su Mo Tu We
-────────────────────────────────────────────────────
-Me       | Task 31      ██
-Me       | ADR Draft         ██
+Work (days)  01 02 03 04 05 06 07 08 09 10
+             Mo Tu We Th Fr Sa Su Mo Tu We
+──────────────────────────────────────────
+Task 31      ██
+ADR Draft          ██
 
 Key:
   ADR = Architectural Design Requirements
 Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
 ~~~
 
+Multiple subjects:
+
+~~~text
+Resource | Work (days)  01 02 03 …
+                        Mo Tu We …
+Me       | Task 31      ██
+Ann      | Task 32         ██
+~~~
+
 | Part | Rule |
 |---|---|
-| Left | `Resource \| Work (days)` — header fixed; cells hold short labels |
+| Resource | Show **only** if `distinctResources(tasks).length > 1` |
+| Work (days) | Always shown |
 | Row 1 | Period numbers (`01 02 …`) |
 | Row 2 | Weekdays (`Mo Tu We Th Fr Sa Su`) |
 | Separator | `─` to the width of row 1 |
@@ -141,19 +153,19 @@ Do **not** write files unless the user asks. Do **not** open FigJam/diagram tool
 
 ## Example
 
-`npx --yes tsx scripts/draw-gantt.ts`:
+`npx --yes tsx scripts/draw-gantt.ts` (single subject — no Resource column):
 
 ~~~text
-Resource | Work (days)  01 02 03 04 05 06 07 08 09
-                        Mo Tu We Th Fr Sa Su Mo Tu
-──────────────────────────────────────────────────
-Me       | Task 31      ██                        
-Me       | Task 32         ██                     
-Me       | ADR Draft          ██                  
-Me       | 36 Start              ██               
-Me       | 36,37,38                 ██            
-Me       | Leave                       ▒▒ ▒▒      
-Me       | Follow-up                         ██ ██
+Work (days)  01 02 03 04 05 06 07 08 09
+             Mo Tu We Th Fr Sa Su Mo Tu
+───────────────────────────────────────
+Task 31      ██                        
+Task 32         ██                     
+ADR Draft          ██                  
+36 Start              ██               
+36,37,38                 ██            
+Leave                       ▒▒ ▒▒      
+Follow-up                         ██ ██
 
 Key:
   ADR = Architectural Design Requirements
@@ -167,6 +179,7 @@ Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
 |---|---|
 | Putting full expansions in the grid | Keep abbr in the cell; put multi-word expansion in `Key:` |
 | Lowercase labels (`follow-up`) | Capitalize: `Follow-up` |
+| Showing Resource with one subject | Omit Resource unless 2+ distinct people/teams |
 | Long sentences in the grid | Shorten to id / 1–2 words; put detail in `Key:` |
 | Abbreviation/acronym with no expansion | Always print `Key:` once (e.g. `ADR = Architectural Design Requirements`) |
 | Putting `Task 31` / bare ids into `Key:` | Key is only for abbrs/acronyms, not task numbers |
