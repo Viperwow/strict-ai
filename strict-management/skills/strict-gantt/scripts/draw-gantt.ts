@@ -46,7 +46,7 @@ export type Glossary = Record<string, string>;
 const DAY_MS = 24 * 60 * 60 * 1000;
 
 const RESOURCE_HEADER = "Resource";
-const TASK_HEADER = "Task";
+const WORK_HEADER = "Work (days)";
 const WEEKDAYS = ["Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"] as const;
 const LEGEND = "Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work";
 

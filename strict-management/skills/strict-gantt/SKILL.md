@@ -29,9 +29,9 @@ No tasks in the invocation → collect from session context (plan, backlog, spri
 Still missing → ask once for: resource, short label, start + end (or start + duration).
 Ask for leave ranges and which weekday period 0 is (default Monday) when the calendar matters.
 
-## Task column
+## Work (days) column
 
-Header is **`Task`**. Cell content is short — not long work titles or "Work (days)" blurbs.
+Header is **`Resource | Work (days)`**. Cells stay short (ids / 1–2 words / abbreviations) — the header name does not mean long work titles in the grid.
 
 Each cell is one of:
 
@@ -41,16 +41,16 @@ Each cell is one of:
 | 1–2 words | `36 start` · `follow-up` | Keep tight — no sentences |
 | Abbreviation | `B1a,B1b` | **Expand at least once** in a `Key:` block under the chart |
 
-Never put long titles, epics prose, or "work package" blurbs in the grid. Put expansions in `glossary` / `Key:`, not in the cell.
+Never put long titles or epic prose in the grid. Put expansions in `glossary` / `Key:`, not in the cell.
 
 ## Chart layout (required)
 
 ~~~text
-Resource | Task      01 02 03 04 05 06 07 08 09 10
-                     Mo Tu We Th Fr Sa Su Mo Tu We
-─────────────────────────────────────────────────
-Me       | 31,32     ██
-Me       | B1a,B1b      ██
+Resource | Work (days)  01 02 03 04 05 06 07 08 09 10
+                        Mo Tu We Th Fr Sa Su Mo Tu We
+────────────────────────────────────────────────────
+Me       | 31,32        ██
+Me       | B1a,B1b         ██
 
 Key:
   B1a = Backend slice 1a
@@ -60,7 +60,7 @@ Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
 
 | Part | Rule |
 |---|---|
-| Left | `Resource \| Task` — header required; cells hold short labels |
+| Left | `Resource \| Work (days)` — header fixed; cells hold short labels |
 | Row 1 | Period numbers (`01 02 …`) |
 | Row 2 | Weekdays (`Mo Tu We Th Fr Sa Su`) |
 | Separator | `─` to the width of row 1 |
@@ -142,16 +142,16 @@ Do **not** write files unless the user asks. Do **not** open FigJam/diagram tool
 `npx --yes tsx scripts/draw-gantt.ts`:
 
 ~~~text
-Resource | Task       01 02 03 04 05 06 07 08 09
-                      Mo Tu We Th Fr Sa Su Mo Tu
-────────────────────────────────────────────────
-Me       | 31,32      ██                        
-Me       | B1a,B1b       ██                     
-Me       | B2a,B2b          ██                  
-Me       | 36 start            ██               
-Me       | 36,37,38               ██            
-Me       | Leave                     ▒▒ ▒▒      
-Me       | follow-up                       ██ ██
+Resource | Work (days)  01 02 03 04 05 06 07 08 09
+                        Mo Tu We Th Fr Sa Su Mo Tu
+──────────────────────────────────────────────────
+Me       | 31,32        ██                        
+Me       | B1a,B1b         ██                     
+Me       | B2a,B2b            ██                  
+Me       | 36 start              ██               
+Me       | 36,37,38                 ██            
+Me       | Leave                       ▒▒ ▒▒      
+Me       | follow-up                         ██ ██
 
 Key:
   31 = Epic 31
@@ -171,7 +171,7 @@ Legend: ██ planned work, ▒▒ leave, ▓▓ weekend work
 
 | Mistake | Fix |
 |---|---|
-| Putting long work titles in the Task column | Keep header `Task`; cells are ids / 1–2 words / abbrs (+ Key) |
+| Putting long titles under Work (days) | Keep header `Work (days)`; cells are ids / 1–2 words / abbrs (+ Key) |
 | Long sentences in the grid | Shorten to id / 1–2 words; put detail in `Key:` |
 | Abbreviation with no expansion | Always print `Key:` at least once for that abbr |
 | Reimplementing the bar grid from scratch | Use `scripts/draw-gantt.ts` |
