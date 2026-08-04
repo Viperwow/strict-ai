@@ -109,6 +109,10 @@ Before creating or editing a skill, review:
 - Public skills repo: <https://github.com/anthropics/skills>
 - Skill creator: <https://www.skills.sh/anthropics/skills/skill-creator>
 - Reference layout for skills.sh, including `skills.sh.json` metadata: <https://github.com/nvidia/skills>
+- Agent Skills open standard, vendor-neutral `SKILL.md` spec: <https://agentskills.io>
+- Codex skill catalog, archived — read for examples only: <https://github.com/openai/skills>
+- Codex skill authoring guide, including skill-only plugins: <https://developers.openai.com/codex/skills/create-skill>
+- Curated skill catalog grouped by workflow stage, with skill-to-skill cross-referencing — read for ideas, its install path is awkward: <https://www.aihero.dev/skills>
 
 Authoring rules:
 1. Narrow, single-purpose skills.
@@ -132,6 +136,7 @@ Before creating hooks, plugins, agents, or MCP, review:
 - MCP docs: <https://modelcontextprotocol.info/docs/>
 - MCP course: <https://anthropic.skilljar.com/introduction-to-model-context-protocol>
 - Authorial plugin layout, outside the standards but worth reading: <https://github.com/cursor/plugins>
+- Codex plugin and skill examples, successor of the archived openai/skills catalog: <https://github.com/openai/plugins>
 
 Standards outrank authorial examples. Read an authorial layout for ideas; follow the official structure when the two disagree.
 
