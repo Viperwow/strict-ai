@@ -10,8 +10,8 @@ Neither hook decides anything about your code. One supplies memory, the other su
 
 | Hook | Event | Cost | Answers |
 |---|---|---|---|
-| `load-catalog.mjs` | `SessionStart` | one read, once per session | what exists, what is already automated, what was deliberately left alone |
-| `detect-routine.mjs` | `UserPromptSubmit` | silent unless the turn was command-heavy | was this turn mechanical enough to be worth a second look |
+| `load_catalog.py` | `SessionStart` | one read, once per session | what exists, what is already automated, what was deliberately left alone |
+| `detect_routine.py` | `UserPromptSubmit` | silent unless the turn was command-heavy | was this turn mechanical enough to be worth a second look |
 
 The split follows what each layer can actually see. A counter sees one turn, so it catches repetition *inside* a turn. The catalog persists across sessions, so it catches a routine repeated *between* them. Everything slower than that — the demo you rebuild by hand every other week — is caught by the person, who says so.
 
@@ -20,7 +20,7 @@ The split follows what each layer can actually see. A counter sees one turn, so 
 ```mermaid
 sequenceDiagram
     participant CC as Claude Code
-    participant Hook as load-catalog.mjs
+    participant Hook as load_catalog.py
     participant FS as .strict-ai/scripts/README.md
     participant Model
 
@@ -43,7 +43,7 @@ Paying for the catalog once buys three checks that would otherwise cost a read e
 
 ```mermaid
 flowchart TD
-    A["last 200 transcript lines"] --> B["parse each line as JSON, drop what does not parse"]
+    A["last 512 KB of the transcript, then its last 200 lines"] --> B["parse each line as JSON, drop what does not parse"]
     B --> C["walk forward, counting tool calls"]
     C --> D{"tool input carries command, code, or script?"}
     D -->|no| C
@@ -62,15 +62,19 @@ The message is an invitation, not a finding. Seven commands can be one routine r
 
 Accepted ceiling: a tool that executes under some other input key goes uncounted. The cost is a missed nudge, not a failure, and the fix is one entry in `EXEC_INPUT_KEYS`.
 
+The read is bounded: a session transcript grows to megabytes, and the hook seeks to the last 512 KB instead of parsing all of it on every prompt. The record cut in half by the seek fails to parse and is dropped like any other malformed line.
+
+Both hooks are Python on the standard library alone, which is what the published skill collections settle on — JSON parsing without a second dependency is the whole reason. A shell hook would still have to hand the payload to Python or `jq` to read one field.
+
 ## The check
 
-`hooks/detect-routine.test.mjs` runs on plain `node:assert`, no framework:
+`hooks/test_hooks.py` runs on bare `assert`, no framework:
 
 ```bash
-node strict-script-creator/hooks/detect-routine.test.mjs
+cd strict-script-creator/hooks && python3 test_hooks.py
 ```
 
-It prints `ok` and exits zero, or fails loudly. It covers both hooks: counting across mixed tools, the reset on a real user message versus a tool result, empty payloads, and the catalog's empty and oversized cases.
+It prints `ok` and exits zero, or fails loudly. It covers both hooks: counting across mixed tools, the reset on a real user message versus a tool result, empty payloads, and the catalog's empty and oversized cases. It then runs each hook as a subprocess the way the agent does — JSON on stdin — across the threshold boundary, a missing transcript, and a registry that appears.
 
 ## Wiring
 

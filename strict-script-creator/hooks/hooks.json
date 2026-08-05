@@ -5,7 +5,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/load-catalog.mjs\""
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/load_catalog.py\"",
+            "timeout": 10
           }
         ]
       }
@@ -15,7 +16,8 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node \"${CLAUDE_PLUGIN_ROOT}/hooks/detect-routine.mjs\""
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/detect_routine.py\"",
+            "timeout": 10
           }
         ]
       }

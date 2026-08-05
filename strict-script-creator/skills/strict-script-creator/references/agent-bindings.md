@@ -13,7 +13,7 @@ The catalog event puts the registry in context once per session. The counter eve
 
 | Agent | Entry | Written to |
 |---|---|---|
-| Claude Code | `"Bash(node .strict-ai/scripts/demo-report.mjs:*)"` in `permissions.allow` | `.claude/settings.local.json` |
+| Claude Code | `"Bash(python3 .strict-ai/scripts/demo_report.py:*)"` in `permissions.allow` | `.claude/settings.local.json` |
 
 `settings.local.json`, not `settings.json`: permissions granted by automation are personal and untracked, not something that arrives in a teammate's checkout through a merge.
 
