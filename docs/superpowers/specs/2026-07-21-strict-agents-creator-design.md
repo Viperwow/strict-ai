@@ -2,7 +2,7 @@
 
 **Date:** 2026-07-21
 **Status:** Draft
-**Target package:** strict-agents (new top-level plugin)
+**Target package:** strict-agents (new top-level plugin) — renamed to `strict-agents-creator` on 2026-08-05; paths below read `strict-agents-creator/` today
 
 ---
 

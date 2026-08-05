@@ -1,5 +1,7 @@
 # strict-agents-creator Implementation Record
 
+> **Renamed 2026-08-05.** The plugin `strict-agents` is now `strict-agents-creator`, and its directory moved with it. Every `strict-agents/` path below reads `strict-agents-creator/` today. The record is left as written.
+
 > **Not an executable plan.** The repo's convention plans inline the exact file content and can be replayed step by step. This one documents work already built in PR #10 and points at the shipped files as the single source of truth, so it reads as a record of how the package is put together, not a script to re-run. Steps keep `- [ ]` syntax for structure only.
 
 **Goal:** A `strict-agents` plugin whose `strict-agents-creator` skill turns a task or role into a valid Claude Code subagent `.md` — composed from existing skills, granted the right tools, pinned to a model, and shipped with a mandatory golden eval contract.

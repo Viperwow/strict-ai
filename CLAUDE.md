@@ -22,7 +22,7 @@ strict/
   strict-knowledge/
   strict-foundation/
   strict-adapters/
-  strict-agents/
+  strict-agents-creator/
   strict-labs/
   strict-deprecated/
 ```
@@ -41,7 +41,7 @@ strict/
 | `strict-knowledge` | internal procedures, playbooks, knowledge-grounded guidance                                                                   |
 | `strict-foundation` | shared reusable primitives across multiple packages — rules, policies, templates, hooks                                       |
 | `strict-adapters` | one specific tool/API/CLI/SDK only; replaceable; invocable by other skills only, not directly by users                        |
-| `strict-agents` | creating custom subagents from a task/role — composing skills into an agent `.md`, its tools, model, and eval contract         |
+| `strict-agents-creator` | creating custom subagents from a task/role — composing skills into an agent `.md`, its tools, model, and eval contract         |
 | `strict-labs` | experimental, still stabilizing, or searching for a permanent home                                                            |
 | `strict-deprecated` | confirmed replacement exists; removal scheduled; not the recommended path for any use case                                    |
 
@@ -49,6 +49,7 @@ strict/
 - `strict-workflows` composes atomic skills from domain packages; keep atomic skills in their domain package.
 - `strict-adapters` holds tool-specific knowledge only; keep business logic and workflows in domain packages.
 - `strict-deprecated` skills cannot be invoked directly — see Deprecation protocol.
+- A creator skill — one that generates agents, scripts, or other skills — gets its own package, one per creator. A hook runs whether or not anyone asked for it, so shipping one inside a shared package forces it on everyone who installed that package for a different skill.
 
 ## Naming conventions
 
