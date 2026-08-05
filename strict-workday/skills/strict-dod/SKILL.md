@@ -23,7 +23,7 @@ No args or description triggers automatic mode detection.
 Follow this decision tree on every invocation:
 
 1. **Check for existing DoD file**
-   - Look in `./dod/` for a file matching the current task (by task ID if provided, or by keyword match against filenames)
+   - Look in `.strict-ai/dod/` for a file matching the current task (by task ID if provided, or by keyword match against filenames)
    - File found → **GUARD mode**
    - No file found → continue
 
@@ -128,14 +128,14 @@ On user confirmation (`yes`) → write a file. On `edit: <changes>` → apply ed
 
 ### Path
 
-`./dod/<filename>.md` — relative to current project root (where skill is invoked).
+`.strict-ai/dod/<filename>.md` — relative to current project root (where skill is invoked).
 
 Filename rule: `<task-id>-<task-summary>.<status>.md`, all kebab-case.
 - Task ID present: `task-42-add-user-auth.active.md`
 - No task ID: `add-user-auth.active.md`
 - Derive summary from goal: max 5 words, kebab-case
 - Status values: `active`, `done`
-- CLI filter examples: `ls dod/*.active.md`, `ls dod/*.done.md`
+- CLI filter examples: `ls .strict-ai/dod/*.active.md`, `ls .strict-ai/dod/*.done.md`
 
 ### File Contract
 

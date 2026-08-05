@@ -1,6 +1,6 @@
 {
-  "name": "strict-agents",
-  "version": "0.1.0",
+  "name": "strict-agents-creator",
+  "version": "0.2.0",
   "description": "Create scoped Claude Code subagents from a task or role — compose existing skills, grant the right tools including on-demand uvx/npx CLI, fix the best available model, and write a mandatory golden eval contract.",
   "author": {
     "name": "Viperwow",

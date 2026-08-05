@@ -1,6 +1,6 @@
 ---
 name: strict-grep
-description: Use this skill when Bash commands need fast and accurate project/codebase text search, recursive source inspection, file listing, or pre/post-edit verification. Prefer ripgrep (`rg`) for cases where it is effective: line-oriented regex search over files/directories, repository exploration, source-code search, config search, and targeted log/text search. Select system `grep` when exact POSIX/GNU grep semantics, compatibility, stdin-oriented grep usage, or grep-specific behavior is required. Before relying on `rg` in an unknown environment, verify availability with `rg --version` and check local argument support with `rg --help`.
+description: Use this skill when Bash commands need fast and accurate project/codebase text search, recursive source inspection, file listing, or pre/post-edit verification. Prefer ripgrep (`rg`) for cases where it is effective — line-oriented regex search over files/directories, repository exploration, source-code search, config search, and targeted log/text search. Select system `grep` when exact POSIX/GNU grep semantics, compatibility, stdin-oriented grep usage, or grep-specific behavior is required. Before relying on `rg` in an unknown environment, verify availability with `rg --version` and check local argument support with `rg --help`.
 ---
 
 # strict-grep
