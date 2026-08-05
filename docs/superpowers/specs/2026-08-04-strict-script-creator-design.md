@@ -1,8 +1,25 @@
 # strict-script-creator — design
 
 Date: 2026-08-04
-Status: implemented as the `strict-script-creator` plugin
+Status: superseded in part on 2026-08-05 — see below
 Branch: `feat/strict-script-creator`
+
+## Superseded: detection and registry
+
+The detection design below — normalizing Bash commands to a signature, speaking on the third
+repetition, suppressing through a registry `replaces:` field — was built and then replaced. A
+parser reads token positions; it cannot read the intent behind an argument, and every case it
+missed (chains, `cd`, quoting) added another heuristic.
+
+What shipped instead: a `SessionStart` hook loads the script catalog into context once per
+session, and a `UserPromptSubmit` hook counts tool calls carrying an executable payload —
+input under `command`, `code`, or `script` — and past a threshold invites the model to look at
+its own turn. The model judges whether those commands were one routine. The registry lost
+`replaces:` and gained `skip:` lines for routines the 80/20 gate rejected.
+
+Read `strict-script-creator/README.md` for the shipped design. Everything below stands as the
+2026-08-04 record, and the sections on the create flow, the run gate, cleanup, and artifact
+placement still describe what the skill does.
 
 ## Problem
 
