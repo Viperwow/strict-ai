@@ -23,6 +23,7 @@ strict/
   strict-foundation/
   strict-adapters/
   strict-agents-creator/
+  strict-script-creator/
   strict-labs/
   strict-deprecated/
 ```
@@ -42,6 +43,7 @@ strict/
 | `strict-foundation` | shared reusable primitives across multiple packages — rules, policies, templates, hooks                                       |
 | `strict-adapters` | one specific tool/API/CLI/SDK only; replaceable; invocable by other skills only, not directly by users                        |
 | `strict-agents-creator` | creating custom subagents from a task/role — composing skills into an agent `.md`, its tools, model, and eval contract         |
+| `strict-script-creator` | turning a repeated routine into a reusable script, reusing it, and removing scripts nothing calls                              |
 | `strict-labs` | experimental, still stabilizing, or searching for a permanent home                                                            |
 | `strict-deprecated` | confirmed replacement exists; removal scheduled; not the recommended path for any use case                                    |
 
@@ -110,6 +112,7 @@ Before creating or editing a skill, review:
 - Public skills repo: <https://github.com/anthropics/skills>
 - Skill creator: <https://www.skills.sh/anthropics/skills/skill-creator>
 - Reference layout for skills.sh, including `skills.sh.json` metadata: <https://github.com/nvidia/skills>
+- Vendor presentation metadata in `agents/<vendor>.yaml`: <https://github.com/openai/skills/tree/main/skills/.curated/cli-creator>
 
 Authoring rules:
 1. Narrow, single-purpose skills.
@@ -122,6 +125,21 @@ Authoring rules:
 8. 80/20: maximum impact, minimum text.
 9. If something appears twice, extract and reference it.
 10. Default placement for any new skill is `strict-labs` unless the user specifies otherwise. Before creating, propose the target plugin and wait for user confirmation.
+11. Keep `SKILL.md` vendor-neutral: no host name, no client-specific phrasing, no assumption about which agent reads it.
+12. Put vendor presentation metadata in `agents/<vendor>.yaml` beside `SKILL.md` — display name, short description, default prompt. One file per vendor, added only when that vendor is actually targeted.
+13. Vendor-specific mechanics that cannot be neutral — hook events, transcript paths, permission entries — live in a binding table in `references/`, not in prose, so a new vendor is a new row.
+14. Write every file link with the path as the link text and the GitHub `main` URL as the target: `[references/<name>.md](https://github.com/Viperwow/strict-ai/blob/main/<full-path>)`. The text is what a local reader opens without network; the target is what resolves for anyone reading outside a checkout. One line serves both.
+
+## Code comments
+
+The default is no comment. A comment is a hint to the next reader about the code it sits on, not a running narration.
+
+1. Write one only where the logic is genuinely hard: a non-obvious branch, a deliberate trade-off, a constraint invisible in the code itself.
+2. A workaround earns a comment. Code that looks wrong until you know what it works around is exactly what the next reader will "fix" — name the cause.
+3. A `TODO` earns a comment when the work is actually scheduled, and it carries the task link. Without a link it is a wish, and wishes do not go in the code.
+4. Say what the code means. A line restating the statement below it carries nothing and costs context.
+5. Never comment about anything outside this repository — an external convention, an authoring persona, a tool that ships no code here. It tells a reader of these files nothing they can act on.
+6. Prefer deleting a comment to updating it.
 
 ## Hooks, plugins, agents, and MCP
 
@@ -151,6 +169,25 @@ package-name/
 ```
 
 Include only directories useful for the package.
+
+## Artifact storage
+
+Where a skill writes the files it generates. One rule for every skill in this repository.
+
+**Native first.** When Claude Code owns a location (`.claude/agents/`, `.claude/skills/`, `.claude/settings.json`), write there. Do not invent a parallel namespace beside it.
+
+**Otherwise write under `strict-ai`, in one of two scopes:**
+
+- tied to the repository → `.strict-ai/<topic>/` at the project root;
+- outlives projects and belongs to the person → `~/.strict-ai/<topic>`.
+
+`<topic>` names the subject area, not the skill — several skills may read and write one folder. The owning skill declares the folder in its `SKILL.md`.
+
+**Format** is markdown by default. Another format only when a consumer requires it.
+
+**Registry.** When a folder accumulates files, a sibling `README.md` holds one line per artifact. There is no separate index format.
+
+**Own state only when no native source exists.** Native logs, the session transcript, and git are the source of truth; do not duplicate them.
 
 ## Repository guardrails
 

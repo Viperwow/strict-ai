@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Opinionated skill collection for professional software engineering workflows \u2014 modular, replaceable packages for every phase of daily work and SDLC.",
-    "version": "0.9.3"
+    "version": "0.9.4"
   },
   "plugins": [
     {
@@ -43,6 +43,13 @@
       "description": "Create scoped Claude Code subagents from a task or role, with a mandatory golden eval contract.",
       "version": "0.2.0",
       "category": "agents"
+    },
+    {
+      "name": "strict-script-creator",
+      "source": "./strict-script-creator",
+      "description": "Turn a repeated routine into a reusable script, then reuse it and remove what nothing calls.",
+      "version": "0.1.0",
+      "category": "automation"
     }
   ]
 }

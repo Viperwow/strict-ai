@@ -29,9 +29,10 @@ Swap `strict-workday` for any other available plugin from this marketplace. Upda
 | `strict-adapters` | Tool-specific adapters (Jira, Slack, etc.) |
 | `strict-labs` | Experimental — under development |
 | `strict-agents-creator` | Create custom subagents from a task/role, with eval contract |
+| `strict-script-creator` | Turn a repeated routine into a reusable script, and prune what nothing calls |
 | `strict-deprecated` | Pending removal — see replacement in each |
 
-> **Available in marketplace:** `strict-workday` · `strict-development` · `strict-management` · `strict-labs` · `strict-agents-creator`
+> **Available in marketplace:** `strict-workday` · `strict-development` · `strict-management` · `strict-labs` · `strict-agents-creator` · `strict-script-creator`
 > The remaining plugins, apart from `strict-deprecated`, are actively being developed and will be released to the marketplace over time. `strict-deprecated` holds skills that are on their way out — see the replacement named in each.
 
 ## Goal
