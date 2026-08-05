@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, mkdirSync, writeFileSync, symlinkSync, rmSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { discover, linkTarget } from './dev-link.mjs';
+import { collisions, discover, linkTarget } from './dev-link.mjs';
 
 const root = mkdtempSync(join(tmpdir(), 'dev-link-'));
 const skill = join(root, 'strict-demo', 'skills', 'demo-skill');
@@ -16,6 +16,16 @@ mkdirSync(join(root, 'not-a-package', 'skills', 'other'), { recursive: true });
 assert.deepEqual(
   discover(root).map((e) => `${e.pkg}/${e.skill}`),
   ['strict-demo/demo-skill'],
+);
+
+assert.deepEqual(collisions(discover(root)), []);
+assert.deepEqual(
+  collisions([
+    { pkg: 'strict-a', skill: 'shared' },
+    { pkg: 'strict-b', skill: 'shared' },
+    { pkg: 'strict-a', skill: 'alone' },
+  ]),
+  [['shared', ['strict-a', 'strict-b']]],
 );
 
 const link = join(root, 'link');
