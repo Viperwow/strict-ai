@@ -7,6 +7,8 @@
 | Claude Code | `$CLAUDE_PLUGIN_ROOT` set, or `~/.claude` exists | `.claude-plugin/plugin.json` | `.claude-plugin/marketplace.json` at the repository root | `${CLAUDE_PLUGIN_ROOT}` |
 | anything else | no row matched | — | — | — |
 
+No row matched means the mechanics are unknown, not that the plugin cannot be built. Say which agent you could not place, follow that agent's own documentation for the four columns, and add the row once it is confirmed. Nothing below this table changes for a new agent.
+
 ## Manifest fields
 
 | Field | Required | Holds |
@@ -37,6 +39,8 @@ Only the manifest is required. Every other entry appears when it has content and
 ## Hooks
 
 `hooks/hooks.json` registers each script against an event. Resolve every command through the path variable in the binding table above rather than a relative path, so it works from any working directory. Installing the plugin is the whole setup — a plugin's hooks need no entry in any settings file.
+
+Give every command an explicit timeout in seconds. Hooks on session start and on each prompt sit on the hot path, where a script that hangs holds up the host rather than failing; the timeout is what turns that into a missed hook.
 
 ## Marketplace entry
 

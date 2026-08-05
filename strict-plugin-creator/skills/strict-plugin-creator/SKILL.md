@@ -1,6 +1,6 @@
 ---
 name: strict-plugin-creator
-description: Use when work has outgrown a single skill and needs to ship as one installable unit — creating a plugin, scaffolding its manifest and directories, deciding whether a domain earns a plugin at all, bundling skills, commands, agents, or hooks together, and listing the result in a marketplace. Triggers on /strict-plugin-creator.
+description: Use when components that ship and version together need to become one installable unit — creating a plugin, scaffolding its manifest and directories, deciding whether a domain earns a plugin at all, bundling skills, commands, agents, or hooks, and listing the result in a marketplace. Triggers on /strict-plugin-creator.
 ---
 
 # strict-plugin-creator
@@ -23,14 +23,14 @@ A plugin is a unit of distribution, not a unit of authorship. Read down the tabl
 
 | What you have | Where it goes |
 |---|---|
+| Anything that ships a hook | plugin, always — see the hook rule below |
 | One repeated routine inside one repository | script — hand it to a script creator |
 | One skill, however large | an existing package — a plugin around a single skill is packaging overhead with no payoff |
 | One tool, API, or CLI wrapped for other skills to call | an adapter module in the package that holds adapters |
 | A component that must install on its own schedule, or version separately from its neighbours | plugin |
 | Several components — skills, commands, agents, hooks — that install together and version together | plugin |
-| Anything that ships a hook | plugin, always — see the hook rule below |
 
-**The hook rule.** A hook runs whether or not anyone asked for it. Shipped inside a package someone installed for a different skill, it fires on their sessions uninvited. So a hook narrows the unit rather than joining an existing one: its plugin stays single-purpose.
+**The hook rule.** A hook runs whether or not anyone asked for it. Shipped inside a package someone installed for a different skill, it fires on their sessions uninvited. So a hook narrows the unit rather than joining an existing one, and it outranks every row below it: one skill plus the hooks that serve it is a plugin, however small, because there is nowhere else the hooks can live. What the rule forbids is the reverse — hanging hooks off a package that holds unrelated skills.
 
 Failing the gate is a result, not a dead end. Name the home the table points at, say so in one line, and stop.
 
@@ -48,24 +48,24 @@ Run the steps in order.
 | 6 | Author each component through the creator that owns it | — |
 | 7 | Install it locally and confirm every component loads | — |
 | 8 | Show the tree and the marketplace entry — wait for confirmation | human clears |
-| 9 | Add the marketplace entry, then re-run the repository's consistency check | — |
+| 9 | Add the marketplace entry, then confirm every surface that advertises the plugin agrees | — |
 
 ## Rules
 
-- **Step 2.** A component that belongs in a package that already exists goes there. Reuse beats a new plugin, and a new plugin is the most expensive answer on the table.
+- **Step 2.** Read the listing file, glob the package manifests and skill files under the repository root, and read whatever note the README uses to advertise the installable set. A component that belongs in a package that already exists goes there. Reuse beats a new plugin, and a new plugin is the most expensive answer on the table.
 - **Step 3.** The name is the install command and the directory, so it is effectively permanent. Kebab-case, descriptive, no version or status word in it.
-- **Step 4.** You do not write components yourself when a creator owns them. Routing keeps one authoring standard per component type instead of a second one living here.
+- **Step 4.** Route first: a component type with a creator is written by that creator, so one authoring standard per type survives instead of a second one growing here. A creator that is not available is not a blocker — write the component here to that standard, and say which creator would have owned it.
 - **Step 5.** Ship only directories with content. An empty `agents/` teaches a reader the plugin has agents.
 - **Step 6.** Components carry their own gates — an agent needs its eval, a script needs its verification run. Those gates hold inside this flow; do not clear them on the plugin's behalf.
 - **Step 7.** Installing locally is the test. A manifest that parses proves nothing about whether a skill's frontmatter is readable or a hook's command resolves.
 - **Step 8.** Show the whole tree and the exact marketplace entry in one block, so one confirmation covers both.
-- **Step 9.** The consistency check is what keeps the listing honest — a plugin present on disk and absent from the listing installs for nobody.
+- **Step 9.** Then confirm the four surfaces agree: the plugin on disk, its entry in the listing, whatever note advertises the installable set, and the listing's own version where it carries one. A repository with a script for this runs the script. A plugin present on disk and absent from the listing installs for nobody.
 
 ## Common mistakes
 
 | Mistake | Reality |
 |---|---|
-| A plugin per skill | Distribution overhead with no payoff. One skill belongs in a package that already exists. |
+| A plugin per skill | Distribution overhead with no payoff. A skill that ships no hook belongs in a package that already exists. |
 | Shipping a hook inside a shared package | The hook fires for everyone who installed that package for something else. A hook makes the plugin single-purpose. |
 | Scaffolding every directory the format allows | Empty directories are a claim about what the plugin does. Ship what has content. |
 | Writing the skills and agents inline here | Each component type has a creator that owns its standard. Route to it. |
