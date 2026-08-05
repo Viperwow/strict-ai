@@ -3,9 +3,11 @@
 points at /strict-script-creator. Never blocks, never writes."""
 
 import json
+import os
 import sys
 
 TAIL = 200
+TAIL_BYTES = 512 * 1024
 THRESHOLD = 7
 # A tool executes something when its input carries a payload under one of these keys.
 # Matching the shape rather than the tool name keeps every runner in scope without
@@ -54,6 +56,17 @@ def count(transcript):
     return runs
 
 
+def read_tail(path):
+    """The end of the transcript. A long session runs to megabytes and only the
+    last few hundred lines can hold this turn."""
+    with open(path, "rb") as handle:
+        handle.seek(0, os.SEEK_END)
+        handle.seek(max(0, handle.tell() - TAIL_BYTES))
+        # The first line is cut mid-record whenever the seek landed inside one; it
+        # fails to parse and is dropped with any other malformed line.
+        return handle.read().decode("utf-8", "replace")
+
+
 def main():
     try:
         payload = json.load(sys.stdin)
@@ -63,8 +76,7 @@ def main():
         return
 
     try:
-        with open(payload.get("transcript_path") or "", encoding="utf-8") as handle:
-            transcript = handle.read()
+        transcript = read_tail(payload.get("transcript_path") or "")
     except OSError:
         return
 
@@ -78,6 +90,9 @@ def main():
 
 
 if __name__ == "__main__":
-    # Windows consoles default to a legacy code page, and an em dash raises there.
-    sys.stdout.reconfigure(encoding="utf-8")
+    try:
+        # Windows consoles default to a legacy code page, and an em dash raises there.
+        sys.stdout.reconfigure(encoding="utf-8")
+    except (AttributeError, OSError):
+        pass
     main()

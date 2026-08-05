@@ -43,7 +43,7 @@ Paying for the catalog once buys three checks that would otherwise cost a read e
 
 ```mermaid
 flowchart TD
-    A["last 200 transcript lines"] --> B["parse each line as JSON, drop what does not parse"]
+    A["last 512 KB of the transcript, then its last 200 lines"] --> B["parse each line as JSON, drop what does not parse"]
     B --> C["walk forward, counting tool calls"]
     C --> D{"tool input carries command, code, or script?"}
     D -->|no| C
@@ -62,6 +62,8 @@ The message is an invitation, not a finding. Seven commands can be one routine r
 
 Accepted ceiling: a tool that executes under some other input key goes uncounted. The cost is a missed nudge, not a failure, and the fix is one entry in `EXEC_INPUT_KEYS`.
 
+The read is bounded: a session transcript grows to megabytes, and the hook seeks to the last 512 KB instead of parsing all of it on every prompt. The record cut in half by the seek fails to parse and is dropped like any other malformed line.
+
 Both hooks are Python on the standard library alone, which is what the published skill collections settle on — JSON parsing without a second dependency is the whole reason. A shell hook would still have to hand the payload to Python or `jq` to read one field.
 
 ## The check
@@ -72,7 +74,7 @@ Both hooks are Python on the standard library alone, which is what the published
 cd strict-script-creator/hooks && python3 test_hooks.py
 ```
 
-It prints `ok` and exits zero, or fails loudly. It covers both hooks: counting across mixed tools, the reset on a real user message versus a tool result, empty payloads, and the catalog's empty and oversized cases.
+It prints `ok` and exits zero, or fails loudly. It covers both hooks: counting across mixed tools, the reset on a real user message versus a tool result, empty payloads, and the catalog's empty and oversized cases. It then runs each hook as a subprocess the way the agent does — JSON on stdin — across the threshold boundary, a missing transcript, and a registry that appears.
 
 ## Wiring
 

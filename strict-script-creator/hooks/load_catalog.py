@@ -43,6 +43,9 @@ def main():
 
 
 if __name__ == "__main__":
-    # Windows consoles default to a legacy code page, and an em dash raises there.
-    sys.stdout.reconfigure(encoding="utf-8")
+    try:
+        # Windows consoles default to a legacy code page, and an em dash raises there.
+        sys.stdout.reconfigure(encoding="utf-8")
+    except (AttributeError, OSError):
+        pass
     main()

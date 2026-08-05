@@ -34,7 +34,7 @@ Written in the target project, created on first use:
   <name>.<ext>     # the scripts themselves
 ```
 
-Names are kebab-case. No other state is written anywhere: metadata lives in the script header, call history lives in the session log named by the binding table.
+Names follow the runtime's own convention — `snake_case.py`, `kebab-case.mjs`, `kebab-case.sh` — so the file reads as ordinary code in that language. No other state is written anywhere: metadata lives in the script header, call history lives in the session log named by the binding table.
 
 ## Create flow
 
