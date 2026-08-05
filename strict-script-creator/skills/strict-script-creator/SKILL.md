@@ -55,7 +55,7 @@ Writing is never gated, whatever the script does. Only execution is gated.
 
 **Step 5 failing.** Two repair attempts. Still failing on the third — or declined by the human, so it never ran — the file stays and its registry line is marked `unstable.`. The mark is a label, not a verdict: cleanup still decides on invocations, and whoever confirms the script works removes the mark by hand.
 
-**Step 7** is what makes the automation pay off: a script run twenty times a day behind a confirmation prompt costs twenty clicks. Name one exact script, never the folder — `node .strict-ai/scripts/demo-report.mjs`, not the directory — or the run gate deletes itself for every file written later. Merge into the existing permission file: read the JSON, append one entry, keep every other key untouched. The file and its entry format come from [references/agent-bindings.md](https://github.com/Viperwow/strict-ai/blob/main/strict-script-creator/skills/strict-script-creator/references/agent-bindings.md).
+**Step 7** is what makes the automation pay off: a script run twenty times a day behind a confirmation prompt costs twenty clicks. Name one exact script, never the folder — `python3 .strict-ai/scripts/demo_report.py`, not the directory — or the run gate deletes itself for every file written later. Merge into the existing permission file: read the JSON, append one entry, keep every other key untouched. The file and its entry format come from [references/agent-bindings.md](https://github.com/Viperwow/strict-ai/blob/main/strict-script-creator/skills/strict-script-creator/references/agent-bindings.md).
 
 Step 8 is the only cleanup trigger. No schedule, no background process — the pressure to stay clean appears when the folder grows.
 
@@ -63,11 +63,11 @@ Step 8 is the only cleanup trigger. No schedule, no background process — the p
 
 Every script carries a shebang and three marker lines:
 
-```javascript
-#!/usr/bin/env node
-// strict:purpose  Bring up the demo stack with seed data.
-// strict:effect   mutates
-// strict:usage    node .strict-ai/scripts/demo-setup.mjs [--reset]
+```python
+#!/usr/bin/env python3
+# strict:purpose  Bring up the demo stack with seed data.
+# strict:effect   mutates
+# strict:usage    python3 .strict-ai/scripts/demo_setup.py [--reset]
 ```
 
 The shebang is the single source of truth for the runtime; no marker repeats it. `strict:effect` is declared at creation, never inferred later. The markers also tell cleanup that the mechanism wrote the file rather than a human.
@@ -77,7 +77,7 @@ The shebang is the single source of truth for the runtime; no marker repeats it.
 `.strict-ai/scripts/README.md`, one line per decision. Two kinds:
 
 ```markdown
-- demo-setup.mjs — brings up the demo stack with seed data. run: `node .strict-ai/scripts/demo-setup.mjs`. effect: mutates.
+- demo_setup.py — brings up the demo stack with seed data. run: `python3 .strict-ai/scripts/demo_setup.py`. effect: mutates.
 - skip: rebuilding every image from scratch — twice a month, four steps. The gate says no.
 ```
 
@@ -96,8 +96,8 @@ Before running any script from the registry, read its `effect`:
 
 The project's own language is not a factor — a Python repository may never be executed at all.
 
-1. Probe once per script creation, in one call that cannot fail: `command -v node python3 pwsh sh || true`.
-2. Default priority among what is available: **node → python → POSIX sh**. Node starts fast and handles JSON and files without dependencies.
+1. Probe once per script creation, in one call that cannot fail: `command -v python3 node pwsh sh || true`.
+2. Default priority among what is available: **python → node → POSIX sh**. Python reads JSON and files from its standard library, and it is the runtime the published skill collections settle on.
 3. The task overrides the priority: data parsing where a Python library already fits goes to Python; a thin wrapper over existing CLI commands goes to `sh`.
 4. State the choice in one sentence before writing — runtime, why, what the probe found. A silent pick is unreviewable.
 
