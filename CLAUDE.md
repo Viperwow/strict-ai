@@ -156,6 +156,8 @@ Before creating hooks, plugins, agents, or MCP, review:
 - MCP course: <https://anthropic.skilljar.com/introduction-to-model-context-protocol>
 - Authorial plugin layout, outside the standards but worth reading: <https://github.com/cursor/plugins>
 - Codex plugin and skill examples, successor of the archived openai/skills catalog: <https://github.com/openai/plugins>
+- Agent Plugins open standard, vendor-neutral portable plugin format: <https://agent-plugins.org>
+- Agent Plugins specification and schemas: <https://github.com/agentplugins/agent-plugins-spec>
 
 Standards outrank authorial examples. Read an authorial layout for ideas; follow the official structure when the two disagree.
 
@@ -174,6 +176,25 @@ package-name/
 ```
 
 Include only directories useful for the package.
+
+### Agent Plugins portable layout
+
+A second, vendor-neutral packaging standard supported alongside the layout above. Adopt it for a package meant to load in clients other than Claude Code; keep `.claude-plugin/plugin.json` in place so the package stays loadable in both.
+
+```text
+package-name/
+  plugin.json
+  skills/
+  mcp.json
+  com.example.client/
+```
+
+- `plugin.json` at the package root carries `$schema` pointing at the targeted specification version, plus `name`; other metadata fields are optional and the schema is closed.
+- `skills/` holds one directory per skill, each with `SKILL.md` at its top level. Clients do not search deeper.
+- `mcp.json` declares stdio, Streamable HTTP, or legacy HTTP+SSE MCP servers.
+- A reverse-domain directory carries client-specific behavior — hooks, commands — outside the portable core.
+
+Skill content stays vendor-neutral either way; nothing here changes the authoring conventions above.
 
 ## Artifact storage
 
