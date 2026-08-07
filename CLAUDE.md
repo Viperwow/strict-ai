@@ -185,16 +185,19 @@ A second, vendor-neutral packaging standard supported alongside the layout above
 package-name/
   plugin.json
   skills/
-  mcp.json
+  mcp.json            (only when the package ships MCP servers)
   com.example.client/
 ```
 
-- `plugin.json` at the package root carries `$schema` pointing at the targeted specification version, plus `name`; other metadata fields are optional and the schema is closed.
-- `skills/` holds one directory per skill, each with `SKILL.md` at its top level. Clients do not search deeper.
-- `mcp.json` declares stdio, Streamable HTTP, or legacy HTTP+SSE MCP servers.
-- A reverse-domain directory carries client-specific behavior — hooks, commands — outside the portable core.
+- `plugin.json` at the package root requires `$schema` set to `https://agent-plugins.org/schemas/1.0.0/plugin.schema.json` and `name`. Remaining metadata fields are optional and the schema is closed.
+- `skills/` holds one directory per skill, each with `SKILL.md` at its top level. Discovery stops there — a nested `SKILL.md` is not a second skill — while a skill's own `scripts/`, `references/`, and `agents/<vendor>.yaml` stay where the authoring conventions put them.
+- `mcp.json` carries `$schema` set to `https://agent-plugins.org/schemas/1.0.0/mcp.schema.json` and `mcpServers`, and nothing else at the top level. It declares stdio, Streamable HTTP, or legacy HTTP+SSE servers.
+- A stdio `command` is one executable token — a bare name or a plugin-relative path starting with `./`. An explicit `cwd` stays inside `${PLUGIN_ROOT}` or `${PLUGIN_DATA}`. Neither `env` values nor HTTP headers may carry credentials: they are literal, readable package data.
+- Client-specific data splits by kind. Manifest values go under `extensions`, keyed by a reverse-domain namespace. Files go in a top-level directory named for that same namespace — the Claude Code `hooks/` and `agents/` of the layout above land there when a package is packaged portably.
 
 Skill content stays vendor-neutral either way; nothing here changes the authoring conventions above.
+
+Both manifests are client-owned and read by different loaders. Keep `name`, `version`, and `description` identical across them — a package that reports two identities is one users cannot reason about.
 
 ## Artifact storage
 
