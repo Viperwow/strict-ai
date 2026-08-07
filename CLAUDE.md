@@ -156,6 +156,8 @@ Before creating hooks, plugins, agents, or MCP, review:
 - MCP course: <https://anthropic.skilljar.com/introduction-to-model-context-protocol>
 - Authorial plugin layout, outside the standards but worth reading: <https://github.com/cursor/plugins>
 - Codex plugin and skill examples, successor of the archived openai/skills catalog: <https://github.com/openai/plugins>
+- Agent Plugins open standard, vendor-neutral portable plugin format: <https://agent-plugins.org>
+- Agent Plugins specification and schemas: <https://github.com/agentplugins/agent-plugins-spec>
 
 Standards outrank authorial examples. Read an authorial layout for ideas; follow the official structure when the two disagree.
 
@@ -174,6 +176,28 @@ package-name/
 ```
 
 Include only directories useful for the package.
+
+### Agent Plugins portable layout
+
+A second, vendor-neutral packaging standard supported alongside the layout above. Adopt it for a package meant to load in clients other than Claude Code; keep `.claude-plugin/plugin.json` in place so the package stays loadable in both.
+
+```text
+package-name/
+  plugin.json
+  skills/
+  mcp.json            (only when the package ships MCP servers)
+  com.example.client/
+```
+
+- `plugin.json` at the package root requires `$schema` set to `https://agent-plugins.org/schemas/1.0.0/plugin.schema.json` and `name`. Remaining metadata fields are optional and the schema is closed.
+- `skills/` holds one directory per skill, each with `SKILL.md` at its top level. Discovery stops there — a nested `SKILL.md` is not a second skill — while a skill's own `scripts/`, `references/`, and `agents/<vendor>.yaml` stay where the authoring conventions put them.
+- `mcp.json` carries `$schema` set to `https://agent-plugins.org/schemas/1.0.0/mcp.schema.json` and `mcpServers`, and nothing else at the top level. It declares stdio, Streamable HTTP, or legacy HTTP+SSE servers.
+- A stdio `command` is one executable token — a bare name or a plugin-relative path starting with `./`. An explicit `cwd` stays inside `${PLUGIN_ROOT}` or `${PLUGIN_DATA}`. Neither `env` values nor HTTP headers may carry credentials: they are literal, readable package data.
+- Client-specific data splits by kind. Manifest values go under `extensions`, keyed by a reverse-domain namespace. Files go in a top-level directory named for that same namespace — the Claude Code `hooks/` and `agents/` of the layout above land there when a package is packaged portably.
+
+Skill content stays vendor-neutral either way; nothing here changes the authoring conventions above.
+
+Both manifests are client-owned and read by different loaders. Keep `name`, `version`, and `description` identical across them — a package that reports two identities is one users cannot reason about.
 
 ## Artifact storage
 
