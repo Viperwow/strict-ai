@@ -24,6 +24,7 @@ strict/
   strict-adapters/
   strict-agents-creator/
   strict-script-creator/
+  strict-plugin-creator/
   strict-labs/
   strict-deprecated/
 ```
@@ -44,6 +45,7 @@ strict/
 | `strict-adapters` | one specific tool/API/CLI/SDK only; replaceable; invocable by other skills only, not directly by users                        |
 | `strict-agents-creator` | creating custom subagents from a task/role — composing skills into an agent `.md`, its tools, model, and eval contract         |
 | `strict-script-creator` | turning a repeated routine into a reusable script, reusing it, and removing scripts nothing calls                              |
+| `strict-plugin-creator` | packaging components that ship and version together into an installable plugin, and judging when a domain earns one   |
 | `strict-labs` | experimental, still stabilizing, or searching for a permanent home                                                            |
 | `strict-deprecated` | confirmed replacement exists; removal scheduled; not the recommended path for any use case                                    |
 

@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Opinionated skill collection for professional software engineering workflows \u2014 modular, replaceable packages for every phase of daily work and SDLC.",
-    "version": "0.9.4"
+    "version": "0.9.5"
   },
   "plugins": [
     {
@@ -50,6 +50,13 @@
       "description": "Turn a repeated routine into a reusable script, then reuse it and remove what nothing calls.",
       "version": "0.1.0",
       "category": "automation"
+    },
+    {
+      "name": "strict-plugin-creator",
+      "source": "./strict-plugin-creator",
+      "description": "Turn a set of components that ship together into an installable plugin, and decide when a domain earns one at all.",
+      "version": "0.1.0",
+      "category": "packaging"
     }
   ]
 }
