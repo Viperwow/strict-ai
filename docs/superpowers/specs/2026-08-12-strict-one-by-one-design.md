@@ -46,9 +46,9 @@ storage policy.
 
 | ID | class | Requirement | Source | Links | Files | Mode | Status |
 |---|---|---|---|---|---|---|---|
-| REQ-01 | req | … | prompt | blocks REQ-03 | `src/a.py` | manual | done |
+| T-01 | test | … | derived | verifies REQ-01 | `tests/test_a.py` | manual | done |
+| REQ-01 | req | … | prompt | blocks REQ-03 | `src/a.py` | manual | active |
 | REQ-02 | req | … | tracker ABC-12 | relates REQ-04 | `src/b.py` | agent | queued |
-| T-01 | test | … | derived | verifies REQ-01 | `tests/test_a.py` | manual | active |
 | G-01 | gate | `ruff check` | repo policy | guards REQ-02 | — | manual | queued |
 
 **ID** — one requirement is one item. `REQ-nn` for requirements, `T-nn` for tests, `G-nn` for gates.
@@ -101,7 +101,8 @@ stream is holding.
 
 Exactly one item is `active`. Edits touch only the files that item names.
 
-1. Read the queue file, take the first `queued` + `manual` item, set it `active`.
+1. Read the queue file, take the first `queued` + `manual` item whose every `blocked by` is `done`, set
+   it `active`. An item in `blocked` is never picked up, and neither is one whose blocker is still open.
 2. Announce: ID, the requirement as written, the files that will be touched.
 3. Do the work. One requirement, one test — not a suite of cases per requirement, and no test written
    for a neighbouring requirement along the way. A test and the requirement it verifies are two items
@@ -119,7 +120,10 @@ the run early and stops. The default remains a stop after every item.
 ### Anti-batch rules
 
 - One `active` item at a time. A second item does not open until the first closes.
-- A new requirement discovered mid-work is not implemented. It is added as a `queued` row and reported.
+- A new requirement discovered mid-work is not implemented and does not enter the queue on its own. It
+  is recorded as a proposal and reported, and stays unexecutable until the user approves it. Approval
+  turns it into a row, placed by the ordering rules and passed through selection like any other. A
+  frozen queue that the assistant can append to is not frozen.
 - A question from the user is answered as a question. It does not start work.
 - Agent results never interleave with the manual stream. They run in the background and surface only
   in the review pass.
@@ -135,11 +139,17 @@ An `active` item found at startup means a previous session stopped mid-step. The
 item and the current diff, and asks: continue it, redo it from a clean tree, or send it back to
 `queued`. It never assumes the item is finished.
 
+A `dispatched` item at startup has no agent behind it — the run that owned it is gone. The skill
+reports it with whatever its files show and asks: redispatch, take it over manually, or return it to
+`queued`. It is never left `dispatched`, or the queue waits on something that will never return.
+
 ## Agent dispatch
 
-Agent items run alongside the manual stream, but only on files nothing else holds. An agent item
-starts when its `Files` intersect neither the active manual item's files nor any running agent's;
-otherwise it waits.
+Agent items run alongside the manual stream, but only on files nothing else holds. An agent item starts
+when its `Files` intersect no file any `manual` item declares — queued ones included, not only the
+active one — and no running agent's files; otherwise it waits. The manual stream owns its declared
+paths for the whole run: an agent that edits a file a later manual item is waiting on hands that item a
+tree it never saw.
 
 The dispatch carries the item ID, the frozen requirement text, the declared files, and the rule that
 work outside those files stops instead of proceeding. The item goes to `dispatched`. The agent returns

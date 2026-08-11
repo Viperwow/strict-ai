@@ -35,9 +35,9 @@ skill is re-run on the full path.
 
 | ID | class | Requirement | Source | Links | Files | Mode | Status |
 |:---|:---|:---|:---|:---|:---|:---|:---|
-| REQ-01 | req | … | prompt | blocks REQ-03 | `src/a.py` | manual | done |
+| T-01 | test | … | derived | verifies REQ-01 | `tests/test_a.py` | manual | done |
+| REQ-01 | req | … | prompt | blocks REQ-03 | `src/a.py` | manual | active |
 | REQ-02 | req | … | tracker ABC-12 | relates REQ-04 | `src/b.py` | agent | queued |
-| T-01 | test | … | derived | verifies REQ-01 | `tests/test_a.py` | manual | active |
 | G-01 | gate | `ruff check` | repo policy | guards REQ-02 | — | manual | queued |
 
 **ID** — one requirement is one item. `REQ-nn`, `T-nn` for tests, `G-nn` for gates.
@@ -84,7 +84,8 @@ manual item in hand. `dispatched` is an agent item in flight, and becomes `revie
 Exactly one item is `active`. Edits touch only the files that item names.
 
 1. Read the queue file — or the conversation list below the ceremony threshold — take the first
-   `queued` + `manual` item, set it `active`.
+   `queued` + `manual` item whose every `blocked by` is `done`, set it `active`. An item in `blocked`
+   is never picked up, and neither is one whose blocker is still open.
 2. Announce: ID, the requirement as written, the files that will be touched.
 3. Do the work. One requirement, one test — not a suite of cases per requirement, and no test for a
    neighbouring requirement along the way.
@@ -104,7 +105,9 @@ or an ambiguity ends the run early. The default is a stop after every item.
 ## Rules
 
 - One `active` item at a time. A second does not open until the first closes.
-- A new requirement found mid-work is not implemented. Add a `queued` row and report it.
+- A new requirement found mid-work is not implemented and does not enter the queue on its own. Record
+  it as a proposal, report it, and leave it unexecutable until the user approves it. On approval it
+  becomes a row, is placed by the ordering rules, and goes through selection like any other.
 - A question is answered as a question. It does not start work.
 - Agent results never interleave with the manual stream. They surface only in the review pass.
 - A requirement that turns out to be unworkable goes to `blocked` and is reported. Never reinterpret
@@ -114,8 +117,10 @@ or an ambiguity ends the run early. The default is a stop after every item.
 
 ## Agent dispatch
 
-An agent item starts when its `Files` intersect neither the active manual item's files nor any running
-agent's. Otherwise it waits.
+An agent item starts when its `Files` intersect no file any `manual` item declares — queued ones
+included, not just the active one — and no running agent's files. The manual stream owns its declared
+paths for the whole run; an agent that edits a file a later manual item is waiting on hands that item a
+tree it never saw. Otherwise the agent item waits.
 
 The dispatch carries the item ID, the frozen requirement text, the declared files, and the rule that
 work outside those files stops instead of proceeding. Set the item `dispatched` when it goes out. The
@@ -141,6 +146,10 @@ unnoticed. Everything else — a red gate, a file the item never named, an item 
 
 An `active` item at startup means a previous session stopped mid-step. Report the item and the current
 diff, then ask: continue, redo from a clean tree, or return to `queued`. Never assume it finished.
+
+A `dispatched` item at startup has no agent behind it any more — the run that owned it is gone. Report
+it with whatever its files show and ask: redispatch, take it over manually, or return it to `queued`.
+Never leave it `dispatched`, or the queue waits on something that will never return.
 
 ## Closing
 
