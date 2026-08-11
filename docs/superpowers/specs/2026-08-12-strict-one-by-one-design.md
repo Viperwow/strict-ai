@@ -24,7 +24,12 @@ one-at-a-time review.
 ## Artifacts
 
 **Queue file:** `.strict-ai/queue/<task-id>.md` — one markdown table, persists across sessions, re-read
-before every step. The queue file is the state of record; conversation context is not.
+before every step. The queue file is the state of record; conversation context is not. `<task-id>`
+defaults to the current branch name; a tracker key or an explicit argument overrides it.
+
+**Ceremony threshold.** Three or fewer formalized requirements means no queue file and no table. The
+items are listed in the conversation and walked one at a time with the same stops. Everything below
+describes the full path.
 
 **Registry:** `.strict-ai/queue/README.md` — one line per queue file, per the repository artifact
 storage policy.
@@ -61,7 +66,9 @@ delegation. Links inform the user's selection; they do not reorder execution.
    tracker, and requirements stated in the session context. If `.strict-ai/dod/` holds a DoD for the
    task, its criteria are a source too.
 2. **Formalize.** Every source becomes a numbered row. Derive `test` rows for requirements that need
-   verification and `gate` rows for safeguards and quality gates.
+   verification and `gate` rows for safeguards and quality gates. Order the rows topologically by
+   `blocked by`, so walking the queue top to bottom never hits an item waiting on a later one. A cycle
+   is reported rather than resolved.
 3. **Approve.** Present the table. On approval the requirements are frozen — they change only when the
    user explicitly asks for a change. A realization mid-work is not a licence to rewrite a row.
 4. **Select.** The user multi-selects which `req` items run `manual`. Unselected `req` items become
@@ -77,8 +84,12 @@ Exactly one item is `active`. Edits touch only the files that item names.
 3. Do the work. One requirement, one test — not a suite of cases per requirement, and no test written
    for a neighbouring requirement along the way.
 4. Show the diff and the verification result.
-5. Ask via a question prompt: **Next** / **Redo** / **Skip** / **Delegate to agent**.
+5. Ask via a question prompt: **Next** / **Next ×N** / **Redo** / **Skip** / **Delegate to agent**.
 6. Write the status back to the queue file, move to the next item.
+
+**Next ×N** runs the following N items without stopping, then returns to a stop. The user sets the
+pace where they are, rather than committing to it upfront. A failed verification or an ambiguity ends
+the run early and stops. The default remains a stop after every item.
 
 ### Anti-batch rules
 
@@ -93,6 +104,10 @@ Delegated items return as a second queue, walked the same way. On completion an 
 status `review`. Review items are processed one at a time with **Accept** / **Return to agent** /
 **Take over manually**. The manual stream drains first; the review stream runs after it. The two never
 mix.
+
+Before the review stream starts, items whose gates are green and whose diff stays inside the files the
+item declared can be accepted in one **Accept all green** action. Everything else — a red gate, a
+touched file the item never named — is walked one at a time.
 
 ## Packaging
 
@@ -116,3 +131,5 @@ answers where the work stands, not how it is executed.
 - No hook. Enforcement is the queue file plus the rules in `SKILL.md`; a `PreToolUse` block on
   file paths was considered and rejected as false-positive prone.
 - No automatic parallel dispatch. `Links` marks independence; the user decides what is delegated.
+- No automatic activation. The skill runs when invoked or when its description matches; it is not
+  wired into repository or global policy files.
