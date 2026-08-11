@@ -27,9 +27,9 @@ one-at-a-time review.
 before every step. The queue file is the state of record; conversation context is not. `<task-id>`
 defaults to the current branch name; a tracker key or an explicit argument overrides it.
 
-**Ceremony threshold.** Three or fewer formalized requirements means no queue file and no table. The
-items are listed in the conversation and walked one at a time with the same stops. Everything below
-describes the full path.
+**Ceremony threshold.** Three or fewer `req` rows — tests and gates do not count toward the threshold —
+means no queue file and no table. The items are listed in the conversation and walked one at a time
+with the same stops, all `manual`, nothing delegated. Everything below describes the full path.
 
 **Registry:** `.strict-ai/queue/README.md` — one line per queue file, per the repository artifact
 storage policy.
@@ -55,11 +55,14 @@ available.
 
 **Links** — tracker-style relations between items: `blocks`, `blocked by`, `relates`, `verifies`,
 `guards`. An item with no `blocks` / `blocked by` relation is independent and is a candidate for
-delegation. Links inform the user's selection; they do not reorder execution.
+delegation. `blocked by` sets the order of the queue; the other relations are information for the
+user's selection and change nothing about execution.
 
 **Mode** — `manual` (walked step by step with the user) or `agent` (delegated).
 
-**Status** — `queued`, `active`, `blocked`, `review`, `done`, `skipped`.
+**Status** — `queued`, `active`, `dispatched`, `blocked`, `review`, `done`, `skipped`. `active` is the
+manual item in hand; `dispatched` is an agent item in flight, which becomes `review` when the agent
+returns.
 
 **Files** — the files an item declares it will touch, recorded at formalization and updated when the
 item is announced. Used to keep delegated work off the files the manual stream is holding.
@@ -136,6 +139,13 @@ mix.
 Before the review stream starts, items whose gates are green and whose diff stays inside the files the
 item declared can be accepted in one **Accept all green** action. Everything else — a red gate, a
 touched file the item never named — is walked one at a time.
+
+## Closing the queue
+
+No `queued`, `active`, or `dispatched` items left means the queue is finished. The skill reports what
+closed, what was skipped, and what stayed `blocked`, then writes the registry line in
+`.strict-ai/queue/README.md`. A queue with anything still `blocked` is reported as unfinished, not as
+done.
 
 ## Packaging
 
