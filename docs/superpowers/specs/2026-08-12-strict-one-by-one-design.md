@@ -36,17 +36,18 @@ storage policy.
 
 ### Queue table
 
-| ID | class | Requirement | Source | Links | Mode | Status |
-|---|---|---|---|---|---|---|
-| REQ-01 | req | … | prompt | blocks REQ-03 | manual | done |
-| REQ-02 | req | … | tracker ABC-12 | relates REQ-04 | agent | queued |
-| T-01 | test | … | derived | verifies REQ-01 | manual | active |
-| G-01 | gate | … | repo policy | guards REQ-02 | manual | queued |
+| ID | class | Requirement | Source | Links | Files | Mode | Status |
+|---|---|---|---|---|---|---|---|
+| REQ-01 | req | … | prompt | blocks REQ-03 | `src/a.py` | manual | done |
+| REQ-02 | req | … | tracker ABC-12 | relates REQ-04 | `src/b.py` | agent | queued |
+| T-01 | test | … | derived | verifies REQ-01 | `tests/test_a.py` | manual | active |
+| G-01 | gate | `ruff check` | repo policy | guards REQ-02 | — | manual | queued |
 
 **ID** — one requirement is one item. `REQ-nn` for requirements, `T-nn` for tests, `G-nn` for gates.
 
 **class** — `req`, `test`, or `gate`. `test` and `gate` items are always `manual`; the user cannot
-deselect them.
+deselect them. A `gate` item carries the command that checks it, and green means that command's exit
+status — not a judgement. A safeguard with no runnable check is a `req`, not a `gate`.
 
 **Source** — where the requirement came from: the prompt, a requirements or documentation service, a
 task tracker, or the session context. The skill names no vendor; it resolves whatever integration is
@@ -58,7 +59,10 @@ delegation. Links inform the user's selection; they do not reorder execution.
 
 **Mode** — `manual` (walked step by step with the user) or `agent` (delegated).
 
-**Status** — `queued`, `active`, `review`, `done`, `skipped`.
+**Status** — `queued`, `active`, `blocked`, `review`, `done`, `skipped`.
+
+**Files** — the files an item declares it will touch, recorded at formalization and updated when the
+item is announced. Used to keep delegated work off the files the manual stream is holding.
 
 ## Flow
 
@@ -66,14 +70,15 @@ delegation. Links inform the user's selection; they do not reorder execution.
    tracker, and requirements stated in the session context. If `.strict-ai/dod/` holds a DoD for the
    task, its criteria are a source too.
 2. **Formalize.** Every source becomes a numbered row. Derive `test` rows for requirements that need
-   verification and `gate` rows for safeguards and quality gates. Order the rows topologically by
-   `blocked by`, so walking the queue top to bottom never hits an item waiting on a later one. A cycle
-   is reported rather than resolved.
+   verification and `gate` rows for safeguards and quality gates. A `test` row is ordered before the
+   requirement it verifies. Order the rows topologically by `blocked by`, so walking the queue top to
+   bottom never hits an item waiting on a later one. A cycle is reported rather than resolved.
 3. **Approve.** Present the table. On approval the requirements are frozen — they change only when the
    user explicitly asks for a change. A realization mid-work is not a licence to rewrite a row.
 4. **Select.** The user multi-selects which `req` items run `manual`. Unselected `req` items become
    `agent`. `test` and `gate` items are pre-selected and locked to `manual`.
-5. **Execute.** Manual items run one at a time. Agent items start only after the queue is confirmed.
+5. **Execute.** Manual items run one at a time. Agent items start only after the queue is confirmed,
+   and only on files nothing else holds.
 
 ## Item lifecycle
 
@@ -82,7 +87,8 @@ Exactly one item is `active`. Edits touch only the files that item names.
 1. Read the queue file, take the first `queued` + `manual` item, set it `active`.
 2. Announce: ID, the requirement as written, the files that will be touched.
 3. Do the work. One requirement, one test — not a suite of cases per requirement, and no test written
-   for a neighbouring requirement along the way.
+   for a neighbouring requirement along the way. A `test` item closes red: the test must fail before
+   the requirement it verifies is implemented, which is what proves it tests anything at all.
 4. Show the diff and the verification result.
 5. Ask via a question prompt: **Next** / **Next ×N** / **Redo** / **Skip** / **Delegate to agent**.
 6. Write the status back to the queue file, move to the next item.
@@ -96,7 +102,29 @@ the run early and stops. The default remains a stop after every item.
 - One `active` item at a time. A second item does not open until the first closes.
 - A new requirement discovered mid-work is not implemented. It is added as a `queued` row and reported.
 - A question from the user is answered as a question. It does not start work.
-- Agent items never interleave with the manual stream.
+- Agent results never interleave with the manual stream. They run in the background and surface only
+  in the review pass.
+- A requirement that turns out to be unworkable goes to `blocked` and is reported. The wording is not
+  reinterpreted to fit what is achievable — that is the drift this skill exists to stop. Only the user
+  rewrites a requirement.
+- Skipping an item sets everything it blocks to `blocked`. Those items are not picked up until the
+  blocker closes or the user drops the relation.
+
+## Resuming
+
+An `active` item found at startup means a previous session stopped mid-step. The skill reports the
+item and the current diff, and asks: continue it, redo it from a clean tree, or send it back to
+`queued`. It never assumes the item is finished.
+
+## Agent dispatch
+
+Agent items run alongside the manual stream, but only on files nothing else holds. An agent item
+starts when its `Files` intersect neither the active manual item's files nor any running agent's;
+otherwise it waits.
+
+Declared file lists are guesses and will sometimes be wrong. An agent that needs a file outside its
+declaration stops rather than taking it, and comes back as a conflict for the user to resolve — take
+it over manually, redispatch with a corrected list, or wait for the holder to finish.
 
 ## Agent review
 
@@ -130,6 +158,8 @@ answers where the work stands, not how it is executed.
 
 - No hook. Enforcement is the queue file plus the rules in `SKILL.md`; a `PreToolUse` block on
   file paths was considered and rejected as false-positive prone.
-- No automatic parallel dispatch. `Links` marks independence; the user decides what is delegated.
+- No automatic delegation. `Links` marks independence, but the user picks what goes to an agent.
+- No worktree isolation for agents. File-list checks are the guard; if they prove too weak in
+  practice, a worktree per agent is the upgrade path.
 - No automatic activation. The skill runs when invoked or when its description matches; it is not
   wired into repository or global policy files.
