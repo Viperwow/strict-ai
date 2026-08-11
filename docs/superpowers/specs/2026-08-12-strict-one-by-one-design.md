@@ -24,12 +24,20 @@ one-at-a-time review.
 ## Artifacts
 
 **Queue file:** `.strict-ai/queue/<task-id>.md` — one markdown table, persists across sessions, re-read
-before every step. The queue file is the state of record; conversation context is not. `<task-id>`
-defaults to the current branch name; a tracker key or an explicit argument overrides it.
+before every step. The queue file is the state of record; conversation context is not. Rows are stored
+in execution order, so the next item is always the first `queued` row from the top.
+
+`<task-id>` resolves from an explicit argument, then a tracker key, then the branch name, and is
+lowercased to kebab-case — path and whitespace characters become `-`, repeats collapse, 60 characters
+maximum. With none of the three available, including a detached `HEAD`, it falls back to
+`YYYY-MM-DD-<topic>`.
 
 **Ceremony threshold.** Three or fewer `req` rows — tests and gates do not count toward the threshold —
-means no queue file and no table. The items are listed in the conversation and walked one at a time
-with the same stops, all `manual`, nothing delegated. Everything below describes the full path.
+means no queue file, no table, and no registry line. The items are listed in the conversation and
+walked one at a time with the same stops, all `manual`, nothing delegated: at that size the file and
+the dispatch bookkeeping cost more than the coordination they buy. The trade is that nothing survives a
+session restart on this path. A user who wants delegation on a three-item task runs the full path.
+Everything below describes the full path.
 
 **Registry:** `.strict-ai/queue/README.md` — one line per queue file, per the repository artifact
 storage policy.
@@ -47,7 +55,9 @@ storage policy.
 
 **class** — `req`, `test`, or `gate`. `test` and `gate` items are always `manual`; the user cannot
 deselect them. A `gate` item carries the command that checks it, and green means that command's exit
-status — not a judgement. A safeguard with no runnable check is a `req`, not a `gate`.
+status — not a judgement. A safeguard with no runnable check is a `req`, not a `gate`. A gate runs when
+its turn comes, like any other item; `guards` places it directly after the item it guards, so it never
+runs before there is something to check.
 
 **Source** — where the requirement came from: the prompt, a requirements or documentation service, a
 task tracker, or the session context. The skill names no vendor; it resolves whatever integration is
@@ -64,18 +74,22 @@ user's selection and change nothing about execution.
 manual item in hand; `dispatched` is an agent item in flight, which becomes `review` when the agent
 returns.
 
-**Files** — the files an item declares it will touch, recorded at formalization and updated when the
-item is announced. Used to keep delegated work off the files the manual stream is holding.
+**Files** — every path the item declares it will edit, recorded at formalization and updated when the
+item is announced. A directory entry covers its subtree, and paths are normalized before comparison, so
+`src/` and `src/a.py` count as an intersection. Used to keep delegated work off the files the manual
+stream is holding.
 
 ## Flow
 
 1. **Collect.** Gather requirements from the prompt, a requirements or documentation service, the task
    tracker, and requirements stated in the session context. If `.strict-ai/dod/` holds a DoD for the
-   task, its criteria are a source too.
+   task, its criteria are a source too, resolved the way `strict-dod` resolves it: by task ID first,
+   by keyword match against filenames otherwise.
 2. **Formalize.** Every source becomes a numbered row. Derive `test` rows for requirements that need
-   verification and `gate` rows for safeguards and quality gates. A `test` row is ordered before the
-   requirement it verifies. Order the rows topologically by `blocked by`, so walking the queue top to
-   bottom never hits an item waiting on a later one. A cycle is reported rather than resolved.
+   verification and `gate` rows for safeguards and quality gates. Sort topologically by `blocked by`,
+   place a `test` before the requirement it verifies and a `gate` after the item it guards, then write
+   the rows in that order, so walking the queue top to bottom never hits an item waiting on a later
+   one. A cycle is reported rather than resolved.
 3. **Approve.** Present the table. On approval the requirements are frozen — they change only when the
    user explicitly asks for a change. A realization mid-work is not a licence to rewrite a row.
 4. **Select.** The user multi-selects which `req` items run `manual`. Unselected `req` items become
@@ -90,8 +104,10 @@ Exactly one item is `active`. Edits touch only the files that item names.
 1. Read the queue file, take the first `queued` + `manual` item, set it `active`.
 2. Announce: ID, the requirement as written, the files that will be touched.
 3. Do the work. One requirement, one test — not a suite of cases per requirement, and no test written
-   for a neighbouring requirement along the way. A `test` item closes red: the test must fail before
-   the requirement it verifies is implemented, which is what proves it tests anything at all.
+   for a neighbouring requirement along the way. A test and the requirement it verifies are two items
+   closing on two turns: the `test` item writes the test and closes red, implementing nothing, because
+   a failing test is what proves it tests anything at all; the `req` item comes next and closes when
+   that same test runs green.
 4. Show the diff and the verification result.
 5. Ask via a question prompt: **Next** / **Next ×N** / **Redo** / **Skip** / **Delegate to agent**.
 6. Write the status back to the queue file, move to the next item.
@@ -125,6 +141,12 @@ Agent items run alongside the manual stream, but only on files nothing else hold
 starts when its `Files` intersect neither the active manual item's files nor any running agent's;
 otherwise it waits.
 
+The dispatch carries the item ID, the frozen requirement text, the declared files, and the rule that
+work outside those files stops instead of proceeding. The item goes to `dispatched`. The agent returns
+its diff and the result of every gate that guards the item, and the item becomes `review`. An agent
+that never returns stays `dispatched` and is reported at close as unfinished, for the user to cancel or
+take over.
+
 Declared file lists are guesses and will sometimes be wrong. An agent that needs a file outside its
 declaration stops rather than taking it, and comes back as a conflict for the user to resolve — take
 it over manually, redispatch with a corrected list, or wait for the holder to finish.
@@ -137,15 +159,24 @@ status `review`. Review items are processed one at a time with **Accept** / **Re
 mix.
 
 Before the review stream starts, items whose gates are green and whose diff stays inside the files the
-item declared can be accepted in one **Accept all green** action. Everything else — a red gate, a
-touched file the item never named — is walked one at a time.
+item declared can be accepted in one **Accept all green** action. The offer lists the item IDs it would
+close and takes effect only on explicit confirmation; bulk acceptance of agent work is where scope
+drift passes unnoticed. Everything else — a red gate, a touched file the item never named, an item with
+no gate to be green — is walked one at a time.
 
 ## Closing the queue
 
-No `queued`, `active`, or `dispatched` items left means the queue is finished. The skill reports what
-closed, what was skipped, and what stayed `blocked`, then writes the registry line in
-`.strict-ai/queue/README.md`. A queue with anything still `blocked` is reported as unfinished, not as
-done.
+The queue is finished when nothing is left in `queued`, `active`, `dispatched`, or `review`. The review
+stream drains before close — an unreviewed agent item is not a closed one.
+
+The skill reports what closed, what was skipped, and what stayed `blocked`, then appends the registry
+line to `.strict-ai/queue/README.md`:
+
+```text
+- [<task-id>](<task-id>.md) — <closed>/<total> closed, <n> blocked, <n> skipped · YYYY-MM-DD
+```
+
+A queue with anything still `blocked` is reported as unfinished, not as done.
 
 ## Packaging
 
