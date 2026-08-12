@@ -66,23 +66,27 @@ manual item in hand. `dispatched` is an agent item in flight, and becomes `revie
 
 ## Flow
 
-1. **Collect.** Requirements from the prompt, a requirements or documentation service, the tracker, and
-   requirements stated in the session context. A DoD in `.strict-ai/dod/` is a source too — resolve it
-   the way `strict-dod` does, by task ID first and by keyword match against filenames otherwise.
-2. **Formalize.** Requirements before anything else: every source becomes a numbered `req` row. A row
-   that is empty, vague, or states nothing checkable goes back to the user, and the wording is settled
-   in as many rounds as that takes — an unsettled row is not a requirement, and nothing is derived
-   from one.
-3. **Derive.** From the settled `req` rows only: `test` rows for requirements that need verification,
-   `gate` rows for safeguards and quality gates. Sort topologically by `blocked by`, place a `test`
-   before the requirement it verifies and a `gate` after the item it guards, then write the rows in
-   that order. Report a cycle, do not resolve it.
-4. **Approve.** Present the table and wait. On approval the requirements are frozen.
-5. **Select.** The user picks which `req` items run `manual`; the rest become `agent`. `test` and
+The ordinary lifecycle, walked one item at a time:
+
+**requirements → tests → implementation → verification → acceptance**
+
+Each phase is done the way the craft already says to do it. What the queue adds on top:
+
+1. **Collect.** Every source available: the prompt, a requirements or documentation service, the
+   tracker, requirements stated in the session context. A DoD in `.strict-ai/dod/` is a source too —
+   resolve it the way `strict-dod` does, by task ID first and by keyword match against filenames
+   otherwise.
+2. **Formalize.** Requirements first and alone — every source becomes a numbered `req` row, and a row
+   that is empty or states nothing checkable goes back to the user for as many rounds as that takes.
+   Approval freezes them; nothing is derived from a row that is not frozen.
+3. **Derive.** `test` and `gate` rows come from the frozen requirements. Order the queue so that every
+   row is reachable when its turn comes — `blocked by` first, a `test` ahead of what it verifies, a
+   `gate` behind what it guards. Report a cycle, do not resolve it.
+4. **Select.** The user picks which `req` items run `manual`; the rest become `agent`. `test` and
    `gate` items are pre-selected and locked.
-6. **Execute.** Manual items one at a time. Agent items start after the queue is confirmed, and only on
+5. **Execute.** Manual items one at a time. Agent items start after the queue is confirmed, and only on
    files nothing else holds.
-7. **Accept.** Agent work is reviewed, the gates that guard each item are green, and the queue closes
+6. **Accept.** Agent work is reviewed, the gates that guard each item are green, and the queue closes
    on what actually passed.
 
 ## Item lifecycle
