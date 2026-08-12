@@ -73,9 +73,8 @@ The ordinary lifecycle, walked one item at a time:
 Each phase is done the way the craft already says to do it. What the queue adds on top:
 
 1. **Collect.** Every source available: the prompt, a requirements or documentation service, the
-   tracker, requirements stated in the session context. A DoD in `.strict-ai/dod/` is a source too —
-   resolve it the way `strict-dod` does, by task ID first and by keyword match against filenames
-   otherwise.
+   tracker, requirements stated in the session context, a definition of done that already exists for
+   this task.
 2. **Formalize.** Requirements first and alone — every source becomes a numbered `req` row, and a row
    that is empty or states nothing checkable goes back to the user for as many rounds as that takes.
    Approval freezes them; nothing is derived from a row that is not frozen.
