@@ -69,15 +69,21 @@ manual item in hand. `dispatched` is an agent item in flight, and becomes `revie
 1. **Collect.** Requirements from the prompt, a requirements or documentation service, the tracker, and
    requirements stated in the session context. A DoD in `.strict-ai/dod/` is a source too — resolve it
    the way `strict-dod` does, by task ID first and by keyword match against filenames otherwise.
-2. **Formalize.** Every source becomes a numbered row. Derive `test` rows for requirements that need
-   verification and `gate` rows for safeguards and quality gates. Sort topologically by `blocked by`,
-   place a `test` before the requirement it verifies and a `gate` after the item it guards, then write
-   the rows in that order. Report a cycle, do not resolve it.
-3. **Approve.** Present the table and wait. On approval the requirements are frozen.
-4. **Select.** The user picks which `req` items run `manual`; the rest become `agent`. `test` and
+2. **Formalize.** Requirements before anything else: every source becomes a numbered `req` row. A row
+   that is empty, vague, or states nothing checkable goes back to the user, and the wording is settled
+   in as many rounds as that takes — an unsettled row is not a requirement, and nothing is derived
+   from one.
+3. **Derive.** From the settled `req` rows only: `test` rows for requirements that need verification,
+   `gate` rows for safeguards and quality gates. Sort topologically by `blocked by`, place a `test`
+   before the requirement it verifies and a `gate` after the item it guards, then write the rows in
+   that order. Report a cycle, do not resolve it.
+4. **Approve.** Present the table and wait. On approval the requirements are frozen.
+5. **Select.** The user picks which `req` items run `manual`; the rest become `agent`. `test` and
    `gate` items are pre-selected and locked.
-5. **Execute.** Manual items one at a time. Agent items start after the queue is confirmed, and only on
+6. **Execute.** Manual items one at a time. Agent items start after the queue is confirmed, and only on
    files nothing else holds.
+7. **Accept.** Agent work is reviewed, the gates that guard each item are green, and the queue closes
+   on what actually passed.
 
 ## Item lifecycle
 
@@ -93,7 +99,8 @@ Exactly one item is `active`. Edits touch only the files that item names.
    A test and its requirement are two items, and they close in two turns. The `test` item writes the
    test and closes **red**: a failing test is what proves it tests anything, so no implementation
    happens on this turn. The `req` item it verifies comes next and closes when that same test runs
-   green.
+   green. Test before implementation is execution order — the requirement it verifies was written and
+   frozen back at formalization, and is never worked out here.
 4. Show the diff and the verification result.
 5. Ask for one of **Next** / **Next ×N** / **Redo** / **Skip** / **Delegate to agent**.
 6. Write the status back, move on.
