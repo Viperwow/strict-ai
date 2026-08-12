@@ -6,21 +6,21 @@
   },
   "metadata": {
     "description": "Opinionated skill collection for professional software engineering workflows \u2014 modular, replaceable packages for every phase of daily work and SDLC.",
-    "version": "0.9.6"
+    "version": "0.9.7"
   },
   "plugins": [
     {
       "name": "strict-workday",
       "source": "./strict-workday",
       "description": "Skills for daily work execution \u2014 operating rhythm, focus, time management, day planning.",
-      "version": "0.4.0",
+      "version": "0.4.1",
       "category": "productivity"
     },
     {
       "name": "strict-labs",
       "source": "./strict-labs",
       "description": "Experimental and unstable content \u2014 early skills and drafts being evaluated.",
-      "version": "0.3.0",
+      "version": "0.3.1",
       "category": "labs"
     },
     {
@@ -48,7 +48,7 @@
       "name": "strict-script-creator",
       "source": "./strict-script-creator",
       "description": "Turn a repeated routine into a reusable script, then reuse it and remove what nothing calls.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "category": "automation"
     },
     {
