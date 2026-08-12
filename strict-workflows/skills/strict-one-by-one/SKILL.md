@@ -95,8 +95,7 @@ Exactly one item is `active`. Edits touch only the files that item names.
    happens on this turn. The `req` item it verifies comes next and closes when that same test runs
    green.
 4. Show the diff and the verification result.
-5. Ask with a multiple-choice prompt: **Next** / **Next ×N** / **Redo** / **Skip** / **Delegate to
-   agent**.
+5. Ask for one of **Next** / **Next ×N** / **Redo** / **Skip** / **Delegate to agent**.
 6. Write the status back, move on.
 
 **Next ×N** runs the following N items without stopping, then returns to a stop. A failed verification
@@ -105,6 +104,9 @@ or an ambiguity ends the run early. The default is a stop after every item.
 ## Rules
 
 - One `active` item at a time. A second does not open until the first closes.
+- A set of options is offered through whatever choice affordance the environment provides — a built-in
+  selection prompt where one exists, a numbered list otherwise — in the form the step calls for: one
+  answer for **Next** / **Redo** / **Skip**, several for picking `manual` items at selection.
 - A new requirement found mid-work is not implemented and does not enter the queue on its own. Record
   it as a proposal, report it, and leave it unexecutable until the user approves it. On approval it
   becomes a row, is placed by the ordering rules, and goes through selection like any other.
