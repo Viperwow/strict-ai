@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Opinionated skill collection for professional software engineering workflows \u2014 modular, replaceable packages for every phase of daily work and SDLC.",
-    "version": "0.9.5"
+    "version": "0.9.6"
   },
   "plugins": [
     {
@@ -55,7 +55,7 @@
       "name": "strict-workflows",
       "source": "./strict-workflows",
       "description": "Composed end-to-end workflows — reusable multi-step flows that combine lower-level skills from other packages across the full SDLC.",
-      "version": "0.1.0",
+      "version": "0.1.1",
       "category": "workflows"
     }
   ]
