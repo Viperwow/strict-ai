@@ -117,6 +117,7 @@ Before creating or editing a skill, review:
 - Codex skill catalog, archived — read for examples only: <https://github.com/openai/skills>
 - Codex skill authoring guide, including skill-only plugins: <https://developers.openai.com/codex/skills/create-skill>
 - Curated skill catalog grouped by workflow stage, with skill-to-skill cross-referencing — read for ideas, its install path is awkward: <https://www.aihero.dev/skills>
+- Atomized single-purpose skill catalog — compare its behavior decomposition against local ideas: <https://skills.addy.ie>
 
 Authoring rules:
 1. Narrow, single-purpose skills.
