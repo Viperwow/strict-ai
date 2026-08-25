@@ -1,7 +1,7 @@
 {
   "name": "strict-development",
   "version": "0.4.0",
-  "description": "Skills for engineering implementation — technical design, architecture, coding procedures, PR preparation, and technical documentation.",
+  "description": "Skills for engineering implementation — technical design, architecture, coding procedures, comment and documentation policy, changelog generation, and PR preparation.",
   "author": {
     "name": "Viperwow",
     "email": "viperkodiak@gmail.com"

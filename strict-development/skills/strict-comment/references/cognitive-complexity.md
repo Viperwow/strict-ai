@@ -22,7 +22,7 @@ Start at 0. Walk the function body.
 | `else`, `else if` | the reader is already inside the chain |
 | sequence of mixed boolean operators | `a && b && c` scores 1; `a && b \|\| c` scores 2 |
 | jump to a label — labeled `break`, `continue`, `goto` | a plain `break` inside a loop scores 0 |
-| recursion | direct or mutual, once per call site |
+| recursion | direct or mutual — one increment per method in the cycle, not per call site |
 
 **Nesting level** rises inside any construct in the first table, and inside a nested function, lambda, or closure. It does not rise inside `else`.
 
@@ -30,11 +30,11 @@ Start at 0. Walk the function body.
 
 ## What it does not measure
 
-The metric is syntactic: it reads control flow in the source and knows nothing about input size or what a called function costs. `listB.includes(a.id)` inside a loop scores 3 and runs in `O(n·m)`; a branchless numeric kernel scores 20 and runs in `O(1)`. Algorithmic cost is a separate comment trigger — see trigger 7 in [SKILL.md](https://github.com/Viperwow/strict-ai/blob/main/strict-development/skills/strict-comment/SKILL.md).
+The metric is syntactic: it reads control flow in the source and knows nothing about input size or what a called function costs. A loop whose body tests `if (listB.includes(a.id))` scores 3 — the loop, then the `if` one level in — and runs in `O(n·m)`; a branchless numeric kernel scores 20 and runs in `O(1)`. Algorithmic cost is a separate comment trigger — see trigger 7 in [SKILL.md](https://github.com/Viperwow/strict-ai/blob/main/strict-development/skills/strict-comment/SKILL.md).
 
 ## Threshold
 
-Default `15`, per function — the SonarSource default for `S3776`. Override in `.strict-ai/configs/strict-development.json`.
+Default `15`, per function — the SonarSource default for `S3776`. Override it at `strict-comment` → `cognitiveComplexityThreshold` in `.strict-ai/configs/strict-development.json`; a flat top-level field there is ignored and the default silently stands.
 
 At or above it: refactor. When the shape is irreducible — a parser, a state machine, a protocol handshake, a numeric kernel — one comment names the invariant or the required order. Below it: no comment on complexity grounds; another trigger must fire.
 
@@ -42,7 +42,10 @@ At or above it: refactor. When the shape is irreducible — a parser, a state ma
 
 | Tool | Scope |
 |---|---|
-| SonarQube / SonarCloud / SonarLint | `S3776`, all supported languages, IDE and CI |
+| SonarQube Server, SonarQube Cloud | `S3776` through a scanner in CI, all supported languages |
+| SonarQube for IDE, formerly SonarLint | the same rule inside the editor, on the file being edited |
 | ESLint `complexity` rule | JS/TS, cyclomatic only — a rough proxy, not this metric |
-| VS Code extension CodeMetrics | JS/TS/Lua, inline per-function score above each declaration |
-| JetBrains IDEs | built-in cognitive and cyclomatic complexity inspections |
+| CodeMetrics, VS Code extension | JS/TS/Lua, inline per-function score above each declaration |
+| JetBrains IDEs | built-in inspections score cyclomatic complexity; cognitive complexity needs the Sonar plugin |
+
+No tool in reach — a chat session, an unfamiliar language, a repository with no analyzer — is not an excuse to skip the trigger: score by hand with the table above, which is what it is for. A hand count is reported as a hand count, never as a measurement.

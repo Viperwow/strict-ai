@@ -146,6 +146,8 @@ The default is no comment. A comment is a hint to the next reader about the code
 5. Never comment about anything outside this repository — an external convention, an authoring persona, a tool that ships no code here. It tells a reader of these files nothing they can act on.
 6. Prefer deleting a comment to updating it.
 
+This section is the summary. The full contract — doc blocks, the seven inline triggers, the cognitive-complexity threshold, and the configuration behind them — lives in the `strict-comment` skill in `strict-development`, and that skill decides.
+
 ## Hooks, plugins, agents, and MCP
 
 Before creating hooks, plugins, agents, or MCP, review:

@@ -23,8 +23,10 @@ One row per language. The rules live in [SKILL.md](https://github.com/Viperwow/s
 `TODO` and `FIXME` are written the same way in every language, in that language's line-comment form:
 
 ```text
-TODO(<task-id>): <what is missing> — <link>
-FIXME(<task-id>): <what is broken> — <link>
+TODO(<task-id>): <what is missing>
+FIXME(<task-id>): <what is broken>
 ```
 
-`TODO` is scheduled work. `FIXME` is a known defect that ships. Both need the link; without it, neither goes in the code.
+`TODO` is scheduled work. `FIXME` is a known defect that ships.
+
+`<task-id>` is one identifier, not two: the tracker key where a key resolves — `PROJ-123` — and the full URL only where nothing shorter does. While `taskLinkRequired` holds its default, a marker without it does not go in the code; turn that field off and the reason alone is enough.

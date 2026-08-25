@@ -26,7 +26,7 @@
     {
       "name": "strict-development",
       "source": "./strict-development",
-      "description": "Skills for engineering implementation \u2014 changelog generation, technical design, PR preparation.",
+      "description": "Skills for engineering implementation \u2014 technical design, architecture, coding procedures, comment and documentation policy, changelog generation, and PR preparation.",
       "version": "0.4.0",
       "category": "development"
     },
