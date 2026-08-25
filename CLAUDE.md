@@ -217,6 +217,8 @@ Where a skill writes the files it generates. One rule for every skill in this re
 
 **Registry.** When a folder accumulates files, a sibling `README.md` holds one line per artifact. There is no separate index format.
 
+**Configuration.** Tunable values a skill exposes live in `.strict-ai/configs/<plugin-name>.json` — one file per plugin, one top-level key per skill inside it. Ship no file: every field carries a default in the owning `SKILL.md`, and an absent file, key, or field means that default. JSON unless a consumer requires another format.
+
 **Own state only when no native source exists.** Native logs, the session transcript, and git are the source of truth; do not duplicate them.
 
 ## Repository guardrails
