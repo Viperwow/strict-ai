@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Opinionated skill collection for professional software engineering workflows \u2014 modular, replaceable packages for every phase of daily work and SDLC.",
-    "version": "0.9.9"
+    "version": "0.10.0"
   },
   "plugins": [
     {
@@ -26,8 +26,8 @@
     {
       "name": "strict-development",
       "source": "./strict-development",
-      "description": "Skills for engineering implementation \u2014 changelog generation, technical design, PR preparation.",
-      "version": "0.3.0",
+      "description": "Skills for engineering implementation \u2014 technical design, architecture, coding procedures, comment and documentation policy, changelog generation, and PR preparation.",
+      "version": "0.4.0",
       "category": "development"
     },
     {

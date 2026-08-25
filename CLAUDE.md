@@ -146,6 +146,8 @@ The default is no comment. A comment is a hint to the next reader about the code
 5. Never comment about anything outside this repository — an external convention, an authoring persona, a tool that ships no code here. It tells a reader of these files nothing they can act on.
 6. Prefer deleting a comment to updating it.
 
+This section is the summary. The full contract — doc blocks, the seven inline triggers, the cognitive-complexity threshold, and the configuration behind them — lives in the `strict-comment` skill in `strict-development`, and that skill decides.
+
 ## Hooks, plugins, agents, and MCP
 
 Before creating hooks, plugins, agents, or MCP, review:
@@ -216,6 +218,8 @@ Where a skill writes the files it generates. One rule for every skill in this re
 **Format** is markdown by default. Another format only when a consumer requires it.
 
 **Registry.** When a folder accumulates files, a sibling `README.md` holds one line per artifact. There is no separate index format.
+
+**Configuration.** Tunable values a skill exposes live in `.strict-ai/configs/<plugin-name>.json` — one file per plugin, one top-level key per skill inside it. Ship no file: every field carries a default in the owning `SKILL.md`, and an absent file, key, or field means that default. JSON unless a consumer requires another format.
 
 **Own state only when no native source exists.** Native logs, the session transcript, and git are the source of truth; do not duplicate them.
 
