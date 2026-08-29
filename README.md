@@ -32,7 +32,7 @@ Swap `strict-workday` for any other available plugin from this marketplace. Upda
 | `strict-script-creator` | Turn a repeated routine into a reusable script, and prune what nothing calls |
 | `strict-deprecated` | Pending removal — see replacement in each |
 
-> **Available in marketplace:** `strict-workday` · `strict-development` · `strict-management` · `strict-workflows` · `strict-labs` · `strict-agents-creator` · `strict-script-creator`
+> **Available in marketplace:** `strict-workday` · `strict-development` · `strict-management` · `strict-workflows` · `strict-labs` · `strict-agents-creator` · `strict-script-creator` · `strict-quality`
 > `strict-agents` was renamed to `strict-agents-creator`. If you installed the old name, uninstall it and install the new one — the old entry no longer resolves.
 > The remaining plugins, apart from `strict-deprecated`, are actively being developed and will be released to the marketplace over time. `strict-deprecated` holds skills that are on their way out — see the replacement named in each.
 
