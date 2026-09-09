@@ -125,7 +125,7 @@ Skills are fully independent. No skill references or invokes another. Integratio
 
 ### Audience
 
-Write for a general adult audience: clear, moderate complexity. Do not assume specialized training in mathematics, statistics, or other technical fields. Keep reasoning honest without oversimplifying conclusions.
+Write for a general adult audience: clear, moderate complexity.
 
 Authoring rules:
 1. Narrow, single-purpose skills.
