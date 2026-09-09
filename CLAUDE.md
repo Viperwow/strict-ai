@@ -123,6 +123,10 @@ Before creating or editing a skill, review:
 
 Skills are fully independent. No skill references or invokes another. Integration happens only through session context and user input — the agent is the bus.
 
+### Audience
+
+Write for a general adult audience: clear, moderate complexity. Do not assume specialized training in mathematics, statistics, or other technical fields. Keep reasoning honest without oversimplifying conclusions.
+
 Authoring rules:
 1. Narrow, single-purpose skills.
 2. Stable, descriptive names.

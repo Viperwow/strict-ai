@@ -32,7 +32,7 @@ State the statistical or reliability model used and why.
 
 ## Calculation
 
-Show the reproducible calculation: assumptions, formulas, inputs, and results. Do not expose hidden chain-of-thought; provide enough detail that a reader can follow and challenge the estimate.
+Show the reproducible calculation: assumptions, formulas, inputs, and results. Do not expose hidden chain-of-thought.
 
 ## Estimated risk
 
