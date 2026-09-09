@@ -1,7 +1,5 @@
 # Evidence quality grades (A–E)
 
-Shared with [strict-decision](../../strict-decision/SKILL.md).
-
 | Grade | Meaning |
 |-------|---------|
 | **A** | Strong primary data with an appropriate denominator and highly relevant event definition. |

@@ -1,6 +1,6 @@
 ---
 name: strict-decision
-description: Quantitative decision analysis — classify a concrete risky activity as ACCEPT, REJECT, or INSUFFICIENT INFORMATION under an explicit decision policy and risk threshold. Transforms risk estimates or user-supplied facts into a finite decision procedure; not reassurance or open-ended hazard discovery. Use when the user invokes /decision or asks for a threshold-based verdict after or alongside strict-risk.
+description: Quantitative decision analysis — classify a concrete risky activity as ACCEPT, REJECT, or INSUFFICIENT INFORMATION under an explicit decision policy and risk threshold. Transforms session risk estimates or user-supplied facts into a finite decision procedure; not reassurance or open-ended hazard discovery. Use when the user invokes /decision or asks for a threshold-based verdict under a stated policy.
 ---
 
 # strict-decision
@@ -27,9 +27,17 @@ My threshold: [policy, e.g. fatality-equivalent risk must be below 10^-6 per exp
 
 Less structured input is acceptable — formalize the decision problem from what is provided.
 
-## Pairing with strict-risk
+## Scope boundary
 
-This skill **decides** under a policy. [strict-risk](../strict-risk/SKILL.md) **estimates** probabilities. If no quantitative risk input exists, run strict-risk first or ask the user for a completed strict-risk report.
+This skill is self-contained. Do not invoke, require, or reference other skills. Integration with prior analysis happens only through session context and user input.
+
+## Risk input — data source order
+
+1. **Session context** — probability estimate, interval, conservative bound, evidence quality, red flags, or exposure unit already present in the session
+2. **User invocation** — structured or unstructured fields supplied in the current request
+3. **Ask the user** — only when quantitative risk input needed for the policy is absent from 1 and 2
+
+If required inputs are missing, return **INSUFFICIENT INFORMATION** and state exactly what is missing. Do not substitute by invoking another skill or reopening open-ended hazard research.
 
 ## Formalize the decision problem
 
@@ -99,7 +107,7 @@ Multiple adverse outcomes may use separate constraints, e.g. P(fatality) < T_fat
 - Range only → if entire plausible range is below threshold → supports ACCEPT; entirely above → REJECT; straddles → default **INSUFFICIENT INFORMATION** unless policy specifies otherwise.
 - Narrow interval from a weak model is not necessarily strong evidence.
 
-Evidence grades A–E (same as strict-risk):
+Evidence grades A–E:
 
 | Grade | Meaning |
 |-------|---------|

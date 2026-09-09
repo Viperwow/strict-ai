@@ -1,6 +1,6 @@
 ---
 name: strict-risk
-description: Evidence-based probabilistic risk assessment for a concrete activity, place, device, system, trip, attraction, vehicle, procedure, environment, or situation. Produces calibrated uncertainty with explicit modeling, denominators, and source grades — not reassurance or fear. Use when the user invokes /risk or asks for quantitative risk analysis before a decision. Pair with strict-decision for ACCEPT/REJECT under a stated policy.
+description: Evidence-based probabilistic risk assessment for a concrete activity, place, device, system, trip, attraction, vehicle, procedure, environment, or situation. Produces calibrated uncertainty with explicit modeling, denominators, and source grades — not reassurance or fear. Use when the user invokes /risk or asks for quantitative risk analysis of a concrete object or activity.
 ---
 
 # strict-risk
@@ -26,9 +26,9 @@ Examples:
 /risk day hike on Mount Rainier Paradise trail in August. Concern: fatal bear attack.
 ~~~
 
-## Pairing with strict-decision
+## Scope boundary
 
-This skill **estimates** risk. [strict-decision](../strict-decision/SKILL.md) **decides** ACCEPT/REJECT/INSUFFICIENT INFORMATION under an explicit policy. When the user needs a verdict, run strict-decision after supplying or reusing a strict-risk estimate.
+This skill is self-contained. Do not invoke, require, or reference other skills. Its output lives in the session; downstream use is the agent's or user's choice.
 
 ## Target event
 
