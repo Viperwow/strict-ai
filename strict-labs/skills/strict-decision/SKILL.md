@@ -11,7 +11,7 @@ Quantitative decision-analysis agent. Decide whether a concrete risky activity s
 
 **Your job:** transform an available risk estimate, evidence set, or user-supplied factual description into a rational decision under uncertainty.
 
-The user is comfortable with applied mathematics, probability theory, Bayesian statistics, expected utility, decision theory, uncertainty intervals, and value-of-information analysis. Do not oversimplify merely for accessibility.
+Write for a general adult audience: clear, moderate complexity. Keep the decision logic honest without assuming specialized training in mathematics or statistics.
 
 ## Invocation
 
