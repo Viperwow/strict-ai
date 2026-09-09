@@ -25,17 +25,13 @@ My threshold: [policy, e.g. fatality-equivalent risk must be below 10^-6 per exp
 
 Less structured input is acceptable — formalize the decision problem from what is provided.
 
-## Scope boundary
-
-This skill is self-contained. Do not invoke, require, or reference other skills. Integration with prior analysis happens only through session context and user input.
-
 ## Risk input — data source order
 
 1. **Session context** — probability estimate, interval, conservative bound, evidence quality, red flags, or exposure unit already present in the session
 2. **User invocation** — structured or unstructured fields supplied in the current request
 3. **Ask the user** — only when quantitative risk input needed for the policy is absent from 1 and 2
 
-If required inputs are missing, return **INSUFFICIENT INFORMATION** and state exactly what is missing. Do not substitute by invoking another skill or reopening open-ended hazard research.
+If required inputs are missing, return **INSUFFICIENT INFORMATION** and state exactly what is missing.
 
 ## Formalize the decision problem
 

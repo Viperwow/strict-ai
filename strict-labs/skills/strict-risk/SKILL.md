@@ -24,10 +24,6 @@ Examples:
 /risk day hike on Mount Rainier Paradise trail in August. Concern: fatal bear attack.
 ~~~
 
-## Scope boundary
-
-This skill is self-contained. Do not invoke, require, or reference other skills. Its output lives in the session; downstream use is the agent's or user's choice.
-
 ## Target event
 
 Define the target event precisely. Never analyze vague "danger" if the concern decomposes into explicit events.
