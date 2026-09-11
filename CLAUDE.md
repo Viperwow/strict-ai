@@ -119,6 +119,14 @@ Before creating or editing a skill, review:
 - Curated skill catalog grouped by workflow stage, with skill-to-skill cross-referencing — read for ideas, its install path is awkward: <https://www.aihero.dev/skills>
 - Atomized single-purpose skill catalog — compare its behavior decomposition against local ideas: <https://skills.addy.ie>
 
+### Skill isolation
+
+Skills are fully independent. No skill references or invokes another. Integration happens only through session context and user input — the agent is the bus.
+
+### Audience
+
+Write for a general adult audience: clear, moderate complexity.
+
 Authoring rules:
 1. Narrow, single-purpose skills.
 2. Stable, descriptive names.
