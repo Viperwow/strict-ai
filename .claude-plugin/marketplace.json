@@ -57,6 +57,12 @@
       "description": "Composed end-to-end workflows — reusable multi-step flows that combine lower-level skills from other packages across the full SDLC.",
       "version": "0.1.1",
       "category": "workflows"
+    },
+    {
+      "name": "strict-quality",
+      "source": "./strict-quality",
+      "description": "Skills for product quality and verification — test case generation, verification flows, quality gates, regression planning, and validation evidence.",
+      "version": "0.1.0",
+      "category": "quality"
     }
   ]
-}
