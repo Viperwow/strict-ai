@@ -225,7 +225,7 @@ Where a skill writes the files it generates. One rule for every skill in this re
 
 ## Skill conventions
 
-**Overrides.** Every default in this section applies unless the skill's `SKILL.md` or the user or agent invocation defines otherwise. State skill-specific exceptions in that skill — do not repeat this caveat on individual rules.
+**Overrides.** Every default in this section applies unless the skill's `SKILL.md` or the user or agent invocation defines otherwise.
 
 ### Output in chat
 
