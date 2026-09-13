@@ -278,7 +278,7 @@ Skills that persist run data default to **cache on**. Override per invocation un
 
 **Location:** `.strict-ai/cache/<skill-name>/`
 
-**Store only raw acquired data** — URLs, quotes, paths, line numbers, UTC timestamps. Do not cache computed metrics, inclusion state, or exclusion lists.
+**Store only raw acquired data** — URLs, quotes, paths, line numbers, UTC timestamps. Cache every fetched record, including findings irrelevant to the current scope, so later runs can reuse them. Do not cache computed metrics or included/excluded **state**. Do not persist output exclusion lists as separate artifacts — only the underlying source records in cache files.
 
 **Filename:** `<slug>-<short-id>.json` — JSON `id` is the short id only; `slug` is a separate field inside the file.
 

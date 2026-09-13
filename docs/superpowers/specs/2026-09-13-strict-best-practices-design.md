@@ -72,7 +72,7 @@ Apply repository-wide rules in `CLAUDE.md` (skill output headers, absence phrase
 
 ### External sample
 
-- Search toward `--sample-target` (default 100); irrelevant sources excluded from **total sources** and listed at end of output (not cached).
+- Search toward `--sample-target` (default 100). Sources **irrelevant to the current scope** are excluded from **total sources** for this run's rates and listed at end of output — but their **raw acquired data is still cached** (same JSON contract) so a later invocation under a different scope can reuse them without re-fetching.
 - Present **3–7** highest-relevance external sources per pattern in chat; `--verbose` shows all sources used for that pattern.
 - Each external source: URL, author, **timestamp (UTC)**, verbatim quote, stance (`positive` \| `negative` \| `neutral`), type (`fundamental` \| `trend`).
 - `fundamental`: RFC, specs, books, world-recognized references — age does not exclude from **stable**.
@@ -207,7 +207,7 @@ Sort patterns by external mention rate descending. Top 5 sources per list; then 
 - GraphQL federation at scale
 ```
 
-No statistics; not cached.
+Labels only — no statistics in chat. Underlying **raw sources are cached** under a BP file (provisional `slug` from the label, same `external[]` / `internal[]` fields). On a later run, read cache first; promote cached sources into the active sample when the new scope makes them relevant.
 
 ### Verbose off (default)
 
@@ -223,13 +223,17 @@ No statistics; not cached.
 
 ## Cache
 
-**Purpose:** store **raw acquired data** only — recomputed on every run.
+**Purpose:** store **raw acquired data** only — metrics recomputed on every run.
 
 **Path:** `.strict-ai/cache/strict-best-practices/<bp-slug>-<short-id>.json`
 
-**Default:** `--cache on`, TTL `30d`. Merge new raw entries by URL (external) or path+lines (internal). On `--cache refresh` or TTL expiry, re-fetch; recompute all metrics.
+**Default:** `--cache on`, TTL `30d`. Merge new raw entries by URL (external) or path + line range (internal). On `--cache refresh` or TTL expiry, re-fetch stale entries; recompute all metrics.
 
-**Do not cache:** encounter rates, phases, alignment, verdicts, irrelevant list, included/excluded state.
+**Cache everything fetched** — including sources that are irrelevant to the **current** scope. Scope relevance is evaluated per run, not persisted.
+
+**Cross-task reuse:** before external search, scan the cache directory. Use cached raw records when they match the new query; skip network fetch when TTL is valid.
+
+**Do not cache:** encounter rates, phases, alignment, verdicts, or included/excluded **state**. Do not write the chat exclusion list as a separate artifact — only the underlying source records in BP JSON files.
 
 ### File contract
 
