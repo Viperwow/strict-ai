@@ -223,9 +223,13 @@ Where a skill writes the files it generates. One rule for every skill in this re
 
 **Own state only when no native source exists.** Native logs, the session transcript, and git are the source of truth; do not duplicate them.
 
-## Skill output in chat
+## Skill conventions
 
-Skills that return results in chat without a separate artifact use this header unless the skill defines otherwise:
+**Overrides.** Every default in this section applies unless the skill's `SKILL.md` or the user or agent invocation defines otherwise. State skill-specific exceptions in that skill — do not repeat this caveat on individual rules.
+
+### Output in chat
+
+Skills that return results in chat without a separate artifact use:
 
 ```markdown
 ## <skill-name> output
@@ -233,7 +237,7 @@ Skills that return results in chat without a separate artifact use this header u
 
 Example: `## strict-best-practices output`.
 
-## Skill CLI shape
+### CLI shape
 
 Author skills like a good CLI command:
 
@@ -241,14 +245,13 @@ Author skills like a good CLI command:
 - **Parameters override defaults** — flags and arguments, not interrogation.
 - Document every parameter and default in the skill's `SKILL.md`.
 
-## Skill terminology
+### Terminology
 
 - Prefer terms that fit the **knowledge domain** and stay readable for a broad audience.
 - Keep wording **short, precise, and unambiguous** — avoid overloaded jargon and long prose.
+- Skills do not cross-reference other skills or git URLs to repository files. Repository policy lives here; each skill applies it locally.
 
-Skills do not cross-reference other skills or git URLs to repository files. Repository policy lives here; each skill applies it locally.
-
-## Absence phrases
+### Absence phrases
 
 When data is missing, empty, or intentionally skipped, use one of these patterns — same wording across all skills:
 
@@ -266,9 +269,9 @@ Rules:
 - **n/a** parenthetical: maximum **5 words**.
 - Do not paraphrase these templates per skill.
 
-## Skill run cache
+### Run cache
 
-Skills that persist run data default to **cache on**. Override per invocation unless the skill defines otherwise.
+Skills that persist run data default to **cache on**.
 
 | Parameter | Default | Values |
 |---|---|---|
