@@ -223,6 +223,69 @@ Where a skill writes the files it generates. One rule for every skill in this re
 
 **Own state only when no native source exists.** Native logs, the session transcript, and git are the source of truth; do not duplicate them.
 
+## Skill output in chat
+
+Skills that return results in chat without a separate artifact use this header unless the skill defines otherwise:
+
+```markdown
+## <skill-name> output
+```
+
+Example: `## strict-best-practices output`.
+
+## Skill CLI shape
+
+Author skills like a good CLI command:
+
+- **Sane defaults** — automate the common path; minimize questions.
+- **Parameters override defaults** — flags and arguments, not interrogation.
+- Document every parameter and default in the skill's `SKILL.md`.
+
+## Skill terminology
+
+- Prefer terms that fit the **knowledge domain** and stay readable for a broad audience.
+- Keep wording **short, precise, and unambiguous** — avoid overloaded jargon and long prose.
+- Use **sample** and **total sources** / **total artifacts**, not *corpus*.
+
+Skills do not cross-reference other skills or git URLs to repository files. Repository policy lives here; each skill applies it locally.
+
+## Absence phrases
+
+When data is missing, empty, or intentionally skipped, use one of these patterns — same wording across all skills:
+
+| Type | Template | Example |
+|---|---|---|
+| Empty | `No <Entity> found.` | `No Internal sources found.` |
+| Unavailable | `<Entity> data is unavailable.` | `Temporal data is unavailable.` |
+| Omitted | `<Entity> omitted: <reason>.` | `Rates omitted: sample below minimum (N=7).` |
+| Not applicable | `<field>: n/a` or `<field>: n/a (<≤5 words>)` | `1Y: n/a (project age)` |
+
+Rules:
+
+- **Entity** is capitalized (`Sources`, `Patterns`, `Sample`, `Best practice`, `Rates`, …).
+- **Omitted** reason: maximum **15 words**.
+- **n/a** parenthetical: maximum **5 words**.
+- Do not paraphrase these templates per skill.
+
+## Skill run cache
+
+Skills that persist run data default to **cache on**. Override per invocation unless the skill defines otherwise.
+
+| Parameter | Default | Values |
+|---|---|---|
+| `--cache` | `on` | `on` \| `off` \| `refresh` |
+| `--cache-ttl` | `30d` | duration |
+
+**Location:** `.strict-ai/cache/<skill-name>/`
+
+**Store only raw acquired data** — URLs, quotes, paths, line numbers, UTC timestamps. Do not cache computed metrics, inclusion state, or exclusion lists.
+
+**Filename:** `<slug>-<short-id>.json` — JSON `id` is the short id only; `slug` is a separate field inside the file.
+
+**Atomicity:** one value per JSON field (e.g. `startLine` and `endLine`, not `lines 42-58`).
+
+On cache hit within TTL, merge new raw facts; recompute derived output every run.
+
 ## Repository guardrails
 
 1. Preserve every `strict-*` package name until user explicitly requests a change.
