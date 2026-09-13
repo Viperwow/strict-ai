@@ -245,7 +245,6 @@ Author skills like a good CLI command:
 
 - Prefer terms that fit the **knowledge domain** and stay readable for a broad audience.
 - Keep wording **short, precise, and unambiguous** — avoid overloaded jargon and long prose.
-- Use **sample** and **total sources** / **total artifacts**, not *corpus*.
 
 Skills do not cross-reference other skills or git URLs to repository files. Repository policy lives here; each skill applies it locally.
 
