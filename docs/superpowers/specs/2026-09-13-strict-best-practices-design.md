@@ -288,6 +288,37 @@ Use repository-wide templates from `CLAUDE.md` § Absence phrases. Entities for 
 - `references/metrics.md` — encounter formulas, alignment decision tree
 - `references/cache-schema.md` — JSON field contract
 
+## SKILL.md description (trigger draft)
+
+Optimize with `docs/superpowers/evals/strict-best-practices-trigger-eval.json` before shipping. Under 1024 characters.
+
+```yaml
+description: >
+  Use when the user needs evidence before choosing an approach — industry best
+  practices with verifiable sources and internal project patterns, not
+  implementation. Invoke before ADR decisions, when comparing architectural or
+  system design options, evaluating trade-offs, or grounding a design in how
+  others solve it, even if they do not say best practices, research, or ADR.
+  Covers API, infra, product, design, and other domains at system level (C4
+  context through component), not single-file edits. Returns pattern cards with
+  citations, encounter rates, and alignment metrics in chat — no code changes,
+  no recommended decision. Triggers on /strict-best-practices. Do not use for
+  straight implementation, trivial syntax questions, scope-only DoD without
+  research, or task prioritization scoring.
+```
+
+Character count: 793 (limit 1024).
+
+### Trigger boundaries (near-misses)
+
+| Adjacent skill | Do not trigger strict-best-practices |
+|---|---|
+| `strict-dod` | scope boundary only, no external/internal research |
+| `strict-impact` | task scoring / prioritization |
+| `strict-one-by-one` | requirement queue execution |
+| ADR authoring | writing the ADR file, not gathering evidence |
+| Implementation | code, migrations, PR fixes |
+
 ## Placement
 
 `strict-knowledge/skills/strict-best-practices/SKILL.md`
