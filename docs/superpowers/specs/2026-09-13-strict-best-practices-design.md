@@ -1,7 +1,7 @@
 # Design: strict-best-practices
 
 **Date:** 2026-09-13  
-**Status:** final  
+**Status:** implemented  
 **Placement:** `strict-knowledge/skills/strict-best-practices/SKILL.md`
 
 ## Problem

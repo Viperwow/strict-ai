@@ -57,6 +57,13 @@
       "description": "Composed end-to-end workflows — reusable multi-step flows that combine lower-level skills from other packages across the full SDLC.",
       "version": "0.1.1",
       "category": "workflows"
+    },
+    {
+      "name": "strict-knowledge",
+      "source": "./strict-knowledge",
+      "description": "Skills for knowledge and procedure handling — playbooks, knowledge-grounded guidance, and design evidence research.",
+      "version": "0.2.0",
+      "category": "knowledge"
     }
   ]
 }

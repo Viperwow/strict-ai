@@ -1,6 +1,6 @@
 {
   "name": "strict-knowledge",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Skills for knowledge and procedure handling — internal procedure retrieval, playbook access, and knowledge-grounded guidance.",
   "author": {
     "name": "Viperwow",
