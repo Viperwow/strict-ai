@@ -22,7 +22,7 @@ Agents jump straight to implementation without grounding in industry practice or
 | Cache raw acquired data per best practice | Storing computed metrics or included/excluded state |
 | Auto-invoke on system design (one-line notice) | Rollback / hardening ADR lifecycle |
 
-Granularity: systems (C4 Context → Container → Component), not individual files.
+Granularity: C4 Context → Container → Component.
 
 ## Invocation
 
@@ -300,7 +300,7 @@ description: >
   system design options, evaluating trade-offs, or grounding a design in how
   others solve it, even if they do not say best practices, research, or ADR.
   Covers API, infra, product, design, and other domains at system level (C4
-  context through component), not single-file edits. Returns pattern cards with
+  context through component). Returns pattern cards with
   citations, encounter rates, and alignment metrics in chat — no code changes,
   no recommended decision. Triggers on /strict-best-practices. Do not use for
   straight implementation, trivial syntax questions, scope-only DoD without

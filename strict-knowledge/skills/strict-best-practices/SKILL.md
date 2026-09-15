@@ -7,7 +7,7 @@ description: >
   system design options, evaluating trade-offs, or grounding a design in how
   others solve it, even if they do not say best practices, research, or ADR.
   Covers API, infra, product, design, and other domains at system level (C4
-  context through component), not single-file edits. Returns pattern cards with
+  context through component). Returns pattern cards with
   citations, encounter rates, and alignment metrics in chat — no code changes,
   no recommended decision. Triggers on /strict-best-practices. Do not use for
   straight implementation, trivial syntax questions, scope-only DoD without
@@ -20,7 +20,7 @@ Gathers evidence for design decisions: internal patterns plus verifiable externa
 sources. Returns a structured chat block for ADR or planning work elsewhere.
 Facts only — never recommend which option to pick.
 
-Granularity: systems (C4 Context → Container → Component), not single files.
+Granularity: C4 Context → Container → Component.
 
 ## Invocation
 
