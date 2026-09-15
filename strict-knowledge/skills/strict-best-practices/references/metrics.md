@@ -1,0 +1,58 @@
+# Metrics
+
+## Encounter (external)
+
+Per pattern, over **total sources** for this run (irrelevant sources excluded from total):
+
+```
+mention_rate  = (positive + negative + neutral) / total_sources
+positive_rate = positive / total_sources
+negative_rate = negative / total_sources
+neutral_rate  = neutral / total_sources
+```
+
+Display: `mention 38% (18/47) · positive 28% · negative 4% · neutral 6%`
+
+If `total_sources < sample-min` (default 10): `Rates omitted: sample below minimum (N={n}).`
+
+## Encounter (internal)
+
+Single frequency over **total artifacts**:
+
+`Encounter (internal): 12% (3/25)`
+
+## Alignment
+
+One kebab-case label + **Basis** with human-readable numbers. No `(34/100)` scores.
+
+| Label | When |
+|---|---|
+| aligned | internal and external trends move the same way |
+| misaligned | trends move in different directions |
+| local-only | pattern in internal sample only |
+| external-only | pattern in external sample only |
+| insufficient-data | not enough data to compare |
+
+Basis required except `insufficient-data` when comparison is impossible.
+
+Compare overlapping temporal phases; cite phase shares or mention counts.
+
+## Regional
+
+Global block always first. Regional block only with `--region` or explicit regional context.
+
+`vs global`: percentage-point difference vs the global pattern above (encounter or key phase share).
+
+## Pattern card order
+
+1. Description (≤ 30 words)
+2. Encounter (external), Encounter (internal)
+3. External phase → verdict, Internal phase → verdict
+4. Alignment + Basis
+5. External sources, Internal sources
+
+Sort patterns by external mention rate descending.
+
+Sources: top 5 per list, then `+N more in sample`. `--verbose`: all sources.
+
+Internal absence per pattern: `No Internal sources found.`
