@@ -294,31 +294,22 @@ Optimize with `docs/superpowers/evals/strict-best-practices-trigger-eval.json` b
 
 ```yaml
 description: >
-  Use when the user needs evidence before choosing an approach — industry best
-  practices with verifiable sources and internal project patterns, not
-  implementation. Invoke before ADR decisions, when comparing architectural or
-  system design options, evaluating trade-offs, or grounding a design in how
-  others solve it, even if they do not say best practices, research, or ADR.
-  Covers API, infra, product, design, and other domains at system level (C4
-  context through component). Returns pattern cards with
-  citations, encounter rates, and alignment metrics in chat — no code changes,
-  no recommended decision. Triggers on /strict-best-practices. Do not use when
-  the user wants implementation as-is, a reference answer with no design
-  choice, a task boundary without design evidence, or ranking which tasks to
-  do first.
+  Use when the user intends to gather evidence before a design or approach
+  choice at system level (C4 context through component). Invoke when comparing
+  options, evaluating trade-offs, learning how others solve the problem, or
+  building an evidence block for a decision record — with verifiable external
+  sources and internal project patterns, even if they do not say best
+  practices, research, or ADR. Multidomain: API, infra, product, design, and
+  beyond. Returns pattern cards with citations, encounter rates, and alignment
+  metrics in chat. Triggers on /strict-best-practices.
 ```
 
-Character count: 793 (limit 1024).
+Description uses positive user intention only — out-of-scope asks are implicit.
 
-### Trigger boundaries (near-misses)
+### Out of scope (implicit, not in description)
 
-| Adjacent skill | Do not trigger strict-best-practices |
-|---|---|
-| `strict-dod` | scope boundary only, no external/internal research |
-| `strict-impact` | task scoring / prioritization |
-| `strict-one-by-one` | requirement queue execution |
-| ADR authoring | writing the ADR file, not gathering evidence |
-| Implementation | code, migrations, PR fixes |
+Implementation, reference-only lookups without a design choice, task-boundary
+without design evidence, backlog ranking, ADR file authoring.
 
 ## Placement
 
