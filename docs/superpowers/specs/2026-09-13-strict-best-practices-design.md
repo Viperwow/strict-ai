@@ -302,9 +302,10 @@ description: >
   Covers API, infra, product, design, and other domains at system level (C4
   context through component). Returns pattern cards with
   citations, encounter rates, and alignment metrics in chat — no code changes,
-  no recommended decision. Triggers on /strict-best-practices. Do not use for
-  straight implementation, trivial syntax questions, scope-only DoD without
-  research, or task prioritization scoring.
+  no recommended decision. Triggers on /strict-best-practices. Do not use when
+  the user wants implementation as-is, a reference answer with no design
+  choice, a task boundary without design evidence, or ranking which tasks to
+  do first.
 ```
 
 Character count: 793 (limit 1024).
