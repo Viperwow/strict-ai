@@ -245,6 +245,25 @@ Author skills like a good CLI command:
 - **Parameters override defaults** — flags and arguments, not interrogation.
 - Document every parameter and default in the skill's `SKILL.md`.
 
+### Triggers (description)
+
+The `description` frontmatter is how agents decide to load a skill. Write **positive user intention only** — when the skill **must** be invoked:
+
+- Frame as **what the user intends to achieve**, not how the skill works internally.
+- Use imperative phrasing: `Use when the user intends to…`, `Invoke when…`.
+- List concrete intents: comparing options, evaluating trade-offs, preparing material for a decision, and similar — including when the user does not name the domain or skill.
+- End with `Triggers on /<skill-name>.` when the skill has a slash command.
+
+**Do not put in `description`:**
+
+- `Do not use…` lists — anything outside the stated intent is out of scope by definition.
+- Names of other skills — no cross-references.
+- Output constraints or forbidden actions — those belong in the `SKILL.md` body (e.g. a **Forbidden** section), not in the trigger text.
+
+**Auto-invoke** in the body uses the same rule: state when user intent matches; do not list negative cases.
+
+Keep `description` under **1024 characters**. Test with an `eval_queries` set (should-trigger and should-not-trigger) before shipping.
+
 ### Terminology
 
 - Prefer terms that fit the **knowledge domain** and stay readable for a broad audience.
