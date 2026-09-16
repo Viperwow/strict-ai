@@ -295,13 +295,12 @@ Optimize with `docs/superpowers/evals/strict-best-practices-trigger-eval.json` b
 ```yaml
 description: >
   Use when the user intends to gather evidence before a design or approach
-  choice at system level (C4 context through component). Invoke when comparing
-  options, evaluating trade-offs, learning how others solve the problem, or
-  building an evidence block for a decision record — with verifiable external
-  sources and internal project patterns, even if they do not say best
-  practices, research, or ADR. Multidomain: API, infra, product, design, and
-  beyond. Returns pattern cards with citations, encounter rates, and alignment
-  metrics in chat. Triggers on /strict-best-practices.
+  choice at system level. Invoke when comparing options, evaluating trade-offs,
+  learning how others solve the problem, or building an evidence block for a
+  decision record — with verifiable external sources and internal project
+  patterns, even if they do not say best practices, research, or ADR.
+  Multidomain: API, infra, product, design, and beyond. Triggers on
+  /strict-best-practices.
 ```
 
 Description uses positive user intention only — out-of-scope asks are implicit.

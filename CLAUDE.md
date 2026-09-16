@@ -258,6 +258,7 @@ The `description` frontmatter is how agents decide to load a skill. Write **posi
 
 - `Do not use…` lists — anything outside the stated intent is out of scope by definition.
 - Names of other skills — no cross-references.
+- Implementation details that may change — granularity models, output schemas, metrics, cache layout, CLI flags, and similar. Keep those in the `SKILL.md` body and `references/`.
 - Output constraints or forbidden actions — those belong in the `SKILL.md` body (e.g. a **Forbidden** section), not in the trigger text.
 
 **Auto-invoke** in the body uses the same rule: state when user intent matches; do not list negative cases.
