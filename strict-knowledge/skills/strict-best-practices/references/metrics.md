@@ -21,47 +21,50 @@ Single frequency over **total artifacts**:
 
 `Encounter (internal): 12% (3/25)`
 
+## Trends
+
+`Popularity` and `Internal adoption` — one trend label each. Values and assignment: [temporal-trends.md](https://github.com/Viperwow/strict-ai/blob/main/strict-knowledge/skills/strict-best-practices/references/temporal-trends.md).
+
 ## Alignment
 
-One kebab-case label + **Basis** with human-readable numbers. No `(34/100)` scores.
+One kebab-case label + **Basis** (human-readable justification for the two trend choices, with numbers). No `(34/100)` scores.
 
 | Label | When |
 |---|---|
-| aligned | internal and external trends move the same way |
-| misaligned | trends move in different directions |
-| local-only | pattern in internal sample only |
+| aligned | same trend on both lines |
+| misaligned | different trends, not covered below |
+| leading | internal trend is newer than external |
+| divergent | `uptrend` vs `downtrend` |
 | external-only | pattern in external sample only |
+| local-only | pattern in internal sample only |
 | insufficient-data | not enough data to compare |
 
 Basis required except `insufficient-data` when comparison is impossible.
 
-### Basis (prose)
-
-Write **plain sentences**, not shorthand chains (`external mass in stable; internal <3M`).
-
-- **Default:** one sentence, **≤ 30 words** — same organic cap as Description.
-- **`--verbose`:** up to two sentences; may name per-bucket or per-phase shares.
-- Weave numbers in naturally (`41% of external sources`, `most internal artifacts`).
-- Name phases in readable terms (`established industry practice`, `recent project artifacts`) — not bare labels alone.
-
-Example (default):
+Example:
 
 ```markdown
-**Alignment:** misaligned
-*Basis:* About 65% of external mentions fall in the established phase, but 80% of internal matches are in artifacts younger than three months.
+**Popularity:** stable
+**Internal adoption:** hot
+
+**Alignment:** leading
+*Basis:* About 65% of external mentions fall in stable-range sources (1Y–2Y), but 80% of internal matches are in artifacts younger than three months.
 ```
+
+- **Default:** one sentence, **≤ 30 words**.
+- **`--verbose`:** up to two sentences; may cite per-bucket shares.
 
 ## Regional
 
 Global block always first. Regional block only with `--region` or explicit regional context.
 
-`vs global`: percentage-point difference vs the global pattern above (encounter or key phase share).
+`vs global`: percentage-point difference vs the global pattern above (encounter or key bucket share).
 
 ## Pattern card order
 
 1. Description (≤ 30 words)
 2. Encounter (external), Encounter (internal)
-3. Popularity, Internal adoption (phase label + verdict in parentheses)
+3. Popularity, Internal adoption
 4. Alignment + Basis
 5. External sources, Internal sources
 

@@ -10,7 +10,7 @@ Agents jump straight to implementation without grounding in industry practice or
 
 ## Goal
 
-`strict-best-practices` performs full research and returns a structured chat block: pattern cards with descriptions, encounter metrics, phase + verdict, alignment, and cited sources. Output enriches ADR work done by other skills or the user. No code changes, no decision recommendation.
+`strict-best-practices` performs full research and returns a structured chat block: pattern cards with descriptions, encounter metrics, trends, alignment, and cited sources. Output enriches ADR work done by other skills or the user. No code changes, no decision recommendation.
 
 ## Role boundary
 
@@ -18,7 +18,7 @@ Agents jump straight to implementation without grounding in industry practice or
 |---|---|
 | Full external + internal research | Creating or writing ADR/PRD files |
 | Verifiable quotes and links | Recommending which option to pick |
-| Encounter, phase, alignment metrics | File-level implementation plans |
+| Encounter, trend, alignment metrics | File-level implementation plans |
 | Cache raw acquired data per best practice | Storing computed metrics or included/excluded state |
 | Auto-invoke on system design (one-line notice) | Rollback / hardening ADR lifecycle |
 
@@ -97,27 +97,27 @@ Apply repository-wide rules in `CLAUDE.md` (skill output headers, absence phrase
 
 `1W → 1M → 3M → 6M → 1Y → 2Y → 3Y → 5Y`
 
-### Phases (one label per pattern per scale)
+### Trends (one label per line)
 
-| Phase | Buckets | Meaning |
+| Label | Buckets | Meaning |
 |---|---|---|
-| **hot** | 1W, 1M | newest mentions |
-| **trending** | 3M, 6M | medium-fresh industry practice |
-| **stable** | 1Y, 2Y | established + global classics |
+| **hot** | 1W, 1M | newest mentions, or direction unclear on the short interval |
+| **uptrend** | 3M, 6M | medium-fresh; recent-bucket share rising |
+| **downtrend** | 3M, 6M | medium-fresh; recent-bucket share falling |
+| **stable** | 1Y, 2Y | established; quiet stable stays stable — revival appears in hotter buckets |
 | **legacy** | 3Y, 5Y | long tail; sunset or historical practice |
+| **unknown** | — | too few data points |
 
-**Rule:** each pattern gets **exactly one** phase label per scale — where mention mass concentrates. Do not report multi-phase percentage splits in default output.
-
-**Verdict** (in parentheses): `emerging` \| `growing` \| `established` \| `declining` \| `unknown`. `emerging` = just appeared, direction unclear. Phase and verdict must not duplicate the same idea (no `legacy` verdict — use phase `legacy` instead).
+Assignment order: `unknown` → `legacy` → `stable` → `uptrend` / `downtrend` → `hot`. Do not map quiet **stable** to **downtrend**.
 
 Example:
 
 ```markdown
-**Popularity:** trending (**growing**)
-**Internal adoption:** hot (**emerging**)
+**Popularity:** stable
+**Internal adoption:** hot
 ```
 
-`--verbose`: per-bucket mention shares plus phase + verdict.
+`--verbose`: per-bucket mention shares plus trend label.
 
 ### Project-age adjustment (internal)
 
@@ -130,17 +130,19 @@ Example:
 
 ## Alignment
 
-Single kebab-case label per pattern plus numeric **Basis** (no `34/100` scores).
+Single kebab-case label per pattern plus **Basis** — human-readable justification for the two trend labels, with numbers. No `(34/100)` scores.
 
 | Value | Meaning |
 |---|---|
-| `aligned` | internal and external trends move the same way |
-| `misaligned` | trends move in different directions |
+| `aligned` | same trend on both lines |
+| `misaligned` | different trends, not covered below |
+| `leading` | internal trend is newer than external |
+| `divergent` | `uptrend` vs `downtrend` |
 | `local-only` | pattern in internal sample only |
-| `external-only` | pattern in external sample only; no internal use |
+| `external-only` | pattern in external sample only |
 | `insufficient-data` | not enough data to compare |
 
-Basis required for every value except `insufficient-data` when data truly absent. Use human-readable numbers (phase shares, mention counts).
+Basis required except `insufficient-data` when comparison is impossible.
 
 ## Regional
 
@@ -180,11 +182,11 @@ Sort patterns by external mention rate descending. Top 5 sources per list; then 
 **Encounter (external):** mention 38% (18/47) · positive 28% · negative 4% · neutral 6%
 **Encounter (internal):** 12% (3/25)
 
-**Popularity:** trending (**growing**)
-**Internal adoption:** hot (**emerging**)
+**Popularity:** stable
+**Internal adoption:** hot
 
-**Alignment:** misaligned
-*Basis:* About 65% of external mentions fall in the established phase, but 80% of internal matches are in artifacts younger than three months.
+**Alignment:** leading
+*Basis:* About 65% of external mentions fall in stable-range sources (1Y–2Y), but 80% of internal matches are in artifacts younger than three months.
 
 **External sources:**
 - [Title](url) — Author, 2025-03-12 — positive — "…"
@@ -211,7 +213,7 @@ Labels only — no statistics in chat. Underlying **raw sources are cached** und
 
 ### Verbose off (default)
 
-- Phase-level temporal only (not per-bucket).
+- Trend labels only (not per-bucket).
 - Top 5 sources per internal/external list.
 - Short Basis.
 
@@ -233,7 +235,7 @@ Labels only — no statistics in chat. Underlying **raw sources are cached** und
 
 **Cross-task reuse:** before external search, scan the cache directory. Use cached raw records when they match the new query; skip network fetch when TTL is valid.
 
-**Do not cache:** encounter rates, phases, alignment, verdicts, or included/excluded **state**. Do not write the chat exclusion list as a separate artifact — only the underlying source records in BP JSON files.
+**Do not cache:** encounter rates, trends, alignment, or included/excluded **state**. Do not write the chat exclusion list as a separate artifact — only the underlying source records in BP JSON files.
 
 ### File contract
 
@@ -275,7 +277,7 @@ Use repository-wide templates from `CLAUDE.md` § Absence phrases. Entities for 
 ## Success criteria
 
 1. Metadata includes total sources, total artifacts, scope, date.
-2. Each pattern: description, encounter (or omission phrase), phase + verdict, alignment + basis.
+2. Each pattern: description, encounter (or omission phrase), Popularity + Internal adoption trends, alignment + Basis.
 3. External: 3–7 cited sources with URL, author, UTC timestamp, quote.
 4. Internal: cited artifacts or `No Internal sources found.`
 5. Irrelevant list when any excluded.
@@ -284,7 +286,7 @@ Use repository-wide templates from `CLAUDE.md` § Absence phrases. Entities for 
 
 ## References (skill implementation)
 
-- `references/temporal-phases.md` — buckets, phases, project-age table, verdict rules
+- `references/temporal-trends.md` — buckets, trend labels, assignment order, alignment rules
 - `references/metrics.md` — encounter formulas, alignment decision tree
 - `references/cache-schema.md` — JSON field contract
 

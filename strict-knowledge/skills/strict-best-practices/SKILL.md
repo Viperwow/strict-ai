@@ -58,7 +58,7 @@ strict-best-practices: starting research (sample target 100)…
 3. **Internal scan** — search project artifacts (code, OpenAPI, CI, docs, design tokens, configs). Collect paths, UTC timestamps, verbatim quotes. Respect `--internal-only`.
 4. **External research** — search toward `--sample-target`. Prefer verifiable sources: RFC, specs, papers, eng blogs, magazines, regional publications when relevant. Each source: URL, author, UTC timestamp, verbatim quote, stance, type. Present 3–7 best per pattern in chat. Respect `--external-only`.
 5. **Pattern grouping** — cluster findings into named patterns. Per pattern: description ≤ 30 words, metrics, sources.
-6. **Compute metrics** — encounter, phase, verdict, alignment per [references/metrics.md](https://github.com/Viperwow/strict-ai/blob/main/strict-knowledge/skills/strict-best-practices/references/metrics.md) and [references/temporal-phases.md](https://github.com/Viperwow/strict-ai/blob/main/strict-knowledge/skills/strict-best-practices/references/temporal-phases.md). Recompute every run; never read metrics from cache.
+6. **Compute metrics** — encounter, trends, alignment per [references/metrics.md](https://github.com/Viperwow/strict-ai/blob/main/strict-knowledge/skills/strict-best-practices/references/metrics.md) and [references/temporal-trends.md](https://github.com/Viperwow/strict-ai/blob/main/strict-knowledge/skills/strict-best-practices/references/temporal-trends.md). Recompute every run; never read metrics from cache.
 7. **Cache write** — persist raw acquired data per best-practice file. Include scope-irrelevant sources. Skip computed fields.
 8. **Output** — formatted chat block (below). List scope-irrelevant pattern labels at end (no stats).
 
@@ -93,11 +93,11 @@ Sort by external mention rate descending.
 **Encounter (external):** mention 38% (18/47) · positive 28% · negative 4% · neutral 6%
 **Encounter (internal):** 12% (3/25)
 
-**Popularity:** trending (**growing**)
-**Internal adoption:** hot (**emerging**)
+**Popularity:** stable
+**Internal adoption:** hot
 
-**Alignment:** misaligned
-*Basis:* About 65% of external mentions fall in the established phase, but 80% of internal matches are in artifacts younger than three months.
+**Alignment:** leading
+*Basis:* About 65% of external mentions fall in stable-range sources (1Y–2Y), but 80% of internal matches are in artifacts younger than three months.
 
 **External sources:**
 - [Title](url) — Author, 2025-03-12 — positive — "…"
@@ -122,7 +122,7 @@ Labels only. Raw sources still cached for later runs.
 
 ### Verbose
 
-Off (default): phase + verdict; top 5 sources per list. On: per-bucket shares, all sources, cache hit notes, expanded Basis.
+Off (default): trend labels only; top 5 sources per list. On: per-bucket shares, all sources, cache hit notes, expanded Basis.
 
 ## Absence phrases
 
@@ -137,7 +137,7 @@ Follow `CLAUDE.md` § Absence phrases. Entities: `Sources`, `Patterns`, `Sample`
 
 ## References
 
-- [references/temporal-phases.md](https://github.com/Viperwow/strict-ai/blob/main/strict-knowledge/skills/strict-best-practices/references/temporal-phases.md)
+- [references/temporal-trends.md](https://github.com/Viperwow/strict-ai/blob/main/strict-knowledge/skills/strict-best-practices/references/temporal-trends.md)
 - [references/metrics.md](https://github.com/Viperwow/strict-ai/blob/main/strict-knowledge/skills/strict-best-practices/references/metrics.md)
 - [references/cache-schema.md](https://github.com/Viperwow/strict-ai/blob/main/strict-knowledge/skills/strict-best-practices/references/cache-schema.md)
 

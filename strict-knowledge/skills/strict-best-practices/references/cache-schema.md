@@ -4,7 +4,7 @@
 
 **Default:** `--cache on`, `--cache-ttl 30d`.
 
-Store **raw acquired data only**. Recompute encounter, phases, alignment every run. Cache scope-irrelevant sources too — relevance is per run.
+Store **raw acquired data only**. Recompute encounter, trends, alignment every run. Cache scope-irrelevant sources too — relevance is per run.
 
 Before external search: scan cache directory; reuse entries within TTL; merge on hit.
 
@@ -43,6 +43,6 @@ Filename: `<bp-slug>-<short-id>.json`. JSON `id` is the short id only; `slug` is
 - Timestamps: UTC ISO 8601.
 - Merge external by `url`; internal by `path` + line range.
 - Optional internal keys when present: `section`, `startColumn`, `endColumn`.
-- Do not store: rates, phases, alignment, verdicts, inclusion state, exclusion lists.
+- Do not store: rates, trends, alignment, inclusion state, exclusion lists.
 
 `--cache refresh`: ignore TTL and re-fetch. `--cache off`: read-only use of session; no writes.
