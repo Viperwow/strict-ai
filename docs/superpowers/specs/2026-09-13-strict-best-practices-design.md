@@ -194,9 +194,9 @@ Sort patterns by external total rate descending. Top 5 sources per list; then `+
 
 **Internal sources:**
 - `api/handlers/list.go` — "…"
-
-**Internal sources:** No Internal sources found.
 ```
+
+When absent: `No Internal sources found.` on the internal sources line.
 
 - **Description:** ≤ 30 words.
 - Per-pattern internal absence: `No Internal sources found.` (repository absence phrase).
