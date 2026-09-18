@@ -35,7 +35,21 @@ One kebab-case label + **Basis** with human-readable numbers. No `(34/100)` scor
 
 Basis required except `insufficient-data` when comparison is impossible.
 
-Compare overlapping temporal phases; cite phase shares or mention counts.
+### Basis (prose)
+
+Write **plain sentences**, not shorthand chains (`external mass in stable; internal <3M`).
+
+- **Default:** one sentence, **≤ 30 words** — same organic cap as Description.
+- **`--verbose`:** up to two sentences; may name per-bucket or per-phase shares.
+- Weave numbers in naturally (`41% of external sources`, `most internal artifacts`).
+- Name phases in readable terms (`established industry practice`, `recent project artifacts`) — not bare labels alone.
+
+Example (default):
+
+```markdown
+**Alignment:** misaligned
+*Basis:* Industry sources mostly treat this as established practice, while internal use appears almost only in artifacts changed within the last three months.
+```
 
 ## Regional
 

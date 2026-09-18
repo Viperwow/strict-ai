@@ -184,7 +184,7 @@ Sort patterns by external mention rate descending. Top 5 sources per list; then 
 **Internal phase:** hot → **emerging**
 
 **Alignment:** misaligned
-*Basis:* external mentions concentrate in 1Y+ (stable); internal 80% in artifacts younger than 3M.
+*Basis:* Industry sources mostly treat this as established practice, while internal use appears almost only in artifacts changed within the last three months.
 
 **External sources:**
 - [Title](url) — Author, 2025-03-12 — positive — "…"

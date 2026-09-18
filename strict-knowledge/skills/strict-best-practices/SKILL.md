@@ -97,7 +97,7 @@ Sort by external mention rate descending.
 **Internal phase:** hot → **emerging**
 
 **Alignment:** misaligned
-*Basis:* external mass in stable (1Y+); internal mass in artifacts <3M old.
+*Basis:* Industry sources mostly treat this as established practice, while internal use appears almost only in artifacts changed within the last three months.
 
 **External sources:**
 - [Title](url) — Author, 2025-03-12 — positive — "…"
