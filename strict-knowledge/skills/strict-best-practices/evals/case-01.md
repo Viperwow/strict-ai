@@ -13,7 +13,7 @@ Project contains `api/handlers/lists.go` with `decodeCursor` and an OpenAPI spec
 - Chat block headed `## strict-best-practices output`.
 - `### Research metadata` with scope, sample counts, research date.
 - At least one `### Pattern:` card with Description ≤ 30 words.
-- Encounter (external) with mention/positive/negative/neutral or `Rates omitted: …`.
+- Mentions (external) with total/positive/negative/neutral or `Rates omitted: …`.
 - Popularity and Internal adoption trend labels and alignment with Basis.
 - External sources: 3–7 entries with URL, author, date, stance, quote; or honest absence phrase.
 - Internal sources citing `lists.go` or OpenAPI — or `No Internal sources found.`

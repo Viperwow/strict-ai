@@ -10,7 +10,7 @@ Agents jump straight to implementation without grounding in industry practice or
 
 ## Goal
 
-`strict-best-practices` performs full research and returns a structured chat block: pattern cards with descriptions, encounter metrics, trends, alignment, and cited sources. Output enriches ADR work done by other skills or the user. No code changes, no decision recommendation.
+`strict-best-practices` performs full research and returns a structured chat block: pattern cards with descriptions, mention metrics, trends, alignment, and cited sources. Output enriches ADR work done by other skills or the user. No code changes, no decision recommendation.
 
 ## Role boundary
 
@@ -18,7 +18,7 @@ Agents jump straight to implementation without grounding in industry practice or
 |---|---|
 | Full external + internal research | Creating or writing ADR/PRD files |
 | Verifiable quotes and links | Recommending which option to pick |
-| Encounter, trend, alignment metrics | File-level implementation plans |
+| Mentions, trend, alignment metrics | File-level implementation plans |
 | Cache raw acquired data per best practice | Storing computed metrics or included/excluded state |
 | Auto-invoke on system design (one-line notice) | Rollback / hardening ADR lifecycle |
 
@@ -87,8 +87,8 @@ Apply repository-wide rules in `CLAUDE.md` (skill output headers, absence phrase
 ### Rates
 
 - Always show `count / total`, not percent alone.
-- External encounter: `mention`, `positive`, `negative`, `neutral` (mention = sum of the three).
-- Internal encounter: single frequency only.
+- External mentions: `total`, `positive`, `negative`, `neutral` (total = sum of the three).
+- Internal mentions: single `total` frequency only.
 - If `total sources < sample-min`: `Rates omitted: sample below minimum (N={n}).` — per absence rules in `CLAUDE.md`.
 
 ## Temporal model
@@ -172,15 +172,15 @@ Chat header (repository default):
 
 ### Pattern card (basic → derived)
 
-Sort patterns by external mention rate descending. Top 5 sources per list; then `+N more in sample` unless `--verbose`.
+Sort patterns by external total rate descending. Top 5 sources per list; then `+N more in sample` unless `--verbose`.
 
 ```markdown
 ### Pattern: Cursor-based pagination
 
 **Description:** Key-based pagination for large lists; avoids offset cost at scale.
 
-**Encounter (external):** mention 38% (18/47) · positive 28% · negative 4% · neutral 6%
-**Encounter (internal):** 12% (3/25)
+**Mentions (external):** total 38% (18/47) · positive 28% · negative 4% · neutral 6%
+**Mentions (internal):** total 12% (3/25)
 
 **Popularity:** stable
 **Internal adoption:** hot
@@ -235,7 +235,7 @@ Labels only — no statistics in chat. Underlying **raw sources are cached** und
 
 **Cross-task reuse:** before external search, scan the cache directory. Use cached raw records when they match the new query; skip network fetch when TTL is valid.
 
-**Do not cache:** encounter rates, trends, alignment, or included/excluded **state**. Do not write the chat exclusion list as a separate artifact — only the underlying source records in BP JSON files.
+**Do not cache:** mention rates, trends, alignment, or included/excluded **state**. Do not write the chat exclusion list as a separate artifact — only the underlying source records in BP JSON files.
 
 ### File contract
 
@@ -277,7 +277,7 @@ Use repository-wide templates from `CLAUDE.md` § Absence phrases. Entities for 
 ## Success criteria
 
 1. Metadata includes total sources, total artifacts, scope, date.
-2. Each pattern: description, encounter (or omission phrase), Popularity + Internal adoption trends, alignment + Basis.
+2. Each pattern: description, mentions (or omission phrase), Popularity + Internal adoption trends, alignment + Basis.
 3. External: 3–7 cited sources with URL, author, UTC timestamp, quote.
 4. Internal: cited artifacts or `No Internal sources found.`
 5. Irrelevant list when any excluded.
@@ -287,7 +287,7 @@ Use repository-wide templates from `CLAUDE.md` § Absence phrases. Entities for 
 ## References (skill implementation)
 
 - `references/temporal-trends.md` — buckets, trend labels, assignment order, alignment rules
-- `references/metrics.md` — encounter formulas, alignment decision tree
+- `references/metrics.md` — mention formulas, alignment decision tree
 - `references/cache-schema.md` — JSON field contract
 
 ## SKILL.md description (trigger draft)

@@ -1,25 +1,25 @@
 # Metrics
 
-## Encounter (external)
+## Mentions (external)
 
 Per pattern, over **total sources** for this run (irrelevant sources excluded from total):
 
 ```
-mention_rate  = (positive + negative + neutral) / total_sources
+total_rate    = (positive + negative + neutral) / total_sources
 positive_rate = positive / total_sources
 negative_rate = negative / total_sources
 neutral_rate  = neutral / total_sources
 ```
 
-Display: `mention 38% (18/47) · positive 28% · negative 4% · neutral 6%`
+Display: `total 38% (18/47) · positive 28% · negative 4% · neutral 6%`
 
 If `total_sources < sample-min` (default 10): `Rates omitted: sample below minimum (N={n}).`
 
-## Encounter (internal)
+## Mentions (internal)
 
 Single frequency over **total artifacts**:
 
-`Encounter (internal): 12% (3/25)`
+`**Mentions (internal):** total 12% (3/25)`
 
 ## Trends
 
@@ -58,17 +58,17 @@ Example:
 
 Global block always first. Regional block only with `--region` or explicit regional context.
 
-`vs global`: percentage-point difference vs the global pattern above (encounter or key bucket share).
+`vs global`: percentage-point difference vs the global pattern above (mentions or key bucket share).
 
 ## Pattern card order
 
 1. Description (≤ 30 words)
-2. Encounter (external), Encounter (internal)
+2. Mentions (external), Mentions (internal)
 3. Popularity, Internal adoption
 4. Alignment + Basis
 5. External sources, Internal sources
 
-Sort patterns by external mention rate descending.
+Sort patterns by external total rate descending.
 
 Sources: top 5 per list, then `+N more in sample`. `--verbose`: all sources.
 

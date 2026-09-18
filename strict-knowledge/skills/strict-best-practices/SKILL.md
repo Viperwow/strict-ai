@@ -58,7 +58,7 @@ strict-best-practices: starting research (sample target 100)…
 3. **Internal scan** — search project artifacts (code, OpenAPI, CI, docs, design tokens, configs). Collect paths, UTC timestamps, verbatim quotes. Respect `--internal-only`.
 4. **External research** — search toward `--sample-target`. Prefer verifiable sources: RFC, specs, papers, eng blogs, magazines, regional publications when relevant. Each source: URL, author, UTC timestamp, verbatim quote, stance, type. Present 3–7 best per pattern in chat. Respect `--external-only`.
 5. **Pattern grouping** — cluster findings into named patterns. Per pattern: description ≤ 30 words, metrics, sources.
-6. **Compute metrics** — encounter, trends, alignment per [references/metrics.md](https://github.com/Viperwow/strict-ai/blob/main/strict-knowledge/skills/strict-best-practices/references/metrics.md) and [references/temporal-trends.md](https://github.com/Viperwow/strict-ai/blob/main/strict-knowledge/skills/strict-best-practices/references/temporal-trends.md). Recompute every run; never read metrics from cache.
+6. **Compute metrics** — mentions, trends, alignment per [references/metrics.md](https://github.com/Viperwow/strict-ai/blob/main/strict-knowledge/skills/strict-best-practices/references/metrics.md) and [references/temporal-trends.md](https://github.com/Viperwow/strict-ai/blob/main/strict-knowledge/skills/strict-best-practices/references/temporal-trends.md). Recompute every run; never read metrics from cache.
 7. **Cache write** — persist raw acquired data per best-practice file. Include scope-irrelevant sources. Skip computed fields.
 8. **Output** — formatted chat block (below). List scope-irrelevant pattern labels at end (no stats).
 
@@ -83,15 +83,15 @@ Header:
 
 ### Pattern card
 
-Sort by external mention rate descending.
+Sort by external total rate descending.
 
 ```markdown
 ### Pattern: Cursor-based pagination
 
 **Description:** Key-based pagination for large lists; avoids offset cost at scale.
 
-**Encounter (external):** mention 38% (18/47) · positive 28% · negative 4% · neutral 6%
-**Encounter (internal):** 12% (3/25)
+**Mentions (external):** total 38% (18/47) · positive 28% · negative 4% · neutral 6%
+**Mentions (internal):** total 12% (3/25)
 
 **Popularity:** stable
 **Internal adoption:** hot

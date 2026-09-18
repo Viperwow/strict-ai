@@ -4,7 +4,7 @@
 
 **Default:** `--cache on`, `--cache-ttl 30d`.
 
-Store **raw acquired data only**. Recompute encounter, trends, alignment every run. Cache scope-irrelevant sources too — relevance is per run.
+Store **raw acquired data only**. Recompute mentions, trends, alignment every run. Cache scope-irrelevant sources too — relevance is per run.
 
 Before external search: scan cache directory; reuse entries within TTL; merge on hit.
 

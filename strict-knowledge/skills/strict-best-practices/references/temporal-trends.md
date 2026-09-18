@@ -40,7 +40,7 @@ Do not downgrade quiet **stable** to **downtrend**. Active decline belongs in me
 Full bucket range. Source `timestamp` (UTC) sets bucket placement.
 
 - `fundamental` sources (RFC, specs, books): map toward **stable** when globally recognized.
-- `date: unknown` — counts toward encounter if relevant; excluded from trend buckets.
+- `date: unknown` — counts toward mentions if relevant; excluded from trend buckets.
 
 ## Internal scale (project-age adjusted)
 
