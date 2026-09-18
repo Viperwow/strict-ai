@@ -2,16 +2,16 @@
 
 Log-scale buckets: `1W → 1M → 3M → 6M → 1Y → 2Y → 3Y → 5Y`.
 
-## Phase assignment (one per pattern per scale)
+## Phase labels (both scales)
 
-Assign the phase where mention mass concentrates:
+One per pattern per scale — where mention mass concentrates:
 
-| Phase | Buckets | Meaning |
+| Label | Buckets | Meaning |
 |---|---|---|
 | hot | 1W, 1M | newest mentions |
 | trending | 3M, 6M | medium-fresh practice |
 | stable | 1Y, 2Y | established; global classics (RFC, books) |
-| heritage | 3Y, 5Y | long tail |
+| legacy | 3Y, 5Y | long tail; sunset or historical practice |
 
 Output format:
 
@@ -22,40 +22,41 @@ Output format:
 
 Phase label in plain text; verdict in bold inside parentheses.
 
-## Phase labels (both scales)
-
-One per pattern per scale — where mention mass concentrates:
-
-| Label | External (Popularity) | Internal (Internal adoption) |
-|---|---|---|
-| `hot` | 1W, 1M | 1W, 1M (if project age allows) |
-| `trending` | 3M, 6M | 3M, 6M |
-| `stable` | 1Y, 2Y | 1Y, 2Y |
-| `heritage` | 3Y, 5Y | 3Y, 5Y |
-
 Internal buckets may be unavailable for young projects — phase is computed only over available buckets.
 
 ## Verdict (parentheses)
 
-One word from: `emerging` | `growing` | `established` | `declining` | `legacy` | `unknown`.
+One word from: `emerging` | `growing` | `established` | `declining` | `unknown`.
 
-Same set for **Popularity** and **Internal adoption**. Describes mention **dynamics** across buckets, not the phase label alone.
+Same set for **Popularity** and **Internal adoption**. Describes mention **dynamics** across buckets — independent of the phase label.
 
-| Verdict | Typical signal |
+| Verdict | Meaning |
 |---|---|
-| `emerging` | new mass appearing in the newest buckets |
+| `emerging` | pattern just appeared; direction not yet clear |
 | `growing` | rising share in hot/trending buckets |
-| `established` | stable mass in stable phase buckets |
+| `established` | stable mass in stable-phase buckets |
 | `declining` | falling share in recent buckets |
-| `legacy` | mass shifting toward heritage |
 | `unknown` | too few data points for a trend |
+
+Phase and verdict must not duplicate the same idea (e.g. no `legacy` verdict — use phase `legacy` with verdict `declining` or `established`).
+
+## Phase × verdict (typical pairings)
+
+| Phase ↓ / Verdict → | emerging | growing | established | declining | unknown |
+|---|---|---|---|---|---|
+| **hot** | ● | ● | △ | △ | ● |
+| **trending** | ○ | ● | ○ | ○ | ● |
+| **stable** | △ | ○ | ● | ○ | ● |
+| **legacy** | △ | △ | ○ | ● | ● |
+
+● typical · ○ possible · △ rare
 
 ## External scale
 
 Full bucket range. Source `timestamp` (UTC) determines bucket placement.
 
 - `fundamental` sources (RFC, specs, books): map to **stable** when globally recognized.
-- `trend` sources: bucket by timestamp; trending phase = medium-fresh (3M–6M) industry practice.
+- `trend` sources: bucket by timestamp.
 
 `date: unknown` on a source — counts toward encounter if relevant; excluded from temporal buckets.
 
@@ -70,7 +71,7 @@ Full bucket range. Source `timestamp` (UTC) determines bucket placement.
 
 Unavailable bucket: `{bucket}: n/a (project age)`.
 
-Signals: artifact timestamps first; `@deprecated`, `legacy`, `old` as hints, not area boundaries.
+Signals: artifact timestamps first; `@deprecated`, `legacy/` paths, `old` markers as hints, not area boundaries.
 
 ## Verbose mode
 

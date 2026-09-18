@@ -104,11 +104,11 @@ Apply repository-wide rules in `CLAUDE.md` (skill output headers, absence phrase
 | **hot** | 1W, 1M | newest mentions |
 | **trending** | 3M, 6M | medium-fresh industry practice |
 | **stable** | 1Y, 2Y | established + global classics |
-| **heritage** | 3Y, 5Y | long tail |
+| **legacy** | 3Y, 5Y | long tail; sunset or historical practice |
 
-**Rule:** each pattern gets **exactly one** external phase and **one** internal phase — the phase where mention mass concentrates. Do not report multi-phase percentage splits in default output.
+**Rule:** each pattern gets **exactly one** phase label per scale — where mention mass concentrates. Do not report multi-phase percentage splits in default output.
 
-**Verdict** (one word, always shown with phase): `emerging` \| `growing` \| `established` \| `declining` \| `legacy` \| `unknown` — derived from mention dynamics across buckets.
+**Verdict** (in parentheses): `emerging` \| `growing` \| `established` \| `declining` \| `unknown`. `emerging` = just appeared, direction unclear. Phase and verdict must not duplicate the same idea (no `legacy` verdict — use phase `legacy` instead).
 
 Example:
 
