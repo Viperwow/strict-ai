@@ -61,7 +61,7 @@ Global block always first. Regional block only with `--region` or explicit regio
 
 1. Description (≤ 30 words)
 2. Encounter (external), Encounter (internal)
-3. External phase → verdict, Internal phase → verdict
+3. Popularity, Internal adoption (phase label + verdict in parentheses)
 4. Alignment + Basis
 5. External sources, Internal sources
 

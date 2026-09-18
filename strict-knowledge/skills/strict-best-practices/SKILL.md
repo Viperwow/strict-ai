@@ -93,8 +93,8 @@ Sort by external mention rate descending.
 **Encounter (external):** mention 38% (18/47) · positive 28% · negative 4% · neutral 6%
 **Encounter (internal):** 12% (3/25)
 
-**External phase:** trending → **growing**
-**Internal phase:** hot → **emerging**
+**Popularity:** trending (**growing**)
+**Internal adoption:** hot (**emerging**)
 
 **Alignment:** misaligned
 *Basis:* About 65% of external mentions fall in the established phase, but 80% of internal matches are in artifacts younger than three months.

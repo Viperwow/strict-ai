@@ -14,7 +14,7 @@ Project contains `api/handlers/lists.go` with `decodeCursor` and an OpenAPI spec
 - `### Research metadata` with scope, sample counts, research date.
 - At least one `### Pattern:` card with Description ≤ 30 words.
 - Encounter (external) with mention/positive/negative/neutral or `Rates omitted: …`.
-- External phase → verdict and alignment label with Basis.
+- Popularity and Internal adoption (phase + verdict) and alignment label with Basis.
 - External sources: 3–7 entries with URL, author, date, stance, quote; or honest absence phrase.
 - Internal sources citing `lists.go` or OpenAPI — or `No Internal sources found.`
 - No recommended option, no code edits, no ADR file write.

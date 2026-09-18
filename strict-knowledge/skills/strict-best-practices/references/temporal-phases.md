@@ -13,13 +13,42 @@ Assign the phase where mention mass concentrates:
 | stable | 1Y, 2Y | established; global classics (RFC, books) |
 | heritage | 3Y, 5Y | long tail |
 
-Output: `**External phase:** trending → **growing**` (phase + verdict).
+Output format:
 
-## Verdict
+```markdown
+**Popularity:** trending (**growing**)
+**Internal adoption:** hot (**emerging**)
+```
+
+Phase label in plain text; verdict in bold inside parentheses.
+
+## Phase labels (both scales)
+
+One per pattern per scale — where mention mass concentrates:
+
+| Label | External (Popularity) | Internal (Internal adoption) |
+|---|---|---|
+| `hot` | 1W, 1M | 1W, 1M (if project age allows) |
+| `trending` | 3M, 6M | 3M, 6M |
+| `stable` | 1Y, 2Y | 1Y, 2Y |
+| `heritage` | 3Y, 5Y | 3Y, 5Y |
+
+Internal buckets may be unavailable for young projects — phase is computed only over available buckets.
+
+## Verdict (parentheses)
 
 One word from: `emerging` | `growing` | `established` | `declining` | `legacy` | `unknown`.
 
-Derive from mention dynamics across available buckets — heavier recent mass → `emerging`/`growing`; stable mass in 1Y–2Y → `established`; rising heritage share → `declining`/`legacy`.
+Same set for **Popularity** and **Internal adoption**. Describes mention **dynamics** across buckets, not the phase label alone.
+
+| Verdict | Typical signal |
+|---|---|
+| `emerging` | new mass appearing in the newest buckets |
+| `growing` | rising share in hot/trending buckets |
+| `established` | stable mass in stable phase buckets |
+| `declining` | falling share in recent buckets |
+| `legacy` | mass shifting toward heritage |
+| `unknown` | too few data points for a trend |
 
 ## External scale
 
