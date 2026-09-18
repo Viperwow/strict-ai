@@ -227,6 +227,8 @@ Where a skill writes the files it generates. One rule for every skill in this re
 
 **Overrides.** Every default in this section applies unless the skill's `SKILL.md` or the user or agent invocation defines otherwise.
 
+**No duplication.** Each thought, rule, or constraint appears **once** in this file and in each skill. Do not restate the same meaning in other words across sections, bullets, tables, or notes.
+
 ### Output in chat
 
 Skills that return results in chat without a separate artifact use:
@@ -258,8 +260,7 @@ The `description` frontmatter is how agents decide to load a skill. Write **posi
 
 - `Do not use…` lists — anything outside the stated intent is out of scope by definition.
 - Names of other skills — no cross-references.
-- Implementation details that may change — granularity models, output schemas, metrics, cache layout, CLI flags, and similar. Keep those in the `SKILL.md` body and `references/`.
-- Output constraints or forbidden actions — those belong in the `SKILL.md` body (e.g. a **Forbidden** section), not in the trigger text.
+- Anything beyond user intent — implementation detail, output shape, forbidden actions (`SKILL.md` body and `references/`, not frontmatter).
 
 **Auto-invoke** in the body uses the same rule: state when user intent matches; do not list negative cases.
 
@@ -273,8 +274,6 @@ Keep `description` under **1024 characters**. Test with an `eval_queries` set (s
 
 ### Absence phrases
 
-When data is missing, empty, or intentionally skipped, use one of these patterns — same wording across all skills:
-
 | Type | Template | Example |
 |---|---|---|
 | Empty | `No <Entity> found.` | `No Internal sources found.` |
@@ -282,12 +281,8 @@ When data is missing, empty, or intentionally skipped, use one of these patterns
 | Omitted | `<Entity> omitted: <reason>.` | `Rates omitted: sample below minimum (N=7).` |
 | Not applicable | `<field>: n/a` or `<field>: n/a (<≤5 words>)` | `1Y: n/a (project age)` |
 
-Rules:
-
 - **Entity** is capitalized (`Sources`, `Patterns`, `Sample`, `Best practice`, `Rates`, …).
-- **Omitted** reason: maximum **15 words**.
-- **n/a** parenthetical: maximum **5 words**.
-- Do not paraphrase these templates per skill.
+- **Omitted** reason: maximum **15 words**; **n/a** parenthetical: maximum **5 words**.
 
 ### Run cache
 
