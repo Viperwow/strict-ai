@@ -24,6 +24,7 @@ strict/
   strict-adapters/
   strict-agents-creator/
   strict-script-creator/
+  strict-mod-creator/
   strict-labs/
   strict-deprecated/
 ```
@@ -44,6 +45,7 @@ strict/
 | `strict-adapters` | one specific tool/API/CLI/SDK only; replaceable; invocable by other skills only, not directly by users                        |
 | `strict-agents-creator` | creating custom subagents from a task/role — composing skills into an agent `.md`, its tools, model, and eval contract         |
 | `strict-script-creator` | turning a repeated routine into a reusable script, reusing it, and removing scripts nothing calls                              |
+| `strict-mod-creator` | building a mod — code that runs inside the agent engine on its events — with its reach budget, tests, and footprint check      |
 | `strict-labs` | experimental, still stabilizing, or searching for a permanent home                                                            |
 | `strict-deprecated` | confirmed replacement exists; removal scheduled; not the recommended path for any use case                                    |
 
@@ -156,9 +158,10 @@ The default is no comment. A comment is a hint to the next reader about the code
 
 This section is the summary. The full contract — doc blocks, the seven inline triggers, the cognitive-complexity threshold, and the configuration behind them — lives in the `strict-comment` skill in `strict-development`, and that skill decides.
 
-## Hooks, plugins, agents, and MCP
+## Hooks, mods, plugins, agents, and MCP
 
-Before creating hooks, plugins, agents, or MCP, review:
+Before creating hooks, mods, plugins, agents, or MCP, review:
+- Mods — hooks-module plugins, their test kit and noun contracts, with four shipped examples: <https://github.com/anthropics/claude-code/blob/main/mods/README.md>
 - Plugin structure and examples: <https://github.com/anthropics/claude-code/blob/main/plugins/README.md>
 - Plugin overview: <https://www.anthropic.com/news/claude-code-plugins?cb=zapier>
 - Subagents: <https://docs.claude.com/en/docs/claude-code/sub-agents?_bhlid=fab9dd4ba867c6a3f19d2ee04c0262e5f9fc2d40>
@@ -172,7 +175,32 @@ Before creating hooks, plugins, agents, or MCP, review:
 
 Standards outrank authorial examples. Read an authorial layout for ideas; follow the official structure when the two disagree.
 
-Hooks: deterministic enforcement. Workflows: composition. Adapters: tool-specific knowledge. Foundation: shared primitives.
+Hooks: deterministic enforcement. Mods: engine behaviour as code. Workflows: composition. Adapters: tool-specific knowledge. Foundation: shared primitives.
+
+### Mods
+
+A mod is a Claude Code plugin whose behaviour lives in a TypeScript hooks module. `register(on, options)` hooks engine events as functions `($, e, next)`: it can answer an engine call, rewrite it and pass it on with `next`, or add a noun to `$`.
+
+```text
+mod-name/
+  .claude-plugin/plugin.json   (options go in userConfig)
+  hooks/hooks.json             ({ "description", "modules": ["./register.ts"] })
+  hooks/register.ts
+  tests/register.test.ts
+  types/index.d.ts             (only when the mod adds a noun to $)
+  tsconfig.json
+```
+
+- Choose a classic hook when a shell command on an event is enough. Choose a mod when the work must answer or rewrite an engine call (`prompt.context`, `tool.call`), add a command or pane, or provide a noun other plugins call.
+- Mods are early access. The API may change between Claude Code releases without notice, so the mod's `README.md` names the Claude Code version it was tested on.
+- Type hooks against the declarations `/plugin-types` writes: `import type … from 'claude-code'`.
+- Each file under `hooks/` gets one test file of the same name in `tests/`, holding its imports, one `tier(...)`, and one `describe` with that name. Shared test data sits in `tests/fixtures/`, one export per file.
+- Answer the world beneath the mod with `mock.env`, `mock.store`, and `mock.clock`. An engine call the test leaves unanswered throws, naming its event.
+- A mod is done when `claude plugin test <dir>` and `tsc -p <dir>/tsconfig.json` both pass.
+- A mod that adds a noun owns its types in `types/index.d.ts`: no imports, the noun declared on `EngineInterface`. A mod that calls the noun includes that folder in its tsconfig and never copies the types.
+- Run a mod from source with `claude --plugin-dir <dir>`.
+- A mod is Claude Code only. In the Agent Plugins portable layout it lives in the Claude Code namespace directory.
+- A mod runs whether or not anyone asked for it, so it follows the hook placement rule under Boundary notes.
 
 ## Preferred internal package layout
 

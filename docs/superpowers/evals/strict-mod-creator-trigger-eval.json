@@ -1,0 +1,16 @@
+[
+  { "query": "make a mod that shows the current git branch above the prompt", "should_trigger": true, "split": "train" },
+  { "query": "I want a /tally command that prints how many tool calls Claude made, without spending a model turn", "should_trigger": true, "split": "train" },
+  { "query": "write a function hook that masks API keys in tool output before the model sees them", "should_trigger": true, "split": "train" },
+  { "query": "pin every subagent to the cheaper model when it spawns", "should_trigger": true, "split": "train" },
+  { "query": "/strict-mod-creator pane with the session's token cost per turn", "should_trigger": true, "split": "train" },
+  { "query": "replace the WebSearch tool with our internal search API inside Claude Code itself", "should_trigger": true, "split": "train" },
+  { "query": "add a $.timer noun other plugins can call to measure their hooks", "should_trigger": true, "split": "validation" },
+  { "query": "refuse any Edit on .env files and draw a red badge on the refused tool row", "should_trigger": true, "split": "validation" },
+  { "query": "write a bash script that rebuilds the docker images", "should_trigger": false, "split": "train" },
+  { "query": "create a subagent that reviews pull requests", "should_trigger": false, "split": "train" },
+  { "query": "add a SKILL.md that teaches Claude our commit message format", "should_trigger": false, "split": "train" },
+  { "query": "fix the failing unit test in the payments service", "should_trigger": false, "split": "train" },
+  { "query": "build an MCP server that exposes our Jira tickets", "should_trigger": false, "split": "validation" },
+  { "query": "what's the difference between cursor and offset pagination", "should_trigger": false, "split": "validation" }
+]

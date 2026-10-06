@@ -1,0 +1,10 @@
+{
+  "name": "strict-mod-creator",
+  "version": "0.1.0",
+  "description": "Build a Claude Code mod — a plugin whose hooks module runs inside the engine — with a declared reach budget, a test per hook file, and a validator footprint check before it is done.",
+  "author": {
+    "name": "Viperwow",
+    "email": "viperkodiak@gmail.com"
+  },
+  "keywords": ["mods", "function-hooks", "mod-creator", "hooks", "plugins", "engine"]
+}

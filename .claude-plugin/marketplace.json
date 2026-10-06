@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Opinionated skill collection for professional software engineering workflows \u2014 modular, replaceable packages for every phase of daily work and SDLC.",
-    "version": "0.10.0"
+    "version": "0.11.0"
   },
   "plugins": [
     {
@@ -49,6 +49,13 @@
       "source": "./strict-script-creator",
       "description": "Turn a repeated routine into a reusable script, then reuse it and remove what nothing calls.",
       "version": "0.1.1",
+      "category": "automation"
+    },
+    {
+      "name": "strict-mod-creator",
+      "source": "./strict-mod-creator",
+      "description": "Build a Claude Code mod — a plugin whose hooks module runs inside the engine — with a declared reach budget, a test per hook file, and a validator footprint check before it is done.",
+      "version": "0.1.0",
       "category": "automation"
     },
     {
