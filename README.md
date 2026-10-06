@@ -43,4 +43,6 @@ Make Claude more structured, predictable, and useful for real software developme
 
 ## Status
 
+Contributor branch conventions and the local/CI commitlint setup are documented in [CONTRIBUTING.md](https://github.com/Viperwow/strict-ai/blob/main/CONTRIBUTING.md).
+
 Work in progress.

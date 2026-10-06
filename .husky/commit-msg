@@ -1,0 +1,2 @@
+sh scripts/run-existing-git-hook.sh commit-msg "$@" || exit $?
+pnpm exec commitlint --edit "$1"

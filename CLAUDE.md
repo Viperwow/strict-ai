@@ -2,6 +2,10 @@
 
 Primary operating guide for any assistant, agent, automation, or contributor in the strict.ai repository. First source of truth for structure, placement, and authoring conventions.
 
+## Git workflow
+
+Follow [CONTRIBUTING.md](https://github.com/Viperwow/strict-ai/blob/main/CONTRIBUTING.md): branches use `<type>/<short-kebab-case-topic>` from `main`, commits use Conventional Commits with lowercase subjects and headers of at most 100 characters. Local Husky and pull request CI enforce the shared commitlint configuration. Do not add AI attribution trailers.
+
 ## Core principle
 
 Preserve the repository structure as a stable contract. Change only on explicit user request.
