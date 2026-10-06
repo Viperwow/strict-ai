@@ -15,7 +15,11 @@ Project has no `.strict-ai/mods/`. Claude Code is `v2.1.287` or later.
 - `.strict-ai/mods/<name>/` holds `.claude-plugin/plugin.json`, `hooks/hooks.json` with a `modules` key, `hooks/register.ts`, `tests/register.test.ts`, `tsconfig.json`, `README.md`.
 - `register.ts` refuses with `{ deny: reason }` on the destructive commands and returns `next(e)` on every other path.
 - The block count lives in `$.store`, not only in a module variable.
-- Tests cover a refused command, an allowed command, and one crafted command string.
+- Tests fire mocked Bash events through the mod; none of the commands below executes against a real filesystem or remote.
+- Deletion cases refuse recursive deletion of the repository root with combined flags in either order (`rm -rf <repo-root>`, `rm -fr <repo-root>`) and separate flags (`rm -r -f <repo-root>`). An unrelated directory such as `/tmp` is not mistaken for the repository root. Include a quoted target and one crafted command string.
+- Force-push cases refuse `git push --force origin HEAD`, `git push -f origin HEAD`, `git push --force-with-lease origin HEAD`, and the forced refspec `git push origin +HEAD:main`. These all rewrite remote history and are inside this case's requested policy.
+- Allowed-push cases pass `git push origin HEAD` and `git push --dry-run origin HEAD` to `next(e)`.
+- The blocked count increases for a refused deletion or force push, stays unchanged for allowed commands, and is reflected above the prompt. Document the count's storage scope and use scope-specific keys when appropriate.
 - `claude plugin validate` output matches the budget; `claude plugin test` and `tsc` pass.
 - `README.md` has exactly: purpose, tested version, footprint, threat model.
 - `.strict-ai/mods/README.md` gains one registry line with reach and the load command.

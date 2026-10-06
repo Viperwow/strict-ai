@@ -12,5 +12,6 @@
   { "query": "add a SKILL.md that teaches Claude our commit message format", "should_trigger": false, "split": "train" },
   { "query": "fix the failing unit test in the payments service", "should_trigger": false, "split": "train" },
   { "query": "build an MCP server that exposes our Jira tickets", "should_trigger": false, "split": "validation" },
-  { "query": "what's the difference between cursor and offset pagination", "should_trigger": false, "split": "validation" }
+  { "query": "what's the difference between cursor and offset pagination", "should_trigger": false, "split": "validation" },
+  { "query": "write a PreToolUse shell hook that blocks recursive rm on the repository root; no interface changes or in-process behaviour needed", "should_trigger": false, "split": "validation" }
 ]
