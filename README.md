@@ -30,9 +30,10 @@ Swap `strict-workday` for any other available plugin from this marketplace. Upda
 | `strict-labs` | Experimental — under development |
 | `strict-agents-creator` | Create custom subagents from a task/role, with eval contract |
 | `strict-script-creator` | Turn a repeated routine into a reusable script, and prune what nothing calls |
+| `strict-mod-creator` | Build a Claude Code mod with a reach budget, tests, and a footprint check |
 | `strict-deprecated` | Pending removal — see replacement in each |
 
-> **Available in marketplace:** `strict-workday` · `strict-development` · `strict-management` · `strict-workflows` · `strict-knowledge` · `strict-labs` · `strict-agents-creator` · `strict-script-creator`
+> **Available in marketplace:** `strict-workday` · `strict-development` · `strict-management` · `strict-workflows` · `strict-knowledge` · `strict-labs` · `strict-agents-creator` · `strict-script-creator` · `strict-mod-creator`
 > `strict-agents` was renamed to `strict-agents-creator`. If you installed the old name, uninstall it and install the new one — the old entry no longer resolves.
 > The remaining plugins, apart from `strict-deprecated`, are actively being developed and will be released to the marketplace over time. `strict-deprecated` holds skills that are on their way out — see the replacement named in each.
 
@@ -41,5 +42,7 @@ Swap `strict-workday` for any other available plugin from this marketplace. Upda
 Make Claude more structured, predictable, and useful for real software development.
 
 ## Status
+
+Contributor branch conventions and the local/CI commitlint setup are documented in [CONTRIBUTING.md](https://github.com/Viperwow/strict-ai/blob/main/CONTRIBUTING.md).
 
 Work in progress.

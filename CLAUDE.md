@@ -2,6 +2,10 @@
 
 Primary operating guide for any assistant, agent, automation, or contributor in the strict.ai repository. First source of truth for structure, placement, and authoring conventions.
 
+## Git workflow
+
+Follow [CONTRIBUTING.md](https://github.com/Viperwow/strict-ai/blob/main/CONTRIBUTING.md): branches use `<type>/<short-kebab-case-topic>` from `main`, commits use Conventional Commits with lowercase subjects and headers of at most 100 characters. Local Husky and pull request CI enforce the shared commitlint configuration. Do not add AI attribution trailers.
+
 ## Core principle
 
 Preserve the repository structure as a stable contract. Change only on explicit user request.
@@ -24,6 +28,7 @@ strict/
   strict-adapters/
   strict-agents-creator/
   strict-script-creator/
+  strict-mod-creator/
   strict-labs/
   strict-deprecated/
 ```
@@ -44,6 +49,7 @@ strict/
 | `strict-adapters` | one specific tool/API/CLI/SDK only; replaceable; invocable by other skills only, not directly by users                        |
 | `strict-agents-creator` | creating custom subagents from a task/role — composing skills into an agent `.md`, its tools, model, and eval contract         |
 | `strict-script-creator` | turning a repeated routine into a reusable script, reusing it, and removing scripts nothing calls                              |
+| `strict-mod-creator` | building a mod — code that runs inside the agent engine on its events — with its reach budget, tests, and footprint check      |
 | `strict-labs` | experimental, still stabilizing, or searching for a permanent home                                                            |
 | `strict-deprecated` | confirmed replacement exists; removal scheduled; not the recommended path for any use case                                    |
 
@@ -156,9 +162,10 @@ The default is no comment. A comment is a hint to the next reader about the code
 
 This section is the summary. The full contract — doc blocks, the seven inline triggers, the cognitive-complexity threshold, and the configuration behind them — lives in the `strict-comment` skill in `strict-development`, and that skill decides.
 
-## Hooks, plugins, agents, and MCP
+## Hooks, mods, plugins, agents, and MCP
 
-Before creating hooks, plugins, agents, or MCP, review:
+Before creating hooks, mods, plugins, agents, or MCP, review:
+- Mods — hooks-module plugins, their test kit and noun contracts, with four shipped examples: <https://github.com/anthropics/claude-code/blob/main/mods/README.md>
 - Plugin structure and examples: <https://github.com/anthropics/claude-code/blob/main/plugins/README.md>
 - Plugin overview: <https://www.anthropic.com/news/claude-code-plugins?cb=zapier>
 - Subagents: <https://docs.claude.com/en/docs/claude-code/sub-agents?_bhlid=fab9dd4ba867c6a3f19d2ee04c0262e5f9fc2d40>
@@ -172,7 +179,13 @@ Before creating hooks, plugins, agents, or MCP, review:
 
 Standards outrank authorial examples. Read an authorial layout for ideas; follow the official structure when the two disagree.
 
-Hooks: deterministic enforcement. Workflows: composition. Adapters: tool-specific knowledge. Foundation: shared primitives.
+Hooks: deterministic enforcement. Mods: engine behaviour as code. Workflows: composition. Adapters: tool-specific knowledge. Foundation: shared primitives.
+
+### Mods
+
+Use a mod when the requested behaviour must run inside the agent engine; prefer a settings hook when an external command on an event is enough. Declare the reach and validate the footprint before calling a mod done.
+
+The complete file layout, host approval and activation rules, JS/TS checks, storage scope, and noun contracts live in [references/host-bindings.md](https://github.com/Viperwow/strict-ai/blob/main/strict-mod-creator/skills/strict-mod-creator/references/host-bindings.md) and [references/claude-code-mods.md](https://github.com/Viperwow/strict-ai/blob/main/strict-mod-creator/skills/strict-mod-creator/references/claude-code-mods.md) under `strict-mod-creator`. Completion requires validation, footprint agreement, behavioural tests, and the selected language's checks.
 
 ## Preferred internal package layout
 
