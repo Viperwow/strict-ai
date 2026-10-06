@@ -179,28 +179,9 @@ Hooks: deterministic enforcement. Mods: engine behaviour as code. Workflows: com
 
 ### Mods
 
-A mod is a Claude Code plugin whose behaviour lives in a TypeScript hooks module. `register(on, options)` hooks engine events as functions `($, e, next)`: it can answer an engine call, rewrite it and pass it on with `next`, or add a noun to `$`.
+Use a mod when the requested behaviour must run inside the agent engine; prefer a settings hook when an external command on an event is enough. Declare the reach and validate the footprint before calling a mod done.
 
-```text
-mod-name/
-  .claude-plugin/plugin.json   (options go in userConfig)
-  hooks/hooks.json             ({ "description", "modules": ["./register.ts"] })
-  hooks/register.ts
-  tests/register.test.ts
-  types/index.d.ts             (only when the mod adds a noun to $)
-  tsconfig.json
-```
-
-- Choose a classic hook when a shell command on an event is enough. Choose a mod when the work must answer or rewrite an engine call (`prompt.context`, `tool.call`), add a command or pane, or provide a noun other plugins call.
-- Mods are early access. The API may change between Claude Code releases without notice, so the mod's `README.md` names the Claude Code version it was tested on.
-- Type hooks against the declarations `/plugin-types` writes: `import type … from 'claude-code'`.
-- Each file under `hooks/` gets one test file of the same name in `tests/`, holding its imports, one `tier(...)`, and one `describe` with that name. Shared test data sits in `tests/fixtures/`, one export per file.
-- Answer the world beneath the mod with `mock.env`, `mock.store`, and `mock.clock`. An engine call the test leaves unanswered throws, naming its event.
-- A mod is done when `claude plugin test <dir>` and `tsc -p <dir>/tsconfig.json` both pass.
-- A mod that adds a noun owns its types in `types/index.d.ts`: no imports, the noun declared on `EngineInterface`. A mod that calls the noun includes that folder in its tsconfig and never copies the types.
-- Run a mod from source with `claude --plugin-dir <dir>`.
-- A mod is Claude Code only. In the Agent Plugins portable layout it lives in the Claude Code namespace directory.
-- A mod runs whether or not anyone asked for it, so it follows the hook placement rule under Boundary notes.
+The complete file layout, host approval and activation rules, JS/TS checks, storage scope, and noun contracts live in [references/host-bindings.md](https://github.com/Viperwow/strict-ai/blob/main/strict-mod-creator/skills/strict-mod-creator/references/host-bindings.md) and [references/claude-code-mods.md](https://github.com/Viperwow/strict-ai/blob/main/strict-mod-creator/skills/strict-mod-creator/references/claude-code-mods.md) under `strict-mod-creator`. Completion requires validation, footprint agreement, behavioural tests, and the selected language's checks.
 
 ## Preferred internal package layout
 

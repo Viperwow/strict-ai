@@ -11,11 +11,12 @@ import type { On, PluginOptions } from 'claude-code'
 
 export function register(on: On, options: PluginOptions): void {
   on('tool.call', { tool: 'Bash' }, async ($, e, next) => {
-    if (/\brm\s+-rf\s+\//.test(e.command)) return { deny: 'Refuses recursive delete at root.' }
     return next(e)
-  }).catch(() => ({ deny: 'Guard failed; refusing.' }))
+  })
 }
 ```
+
+This example only forwards Bash calls; it is not a deletion guard. A deletion policy needs command-aware option and target parsing, path resolution, and an explicit rule for commands it cannot interpret. A substring regex is insufficient: test option order (`-rf`, `-fr`), separate flags, quoting, command chains, and the distinction between `/` and `/tmp`. A filesystem-root policy differs from a repository-root policy; test the requested boundary without executing deletion commands.
 
 | Argument | Meaning |
 |---|---|
@@ -84,7 +85,7 @@ The second argument of `on` is an optional matcher on the event's fields: `{ too
 | `$.settings` | `read` |
 | `$.env` | `get`, `set` |
 | `$.fs` | `read`, `write`, `list`, `exists`, `stat`, `ancestors`; `write` is not atomic |
-| `$.store` | `get`, `set`, `delete`, `keys`; shared by every session on the machine |
+| `$.store` | `get`, `set`, `delete`, `keys`; persisted per plugin, shared by that plugin's sessions across projects; scope project/session values in their keys |
 | `$.state` | `get`, `set`; helpers `atom`, `read`, `update`, `derive`, `memberOf` from `claude-code` |
 | `$.clock` | `now`, `sleep`, `after`, `every` |
 | `$.http` | `fetch` |
@@ -151,4 +152,4 @@ The example is the official one from `mods/diff`. An installed mod uses the tier
 
 ## Noun contract
 
-A mod that adds a noun in `engine.create` owns its types in `types/index.d.ts`: no imports, the exported types named after the noun, and the noun declared on `EngineInterface` in `claude-code`. Its own hooks import from `../types`. A mod calling the noun includes that folder in its tsconfig; its tests seat an inline provider that adds the noun.
+A mod that adds a noun in `engine.create` owns its types in `types/index.d.ts`: no imports, the exported types named after the noun, and the noun declared on `EngineInterface` in `claude-code`. Set the manifest's `types` field to `types/index.d.ts` so the host includes the contract. This field is also needed when declaring `PluginState` for `$.state`, even without a new noun; otherwise omit it. Its own hooks import from `../types`. A mod calling the noun declares the provider dependency and uses its generated types, or includes the provider's types folder without copying it; its tests seat an inline provider that adds the noun.

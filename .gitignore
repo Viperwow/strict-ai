@@ -232,6 +232,3 @@ dist
 
 # Python
 __pycache__/
-
-# strict-ai run cache
-.strict-ai/cache/
