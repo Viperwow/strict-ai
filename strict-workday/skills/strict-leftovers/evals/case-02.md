@@ -13,9 +13,9 @@ Since the last run:
 1. Review comment, labelled `critical`: "Rename `editCell` to `onEditCell`."
 2. Review comment, labelled `medium`: "After the change, the Export button no longer opens its menu."
 3. User: "The video annotation idea belongs to R-1 after all."
-4. `open-count` has not shrunk for the last 3 runs. One `Open` entry sits at depth 3.
+4. The journal header holds `stall: 2`, and this run does not shrink `Open`. One `Open` entry sits at depth 3.
 
-Later in the same case, the user decides the Export regression and the button-management entry, then runs `/strict-leftovers` again.
+Later in the same case, the user decides every depth-1 entry of `R-1`: the Export regression, the button-management entry, the rename, and the video entry. The session shows every check green. The user leaves the depth-3 entry undecided and runs `/strict-leftovers` again.
 
 ## Expected final state
 
@@ -24,8 +24,9 @@ Later in the same case, the user decides the Export regression and the button-ma
 - The output holds one line `Tracker data is unavailable.` and one line `Messenger data is unavailable.` The run completes.
 - The video entry has moved from `Detached` to `Open`, with `from: R-1` and a depth. Its quote is unchanged.
 - The first output line reports the stall. The output lists the depth-3 entry and proposes moving it to `Later`. Nothing moves without the user.
-- After the final run, `R-1` shows `gate ok`, every depth-1 entry is decided, and the line reads `R-1 · gate ok · n/n · done`.
-- The remaining entries move into a `Follow-ups` tree with their links kept. Each root is listed as a ticket candidate.
+- The header now holds `stall: 3`.
+- After the final run, the line reads `R-1 · gate ok · 5/5 · done` (the inline-editing entry from case 01 is the fifth), and the task is done.
+- The undecided depth-3 entry moves into a `Follow-ups` tree with its links kept. Each root is listed as a ticket candidate.
 
 ## Required tool calls
 

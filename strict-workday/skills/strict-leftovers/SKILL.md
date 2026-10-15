@@ -56,9 +56,10 @@ An unreachable source prints one line, `<Source> data is unavailable.`, and the 
 8. **Route.**
    - A user remark like "would be cool", "not sure", or "need a ticket", with no explicit link to a requirement → `Detached`.
    - A detached entry the user links to a requirement → `Open`, with parent and depth. Its quote stays unchanged.
+   - Any other entry with no parent → `Detached`.
    - An entry the user deferred → `Later`.
    - Anything else undecided → `Open`.
-9. **Write.** Update `last-run` and `open-count`, rewrite the graph block, update the registry line.
+9. **Write.** Update `last-run` and `open-count`. Set `stall` to 0 when `Open` shrank, otherwise add 1. Rewrite the graph block and update the registry line.
 10. **Print** the chat output.
 
 Entries are never deleted. Quotes are never rewritten.
@@ -75,7 +76,7 @@ Entries at `driftDepth` or deeper carry the tag `drift`.
 
 ## Stall rule
 
-After `stallRuns` runs in a row without `Open` shrinking, the first output line says so. Then list the `Open` entries at `driftDepth` or deeper and propose moving them to `Later`. Move nothing without the user.
+When `stall` reaches `stallRuns`, the first output line says so. Then list the `Open` entries at `driftDepth` or deeper and propose moving them to `Later`. Move nothing without the user.
 
 ## Done
 
@@ -84,7 +85,9 @@ After `stallRuns` runs in a row without `Open` shrinking, the first output line 
 1. No open entry in the subtree is `blocker`, `critical`, or `high`.
 2. Every depth-1 entry is `decided`.
 
-**Task done.** Every requirement is done, every check is green, and review shows no finding above `medium`. Take check and review state from the sources and the local git state. A fact the agent cannot see prints `unknown` and counts as not met. Print each unmet condition on one line.
+Progress `n/m` counts decided depth-1 entries out of all depth-1 entries of that requirement.
+
+**Task done.** Every requirement is done, every check is green, and no open entry has an assigned severity above `medium`. The `stated` label never counts. Take check and review state from the sources and the local git state. A fact the agent cannot see prints `unknown` and counts as not met. Print each unmet condition on one line.
 
 **Follow-ups.** When the task is done, move every remaining entry into the `Follow-ups` tree, links kept: undecided entries, `Later`, and `Detached`. List each root as a ticket candidate. Record a ticket link only when the user gives one.
 

@@ -5,7 +5,7 @@
 ````markdown
 # PROJ-123 leftovers
 
-last-run: 2026-10-15T14:02:00Z · open-count: 4
+last-run: 2026-10-15T14:02:00Z · open-count: 4 · stall: 0
 
 DoD: "<verbatim>"
 

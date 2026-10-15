@@ -28,7 +28,7 @@ No Definition of Done was stated.
 - Message 5 is a question and message 6 decides it. The entry sits under `Decided`, status `decided`, with message 5 as its quote and message 6 verbatim after `→`.
 - Message 4 sits under `Detached`, `by: user`, verbatim, with no `from` and no `depth`.
 - The graph block contains node `R1`, an edge from `R1`, and one unconnected node for the detached entry.
-- Chat output starts with `## strict-leftovers output`, then one counts line, then `Open` items only.
+- Chat output starts with `## strict-leftovers output`. Next come the absence lines (`Tracker data is unavailable.` is among them), then one counts line, then one progress line for `R-1`, then `Open` items only.
 - `.strict-ai/leftovers/README.md` exists and holds one line for this journal.
 
 ## Required tool calls
