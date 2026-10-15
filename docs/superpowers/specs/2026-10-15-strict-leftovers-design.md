@@ -182,14 +182,24 @@ requested.
 
 ## Done
 
-The task is done when all four hold:
+Done is tracked per requirement, then per task.
 
-- `Open` is 0;
-- every DoD criterion is met;
+**Requirement done.** `R-n` is marked done when every entry in its subtree above `driftDepth` is
+`decided`. The output shows progress per requirement: `R-1 · 5/5 · done`, `R-2 · 3/6`.
+
+**Task done.** All three hold:
+
+- every requirement is done;
 - every check is green;
 - review shows no finding above `medium`.
 
-The skill states which of the four are not yet met, one line each.
+The skill states which conditions are not yet met, one line each.
+
+**Follow-ups.** When the task is done, every remaining entry moves into a separate `Follow-ups` tree:
+undecided entries at `driftDepth` or deeper, `Later`, and `Detached`. The tree keeps its links, so it
+shows what each follow-up grew from. Each root of that tree is a candidate ticket. The skill lists the
+candidates; the user creates the tickets and the skill records their links. This is the conclusion of
+the task: what the work found but did not own.
 
 ## Evidence
 
