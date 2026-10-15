@@ -44,8 +44,8 @@ Add only what the compression mode lacks. The compression mode is primary: on an
 
 ## Precedence
 
-The compression mode wins every conflict. Where it allows fragments or dropped words, this package does
-not restore them.
+The compression mode wins every conflict, in every language, Russian included. Where it allows fragments
+or dropped words, this package does not restore them.
 
 ## `references/ru.md` content
 
