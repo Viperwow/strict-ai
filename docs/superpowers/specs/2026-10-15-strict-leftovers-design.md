@@ -61,6 +61,7 @@ kebab-case, 60 characters maximum. With none available it falls back to `YYYY-MM
 | Field | Default | Meaning |
 |---|---|---|
 | `driftDepth` | `3` | depth at which an item counts as drift |
+| `doneRatio` | `0.9` | share of non-critical entries per requirement that must be decided |
 | `stallRuns` | `3` | runs in a row without `Open` shrinking before the stall rule fires |
 
 ## Sources
@@ -184,8 +185,19 @@ requested.
 
 Done is tracked per requirement, then per task.
 
-**Requirement done.** `R-n` is marked done when every entry in its subtree above `driftDepth` is
-`decided`. The output shows progress per requirement: `R-1 · 5/5 · done`, `R-2 · 3/6`.
+**Requirement done.** Each `R-n` is judged on its own subtree, above `driftDepth`. It is done when
+both hold:
+
+1. **Hard gate.** No open entry is `blocker` or `critical`, and none carries a security, money,
+   personal-data, or regression risk. Always 100%.
+2. **Ratio.** At least `doneRatio` of the remaining entries are `decided`. The rest move to
+   `Follow-ups`.
+
+The output shows progress per requirement: `R-1 · 9/10 · done`, `R-2 · 3/6`.
+
+`doneRatio` defaults to `0.9`. It is a convention, not a measured threshold: no study found supports a
+specific value, so it is configurable. A single ratio alone is not enough, because the undecided 10%
+may hold a critical regression; the hard gate covers that.
 
 **Task done.** All three hold:
 
