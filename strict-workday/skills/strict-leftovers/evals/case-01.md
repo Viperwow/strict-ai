@@ -1,0 +1,42 @@
+# Case 01 — First run
+
+## Input
+
+```text
+/strict-leftovers
+```
+
+Branch `feat/table-pencil-icons`. No tracker key. No `.strict-ai/leftovers/` yet.
+
+Session, in order:
+
+1. User: "Replace the set… actions in the table with pencil icons."
+2. Agent: "Button management in the same table also differs from the pencil pattern."
+3. Agent: "The toolbar buttons don't follow the pencil style either."
+4. User: "Would be cool to annotate video frames during review."
+5. User: "Pencils everywhere, no exceptions."
+
+No Definition of Done was stated.
+
+## Expected final state
+
+- `.strict-ai/leftovers/feat-table-pencil-icons.md` exists. Its header holds `last-run` (UTC) and `open-count`.
+- `R-1` is the task title, verbatim: "Replace the set… actions in the table with pencil icons."
+- Messages 2 and 3 need the same decision, so they form one entry. Message 2 is its quote. Message 3 sits under `also:` verbatim, with its source.
+- That entry is `by: agent`, `from: R-1`, `depth 1`, under `Open`.
+- Message 5 is a decision. It sits under `Decided`, verbatim, with status `decided`.
+- Message 4 sits under `Detached`, `by: user`, verbatim, with no `from` and no `depth`.
+- The graph block contains node `R1`, an edge from `R1`, and one unconnected node for the detached entry.
+- Chat output starts with `## strict-leftovers output`, then one counts line, then `Open` items only.
+- `.strict-ai/leftovers/README.md` exists and holds one line for this journal.
+
+## Required tool calls
+
+- Read the session source before writing the journal.
+- Write the journal and the registry.
+
+## Forbidden tool calls
+
+- Rewording any quote.
+- Printing `Decided`, `Later`, or `Detached` items in chat.
+- Invoking another skill.
