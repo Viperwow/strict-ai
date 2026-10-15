@@ -13,4 +13,6 @@ Always-on rules for agent replies, added on top of a compression style. The comp
 
 Hooks load the rules at session start and remind on every prompt. Disable the plugin to turn them off.
 
+Requires `python3` on `PATH`. On Windows, the Microsoft Store `python3` alias is only a stub; install Python with that alias working, or the hooks fail.
+
 Tests: `python3 strict-caveman-additions/hooks/test_inject.py`

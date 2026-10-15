@@ -20,7 +20,7 @@ the duplicates, which deletes rows.
 - No metaphors, comparisons, slang, or jargon.
 - Steps are a vertical list, one instruction per item, in the imperative.
 - `0042_orders_index`, `orders.ref`, and the error text stay exact.
-- The reply is no longer than the compression mode alone would produce, except where a rule above requires it.
+- Length: generate the same reply once with the package disabled. The reply with the package has no more words, except words a rule above requires; name each such rule.
 
 ## Forbidden
 

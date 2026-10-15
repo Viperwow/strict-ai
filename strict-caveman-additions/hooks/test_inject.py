@@ -4,6 +4,7 @@
 import os
 import subprocess
 import sys
+import tempfile
 
 from inject import REFERENCES, reminder, rules
 
@@ -33,14 +34,19 @@ prompt = run("prompt")
 assert prompt.returncode == 0, prompt.stderr
 assert len(prompt.stdout.decode("utf-8").strip().splitlines()) == 1
 
-en = REFERENCES[0]
-hidden = en + ".hidden"
-os.rename(en, hidden)
-try:
-    partial = rules()
-    assert "8.2.5.1" in partial and "six sentences" in partial, "missing reference must not drop the rest"
-    assert "-ing" not in partial
-finally:
-    os.rename(hidden, en)
+assert "https://" not in text, "link lines cost tokens every session"
+
+original = list(REFERENCES)
+with tempfile.TemporaryDirectory() as tmp:
+    broken = os.path.join(tmp, "broken.md")
+    with open(broken, "wb") as handle:
+        handle.write(b"\xff\xfe not utf-8")
+    REFERENCES[:] = [os.path.join(tmp, "missing.md"), broken, original[1]]
+    try:
+        partial = rules()
+    finally:
+        REFERENCES[:] = original
+assert "8.2.5.1" in partial and "six sentences" in partial, "missing or broken reference must not drop the rest"
+assert "-ing" not in partial
 
 print("ok")

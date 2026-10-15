@@ -13,7 +13,7 @@ def read(path):
     try:
         with open(path, encoding="utf-8") as handle:
             return handle.read()
-    except OSError:
+    except (OSError, ValueError):
         return ""
 
 
@@ -27,7 +27,9 @@ def body(text):
 
 def rules():
     parts = [body(read(SKILL))] + [read(path) for path in REFERENCES]
-    return "\n\n".join(part.strip() for part in parts if part.strip())
+    text = "\n\n".join(part.strip() for part in parts if part.strip())
+    # The references are inlined below, so their link lines would only add tokens to every session.
+    return "\n".join(line for line in text.split("\n") if "https://" not in line)
 
 
 def reminder():

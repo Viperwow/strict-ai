@@ -17,7 +17,7 @@ the duplicates, which deletes rows.
 - Verbs use simple present, simple past, or simple future only.
 - No `-ing` form is used as a noun or to start a clause.
 - `0042_orders_index`, `orders.ref`, and the error text stay exact.
-- The reply is no longer than the compression mode alone would produce, except where a rule above requires it.
+- Length: generate the same reply once with the package disabled. The reply with the package has no more words, except words a rule above requires; name each such rule.
 
 ## Forbidden
 

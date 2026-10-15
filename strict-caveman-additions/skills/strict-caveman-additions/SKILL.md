@@ -10,13 +10,12 @@ Rules for every reply the agent writes to the user, including subagent results i
 
 ## Precedence
 
-The compression style wins every conflict, in every language. Where it drops words or allows fragments, do not restore them.
+The compression style wins every conflict, in every language. Where it drops words or allows fragments, do not restore them. Its own exceptions, such as full prose for irreversible actions, still apply.
 
 ## Every language
 
 - **Paragraphs.** One topic per paragraph. At most six sentences.
 - **Warnings.** Start with a command. Then give a short reason.
-- **Exact text.** Technical terms, code, commands, paths, and error text stay exact, in their original language.
 
 ## Per language
 
