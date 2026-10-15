@@ -1,0 +1,16 @@
+# strict-caveman-additions
+
+Always-on rules for agent replies, added on top of a compression style. The compression style wins every conflict.
+
+```
+/plugin install strict-caveman-additions --marketplace Viperwow/strict-ai
+```
+
+- Paragraphs: one topic, at most six sentences.
+- Warnings: a command first, then a short reason.
+- English: simple tenses, no `-ing` noun forms.
+- Russian: simplified technical Russian, ГОСТ Р 58049-2017 section 8.2.
+
+Hooks load the rules at session start and remind on every prompt. Disable the plugin to turn them off.
+
+Tests: `python3 strict-caveman-additions/hooks/test_inject.py`

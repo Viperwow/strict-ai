@@ -29,6 +29,7 @@ strict/
   strict-agents-creator/
   strict-script-creator/
   strict-mod-creator/
+  strict-caveman-additions/
   strict-labs/
   strict-deprecated/
 ```
@@ -50,6 +51,7 @@ strict/
 | `strict-agents-creator` | creating custom subagents from a task/role — composing skills into an agent `.md`, its tools, model, and eval contract         |
 | `strict-script-creator` | turning a repeated routine into a reusable script, reusing it, and removing scripts nothing calls                              |
 | `strict-mod-creator` | building a mod — code that runs inside the agent engine on its events — with its reach budget, tests, and footprint check      |
+| `strict-caveman-additions` | always-on reply rules added on top of a compression style — paragraphs, warnings, per-language controlled-language references |
 | `strict-labs` | experimental, still stabilizing, or searching for a permanent home                                                            |
 | `strict-deprecated` | confirmed replacement exists; removal scheduled; not the recommended path for any use case                                    |
 
