@@ -61,7 +61,6 @@ kebab-case, 60 characters maximum. With none available it falls back to `YYYY-MM
 | Field | Default | Meaning |
 |---|---|---|
 | `driftDepth` | `3` | depth at which an item counts as drift |
-| `doneRatio` | `0.9` | share of non-critical entries per requirement that must be decided |
 | `stallRuns` | `3` | runs in a row without `Open` shrinking before the stall rule fires |
 
 ## Sources
@@ -123,13 +122,27 @@ Entry fields:
 | id | `R-n` requirement, `L-n` leftover; ids never change or get reused |
 | status | `new` → `viewed` → `decided` |
 | by | `user` \| `agent` |
-| severity | `blocker` \| `critical` \| `high` \| `medium` \| `low`, when the source states one |
+| severity | `blocker` \| `critical` \| `high` \| `medium` \| `low`, assigned by the skill per the table below |
+| stated | the severity label the source gave, kept as-is |
 | quadrant | Eisenhower `Q1`–`Q4`: importance = path to a requirement, urgency = severity or a stated deadline |
 | from | parent id; absent for detached entries |
 | depth | edges from the nearest requirement; absent for detached entries |
 | source | where it was said: session, review, PR, tracker |
 
 Entries move between sections. They are never rewritten or deleted.
+
+### Severity
+
+The skill assigns severity by user impact, not by the reviewer's label. When two levels fit, it takes
+the higher one and states why in one line.
+
+| Level | Definition | Example |
+|---|---|---|
+| `blocker` | The task cannot be merged or shipped. | Build or tests fail. The main scenario of a requirement does not work. |
+| `critical` | Harm with no workaround. | A vulnerability. Money loss. Personal-data leak. Data corruption. A regression breaks an existing feature. |
+| `high` | A common scenario works wrong. A workaround exists. | A requirement behaves wrong in the typical case. Visible performance or visual degradation. |
+| `medium` | A rare scenario works wrong. | An edge case with a simple workaround. |
+| `low` | No effect on behavior. | Style, naming, a refactoring suggestion. |
 
 Graph nodes are colored by status. Detached nodes stand alone, unconnected to any requirement.
 
@@ -157,8 +170,7 @@ On `/strict-leftovers [task-id]`:
 
 `Open` is sorted by these keys, in order:
 
-1. Severity `blocker` or `critical`, or any security, money, personal-data, or regression risk — always
-   first, whoever raised it.
+1. Severity `blocker`, `critical`, `high`, in that order — always first, whoever raised it.
 2. Depth from a requirement, ascending.
 3. Author: `user` before `agent`.
 4. Eisenhower quadrant: `Q1`, `Q2`, `Q3`, `Q4`.
@@ -185,19 +197,16 @@ requested.
 
 Done is tracked per requirement, then per task.
 
-**Requirement done.** Each `R-n` is judged on its own subtree, above `driftDepth`. It is done when
-both hold:
+**Requirement done.** Each `R-n` is judged on its own subtree. It is done when both hold:
 
-1. **Hard gate.** No open entry is `blocker` or `critical`, and none carries a security, money,
-   personal-data, or regression risk. Always 100%.
-2. **Ratio.** At least `doneRatio` of the remaining entries are `decided`. The rest move to
-   `Follow-ups`.
+1. **Hard gate.** No open entry in the subtree is `blocker`, `critical`, or `high`.
+2. **Direct entries.** Every depth-1 entry, one that grew straight from the requirement, is `decided`.
 
-The output shows progress per requirement: `R-1 · 9/10 · done`, `R-2 · 3/6`.
+Everything else in the subtree moves to `Follow-ups`. The output shows progress per requirement:
+`R-1 · gate ok · 4/4 · done`, `R-2 · 1 high open · 2/5`.
 
-`doneRatio` defaults to `0.9`. It is a convention, not a measured threshold: no study found supports a
-specific value, so it is configurable. A single ratio alone is not enough, because the undecided 10%
-may hold a critical regression; the hard gate covers that.
+There is no percentage threshold. No study found supports a universal share of resolved items, and
+most review comments never lead to a code change, so a high ratio would force the user through noise.
 
 **Task done.** All three hold:
 
@@ -223,7 +232,8 @@ Each design choice rests on a measured effect:
 | Merge before adding | People default to adding and overlook subtraction (Adams et al., Nature 2021) |
 | Verbatim decisions in a file | Written plans remove intrusive thoughts about unfinished goals (Masicampo & Baumeister 2011) |
 | Depth and drift | Scope creep hit 52% of projects (PMI Pulse 2018) |
-| Severity before depth | About a third of "bugs" are misclassified (Herzig et al. 2013), so stated severity orders but does not filter |
+| Skill assigns severity | About a third of "bugs" are misclassified (Herzig et al. 2013) |
+| Gate by severity, no ratio | LLM review comments lead to code changes in 38.7% of cases, human ones in 44.5% (Atlassian, 54k comments, arXiv 2601.01129); about 15% of review comments point to a defect (Czerwonka et al., Microsoft) |
 | Eisenhower quadrant | A visual label. The urgency bias it targets is measured (Zhu et al. 2018); the matrix itself has no controlled trials |
 
 ## Resolved calls
