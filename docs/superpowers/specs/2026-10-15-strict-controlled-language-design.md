@@ -16,8 +16,8 @@ says nothing about how a Russian sentence is built.
 Every agent reply in Russian follows simplified technical Russian (УТР), section 8.2 of
 ГОСТ Р 58049-2017. The user reads one structure every time and understands faster.
 
-The package complements the modes already installed; it never restates their rules. A language reference
-may be removed later, in its own commit, if the user decides an installed mode covers that language.
+The package complements the modes already installed; it never restates their rules. After a trial period, if a
+language reference does not fit, the user may remove it in a separate commit.
 
 ## Goals
 
