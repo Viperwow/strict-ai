@@ -115,9 +115,14 @@ git commit -m "test(strict-workday): add strict-leftovers behavior cases"
 **Files:**
 - Create: `strict-workday/skills/strict-leftovers/SKILL.md`
 - Create: `strict-workday/skills/strict-leftovers/references/journal-format.md`
+- Create: `strict-workday/skills/strict-leftovers/references/host-bindings.md`
 
 **Interfaces:**
 - Consumes: Task 1 trigger set, Task 2 cases.
+
+- [ ] **Step 0: Write `references/host-bindings.md`**
+
+A table, one row per host: host, transcript location, session memory store. Claude Code row: transcript `~/.claude/projects/<project-slug>/<session-id>.jsonl` (project slug = working directory with `:`, `\`, `/` replaced by `-`; newest file when the session id is unknown); memory store `context-mode` (`ctx_search`), when installed.
 
 - [ ] **Step 1: Write `references/journal-format.md`**
 

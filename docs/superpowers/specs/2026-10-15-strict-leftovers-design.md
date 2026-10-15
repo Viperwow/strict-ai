@@ -67,7 +67,10 @@ kebab-case, 60 characters maximum. With none available it falls back to `YYYY-MM
 
 Read on every run, each only when the agent can reach it:
 
-- the current session;
+- the current session, from the first source available, in order:
+  1. the host's session transcript file — verbatim and complete, it survives context compaction;
+  2. a session memory store, when installed — quotes from it carry `source: <store>`;
+  3. the visible context;
 - PR review comments, automated and human;
 - the tracker ticket: description and comments;
 - messengers available to the agent, filtered to the task.
@@ -243,9 +246,9 @@ Settled during the builder check. Each is the author's call, not the user's.
 - **Requirements.** One `R-n` per atomic requirement or DoD criterion, verbatim. Any run may append
   new `R-n` entries. With none found, the task title becomes `R-1`.
 - **DoD.** Copied verbatim from the session once, on first run. The skill invokes nothing to get it.
-- **Cursor.** The journal header stores `last-run` (UTC) and `open-count`. Each run rescans the visible
-  session and drops quotes already in the journal. What compaction removed is lost; the journal is the
-  defense against that, not a recovery of it.
+- **Cursor.** The journal header stores `last-run` (UTC) and `open-count`. Each run reads the session
+  source from `last-run` onward and drops quotes already in the journal. Host transcript paths live in a
+  binding table in `references/host-bindings.md`, one row per host, so `SKILL.md` stays vendor-neutral.
 - **Duplicates.** A duplicate needs the same decision, not just the same topic. The first wording stays
   as the entry's quote. Every other wording is kept verbatim under `also:` with its source.
 - **Parent.** The agent infers the parent from content. A user remark or an agent finding with no
