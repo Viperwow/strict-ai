@@ -24,17 +24,18 @@ No Definition of Done was stated.
 - `.strict-ai/leftovers/feat-table-pencil-icons.md` exists. Its header holds `last-run` (UTC) and `open-count`.
 - The header holds `DoD: n/a`.
 - `R1` is the task title, verbatim: "Replace the set… actions in the table with pencil icons."
-- Messages 2 and 3 need the same decision, so they form one entry. Message 2 is its quote. Message 3 sits under `also:` verbatim, with its source.
-- That entry is `L1`, `by: agent`, `from: R1`, `depth 1`, under `Open`.
+- Message 2 is `L1`, `by: agent`, `from: R1`, `depth 1`, under `Open`, severity `low`.
+- Message 3 needs a different fix (the toolbar sits outside the table), so it is its own entry: `L1.1`, `by: agent`, `from: L1`, `depth 2`, under `Open`, severity `low`. No `also:` line.
 - Message 5 is a question and message 6 decides it. The entry is `L2` under `Decided`, status `decided`, with message 5 as its quote and message 6 verbatim after `→`.
 - Message 4 is `D1` under `Detached`, `by: user`, verbatim, with no `from` and no `depth`.
-- The graph block contains node `R1`, an edge from `R1`, and one unconnected node for the detached entry.
+- The graph block holds `R1 --> L1 --> L1.1`, `R1 --> L2`, and an unconnected `D1`. The header holds `open-count: 2` and `stall: 0`.
 - Chat output, after `## strict-leftovers output`:
 
   ```text
   Leftovers
   1/2 R1 · <title> | gate ok
-  ├─ [ ] L1 · <title> | low
+  ├─ 0/1 L1 · <title> | low
+  │  └─ [ ] L1.1 · <title> | low
   └─ [x] L2 · <title>
 
   Detached

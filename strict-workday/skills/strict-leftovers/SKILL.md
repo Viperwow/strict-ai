@@ -50,7 +50,7 @@ A source that is missing or unreachable prints one line, `<Source> data is unava
 3. **Extract.** Questions, findings, and decisions. Store each quote verbatim, and give each entry a title of at most 8 words in the user's language.
 4. **Split and merge.** A quote whose parts are joined by "and" becomes one entry per part: the whole quote is the parent, each part a child quoting that part verbatim. Entries that one answer or one fix settles are one entry. The first wording is the quote; every other wording goes under `also:` verbatim with its source.
 5. **Link.** Infer each entry's parent from its content and compute its depth. An entry with no inferable parent is detached. Assign ids per the journal format; an entry keeps its id across sections and trees; only a new parent gives it a new id, with the old one kept as `was`.
-6. **Status.** `viewed` when the user referred to the entry; `decided` when the user stated a decision, stored verbatim under the question.
+6. **Status.** `viewed` when the user referred to the entry; `decided` when the user stated a decision, stored verbatim under the question. Deciding an entry never decides its children.
 7. **Severity.** Assign it per the severity table in the journal format. Keep the source's label as `stated`. When the severity differs from `stated`, record why in one line under `why`.
 8. **Route.**
    - A user remark like "would be cool", "not sure", or "need a ticket", with no explicit link to a requirement → `Detached`.
@@ -76,7 +76,7 @@ When `stall` reaches `stallRuns`, the output opens with the stall line. Entries 
 
 Progress `n/m` counts decided depth-1 entries out of all depth-1 entries of that requirement.
 
-**Task done.** Every requirement is done and every check is green. Take check and review state from the sources and the local git state. A fact the agent cannot see counts as not met. Task done changes only the first line; the trees print as usual.
+**Task done.** Every requirement is done and every check is green. Take check and review state from the sources and the local git state. A fact the agent cannot see counts as not met. Task done changes only the first line; the trees print as usual, with moved entries now in `Follow-ups` instead of `Leftovers`.
 
 **Follow-ups.** When the task is done, move every remaining entry into the `Follow-ups` tree, links kept: undecided entries, `Later`, and `Detached`. Mark the topmost moved entry on each path as a ticket candidate. Record a ticket link only when the user gives one.
 
