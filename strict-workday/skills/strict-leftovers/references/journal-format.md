@@ -52,7 +52,7 @@ graph TD
 |---|---|
 | id | `R<n>` requirement; `L<n>` depth-1 entry, numbered across all requirements; a child adds `.<n>` to its parent's id (`L1.2.1`); `D<n>` detached entry. Ids are never reused |
 | title | the skill's summary of the quote, at most 8 words, in the user's language |
-| was | the entry's previous id, set when a move changed it |
+| was | the entry's previous id, set when a new parent changed it |
 | status | `new` → `viewed` → `decided` |
 | by | `user` \| `agent` |
 | severity | `blocker` \| `critical` \| `high` \| `medium` \| `low`, assigned per the severity table |
@@ -62,6 +62,8 @@ graph TD
 | depth | edges from the nearest requirement; absent for detached entries |
 | source | where it was said: session, review, PR, tracker, messenger, or a session memory store |
 | also | other wordings of the same entry, verbatim, each with its source |
+
+An entry keeps its id when it moves between `Open`, `Decided`, `Later`, and `Follow-ups`. Only a new parent changes it, such as a detached entry the user links to a requirement.
 
 Quotes never change. Section, id, title, status, `from`, and `depth` may change.
 

@@ -49,7 +49,7 @@ An unreachable source prints one line, `<Source> data is unavailable.`, and the 
 2. **Read.** Take source content from `last-run` onward. Drop quotes the journal already holds.
 3. **Extract.** Questions, findings, and decisions. Store each quote verbatim, and give each entry a title of at most 8 words in the user's language.
 4. **Merge.** Entries that need the same decision are one entry. The first wording is the quote; every other wording goes under `also:` verbatim with its source.
-5. **Link.** Infer each entry's parent from its content and compute its depth. An entry with no inferable parent is detached. Assign ids per the journal format; an entry that moves gets a new id and keeps the old one as `was`.
+5. **Link.** Infer each entry's parent from its content and compute its depth. An entry with no inferable parent is detached. Assign ids per the journal format; an entry keeps its id across sections and trees; only a new parent gives it a new id, with the old one kept as `was`.
 6. **Status.** `viewed` when the user referred to the entry; `decided` when the user stated a decision, stored verbatim under the question.
 7. **Severity.** Assign it per the severity table in the journal format. Keep the source's label as `stated`.
 8. **Route.**

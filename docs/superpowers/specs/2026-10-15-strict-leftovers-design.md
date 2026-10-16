@@ -122,7 +122,7 @@ Entry fields:
 
 | Field | Values |
 |---|---|
-| id | `R<n>` requirement; `L<n>` depth-1 entry; a child adds `.<n>` to its parent's id; `D<n>` detached. A move changes the id and keeps the old one as `was` |
+| id | `R<n>` requirement; `L<n>` depth-1 entry; a child adds `.<n>` to its parent's id; `D<n>` detached. The id survives moves between sections and trees; only a new parent changes it, keeping the old one as `was` |
 | status | `new` → `viewed` → `decided` |
 | by | `user` \| `agent` |
 | severity | `blocker` \| `critical` \| `high` \| `medium` \| `low`, assigned by the skill per the table below |

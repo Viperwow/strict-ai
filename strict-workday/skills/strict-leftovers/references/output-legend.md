@@ -30,7 +30,7 @@ Every symbol the chat output may print, and what it means.
 | `L<n>.<m>` | A child of `L<n>`. Each level of depth adds one `.<m>`: `L1.2.1` is depth 3. |
 | `D<n>` | A detached entry. |
 
-An id is an address in the tree. A move gives the entry a new id; the old one stays as `was`.
+An id keeps its value across `Leftovers`, `Later`, and `Follow-ups`: `L6` stays `L6` in every tree. Only a new parent changes it; the old id stays as `was`.
 
 ## Tree
 
@@ -54,6 +54,6 @@ An id is an address in the tree. A move gives the entry a new id; the old one st
 | `▲ <stated>` | The skill raised the severity above the source's label `<stated>`. |
 | `▼ <stated>` | The skill lowered the severity below the source's label `<stated>`. |
 | `drift` | The entry sits at `driftDepth` or deeper: far from its requirement. |
-| `was <id>` | The entry's previous id before a move. |
+| `was <id>` | The entry's previous id, before a new parent changed it. |
 | `ticket candidate` | A `Follow-ups` root the user may turn into a ticket. |
 | `user` / `agent` | Who raised a detached entry. |
