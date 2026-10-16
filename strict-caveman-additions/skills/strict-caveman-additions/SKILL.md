@@ -16,6 +16,7 @@ The compression style wins every conflict, in every language. Where it drops wor
 
 - **Paragraphs.** One topic per paragraph. At most six sentences.
 - **Warnings.** Start with a command. Then give a short reason.
+- **Technical text.** Keep commands, paths, identifiers, and error text exact, even where a language rule conflicts.
 
 ## Per language
 
