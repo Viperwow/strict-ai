@@ -47,8 +47,8 @@ An id keeps its value across `Leftovers`, `Later`, and `Follow-ups`: `L6` stays 
 
 | Symbol | Meaning |
 |---|---|
-| `gate ok` | Requirement gate passed: no open `blocker`, `critical`, or `high` in its subtree. |
-| `Blocked by <ids>` | Requirement gate failed; these entries hold it. |
+| `gate ok` | Requirement gate passed: no open `blocker`, `critical`, `high`, or `must` entry in its subtree. |
+| `Blocked by <ids>` | Requirement gate failed; these open `blocker`, `critical`, `high`, or `must` entries hold it. |
 | `blocker` `critical` `high` `medium` `low` | Severity the skill assigned by user impact. Definitions: [references/journal-format.md](https://github.com/Viperwow/strict-ai/blob/main/strict-workday/skills/strict-leftovers/references/journal-format.md). |
 | `▲ <stated>` | The skill raised the severity above the source's label `<stated>`. |
 | `▼ <stated>` | The skill lowered the severity below the source's label `<stated>`. |

@@ -78,7 +78,7 @@ Read on every run, each only when the agent can reach it:
 ## Stall rule
 
 After `stallRuns` runs in a row without `Open` shrinking, the output opens with
-`🟧 Stall Open <n> (+<growth>).` Entries at `driftDepth` or deeper carry `drift` in the tree. The skill
+`🟧 Stall Open <n> (+<growth>).` On every run, entries at `driftDepth` or deeper carry `drift` in the tree. The skill
 moves nothing on its own.
 
 ## Journal format

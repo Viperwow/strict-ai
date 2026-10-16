@@ -75,11 +75,13 @@ Entries are never deleted. Quotes are never rewritten.
 
 ## Stall rule
 
-When `stall` reaches `stallRuns`, the output opens with the stall line. Entries at `driftDepth` or deeper carry the tag `drift`.
+When `stall` reaches `stallRuns`, the output opens with the stall line.
+
+On every run, entries at `driftDepth` or deeper carry the tag `drift`.
 
 ## Done
 
-**Requirement done.** Judge each `R<n>` on its own subtree. It is done when all hold:
+**Requirement done.** Judge each `R<n>` on its own subtree in `Leftovers`; entries in `Later` or `Follow-ups` do not count. It is done when all hold:
 
 1. No open entry in the subtree is `blocker`, `critical`, or `high`. The `stated` label never counts.
 2. Every depth-1 entry is `decided`.
@@ -126,7 +128,7 @@ Detached
 Tracker data is unavailable.
 ```
 
-- The first line after the heading is the stall line, `🟧 Stall Open <n> (+<growth>).`, or, when the task is done, `✅ Task Done: please, review the leftovers. Is the task finished?` Neither applies → the output starts at `Leftovers`. One empty line follows it.
+- The first line after the heading is the stall line, `🟧 Stall Open <n> (+<growth>).`, or, when the task is done, `✅ Task Done: please, review the leftovers. Is the task finished?`, which wins over the stall line Neither applies → the output starts at `Leftovers`. One empty line follows it.
 - `Leftovers` always prints. Its roots are the requirements; the tree holds `Open` and `Decided` entries in place.
 - Every entry shows `[ ]` open or `[x]` decided. A branch adds `<decided children>/<children>` after it, in every tree: `[x] 0/1 L1` is decided with one open child. A requirement shows only the count.
 - Each tree counts only the entries it holds. An entry whose children all moved to another tree is a leaf in its own tree, and counts there by its own status.

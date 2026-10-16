@@ -39,7 +39,7 @@ No Definition of Done was stated.
   └─ [x] L2 · <title>
 
   Detached
-  - D1 · <title> | user
+  - D1 · <summary, at most 30 words> | user
 
   PR data is unavailable.
   Tracker data is unavailable.
