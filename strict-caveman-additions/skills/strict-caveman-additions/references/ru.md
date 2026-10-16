@@ -14,6 +14,7 @@ Source: ГОСТ Р 58049-2017, section 8.2, simplified technical Russian (УТ�
 | Prefer the shortest common term. | 8.2.3.8 |
 | Limit participial and adverbial-participial phrases and compound predicates. | 8.2.3.11 |
 | Enumerations in complex text go in vertical bulleted lists. | 8.2.3.16 |
+| Simplify the form only. Keep every fact, step, and caveat the reply would have without these rules. | — |
 
 ## Word counting
 
