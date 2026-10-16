@@ -34,31 +34,31 @@ Configuration: read `.strict-ai/configs/strict-workday.json`, key `strict-leftov
 
 ## Sources
 
-Read each source the agent can reach:
+Check all four sources on every run:
 
-1. The session, from the first source that resolves: the host transcript file, then a session memory store, then the visible context. Locations per host: [references/host-bindings.md](https://github.com/Viperwow/strict-ai/blob/main/strict-workday/skills/strict-leftovers/references/host-bindings.md).
-2. PR review comments, automated and human.
-3. The tracker ticket: description and comments.
-4. Messengers available to the agent, filtered to the task.
+1. Session, from the first source that resolves: the host transcript file, then a session memory store, then the visible context. Locations per host: [references/host-bindings.md](https://github.com/Viperwow/strict-ai/blob/main/strict-workday/skills/strict-leftovers/references/host-bindings.md).
+2. PR: review comments, automated and human.
+3. Tracker: the ticket's description and comments.
+4. Messenger: messengers available to the agent, filtered to the task.
 
-An unreachable source prints one line, `<Source> data is unavailable.`, and the run continues.
+A source that is missing or unreachable prints one line, `<Source> data is unavailable.`, with `<Source>` being `Session`, `PR`, `Tracker`, or `Messenger`, and the run continues.
 
 ## Run
 
 1. **Journal.** Read it, or create it. On creation, copy the DoD verbatim from the sources, or write `DoD: n/a` when none is stated, and add one `R<n>` per atomic requirement or DoD criterion, verbatim. With no requirement found, the task title becomes `R1`. Any run may append new `R<n>`.
 2. **Read.** Take source content from `last-run` onward. Drop quotes the journal already holds.
 3. **Extract.** Questions, findings, and decisions. Store each quote verbatim, and give each entry a title of at most 8 words in the user's language.
-4. **Merge.** Entries that need the same decision are one entry. The first wording is the quote; every other wording goes under `also:` verbatim with its source.
+4. **Split and merge.** A quote whose parts are joined by "and" becomes one entry per part: the whole quote is the parent, each part a child quoting that part verbatim. Entries that one answer or one fix settles are one entry. The first wording is the quote; every other wording goes under `also:` verbatim with its source.
 5. **Link.** Infer each entry's parent from its content and compute its depth. An entry with no inferable parent is detached. Assign ids per the journal format; an entry keeps its id across sections and trees; only a new parent gives it a new id, with the old one kept as `was`.
 6. **Status.** `viewed` when the user referred to the entry; `decided` when the user stated a decision, stored verbatim under the question.
-7. **Severity.** Assign it per the severity table in the journal format. Keep the source's label as `stated`.
+7. **Severity.** Assign it per the severity table in the journal format. Keep the source's label as `stated`. When the severity differs from `stated`, record why in one line under `why`.
 8. **Route.**
    - A user remark like "would be cool", "not sure", or "need a ticket", with no explicit link to a requirement → `Detached`.
    - A detached entry the user links to a requirement → `Open`, with parent and depth. Its quote stays unchanged.
    - Any other entry with no parent → `Detached`.
    - An entry the user deferred → `Later`.
    - Anything else undecided → `Open`.
-9. **Write.** Update `last-run` and `open-count`. Set `stall` to 0 when `Open` shrank, otherwise add 1. Rewrite the graph block and update the registry line.
+9. **Write.** Update `last-run` and `open-count`. Set `stall` to 0 on the first run or when `Open` shrank, otherwise add 1. Rewrite the graph block and update the registry line.
 10. **Print** the chat output.
 
 Entries are never deleted. Quotes are never rewritten.
@@ -76,7 +76,7 @@ When `stall` reaches `stallRuns`, the output opens with the stall line. Entries 
 
 Progress `n/m` counts decided depth-1 entries out of all depth-1 entries of that requirement.
 
-**Task done.** Every requirement is done and every check is green. Take check and review state from the sources and the local git state. A fact the agent cannot see prints `unknown` and counts as not met. Print each unmet condition on one line.
+**Task done.** Every requirement is done and every check is green. Take check and review state from the sources and the local git state. A fact the agent cannot see counts as not met. Task done changes only the first line; the trees print as usual.
 
 **Follow-ups.** When the task is done, move every remaining entry into the `Follow-ups` tree, links kept: undecided entries, `Later`, and `Detached`. Mark the topmost moved entry on each path as a ticket candidate. Record a ticket link only when the user gives one.
 
@@ -116,4 +116,4 @@ Tracker data is unavailable.
 - Siblings sort by id, ascending.
 - Each line reads `<id> · <title>`, then meta after `|`. A requirement's meta is `gate ok` or `Blocked by <ids>`. An open entry's meta is its severity, `▲ <stated>` or `▼ <stated>` when the source labelled it lower or higher, then `drift` and `was <id>` when they apply. A decided entry has no meta.
 - `Later`, `Follow-ups`, and `Detached` print only when not empty. `Later` and `Follow-ups` are trees that repeat the full path from the requirement to each moved entry; path nodes show only `<id> · <title>`. In `Follow-ups`, the topmost moved entry on each path carries `ticket candidate`. `Detached` is a flat list: `<id> · <summary of at most 30 words> | <author>`.
-- Unmet task-done conditions, then absence lines, come last.
+- Absence lines come last.

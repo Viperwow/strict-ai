@@ -219,11 +219,11 @@ most review comments never lead to a code change, so a high ratio would force th
 - every requirement is done;
 - every check is green.
 
-The skill states which conditions are not yet met, one line each.
+Task done changes only the first line of the output; the trees print as usual.
 
 **Follow-ups.** When the task is done, every remaining entry moves into a separate `Follow-ups` tree:
 undecided entries, `Later`, and `Detached`. The tree keeps its links, so it
-shows what each follow-up grew from. Each root of that tree is a candidate ticket. The skill lists the
+shows what each follow-up grew from. The topmost moved entry on each path is a ticket candidate. The skill lists the
 candidates; the user creates the tickets and the skill records their links. This is the conclusion of
 the task: what the work found but did not own.
 
@@ -259,7 +259,7 @@ Settled during the builder check. Each is the author's call, not the user's.
   links to a requirement moves to `Open` and gets a parent and depth.
 - **Delta.** `(+n)` compares against `open-count` from the previous run.
 - **Done inputs.** Taken from the session and cheap local reads: git state and the last check output
-  visible in the session. A fact the skill cannot see prints as `unknown`, never as met.
+  visible in the session. A fact the skill cannot see counts as not met.
 - **Unavailable source.** Skipped. The output prints `<Source> data is unavailable.` and the run
   continues.
 

@@ -19,8 +19,8 @@ Later in the same case, the user decides every depth-1 entry of `R1`: the Export
 
 ## Expected final state
 
-- The rename comment is `L3` and has `severity: low` and `stated: critical`. It does not block the gate.
-- The Export comment is `L4` with `severity: critical` and `stated: medium`, with one line in the journal saying why the level was raised. Its tree line ends `| critical ▲ medium`, and `R1` reads `Blocked by L4`.
+- The rename comment is `L3` and has `severity: low`, `stated: critical`, and a `why` line. It does not block the gate.
+- The Export comment is `L4` with `severity: critical` and `stated: medium`, with a `why` line in the journal saying why the level was raised. Its tree line ends `| critical ▲ medium`, and `R1` reads `Blocked by L4`.
 - The output holds one line `Tracker data is unavailable.` and one line `Messenger data is unavailable.` The run completes.
 - The video entry has moved from `Detached` to `Open` as `L5`, with `was: D1`, `from: R1`, and a depth. Its quote is unchanged.
 - The first line after the heading is `🟧 Stall Open <n> (+<growth>).` The depth-3 entry carries `drift`. Nothing moves to `Later`.

@@ -14,6 +14,7 @@ DoD: "<verbatim>"
 
 ## Open
 - L1.1 · <title> · new · agent · critical · stated: medium · Q1 · from L1 · depth 2 · 2026-10-15 · review PR #12
+  why: "<one line on the severity change>"
   "<question verbatim>"
   also: "<other wording verbatim>" · session
 
@@ -32,7 +33,7 @@ DoD: "<verbatim>"
   "<remark verbatim>"
 
 ## Follow-ups
-- L1.2 · candidate ticket
+- L1.2 · ticket candidate
   - L1.2.1 · from L1.2
 
 ## Graph
@@ -61,6 +62,7 @@ graph TD
 | from | parent id; absent for detached entries |
 | depth | edges from the nearest requirement; absent for detached entries |
 | source | where it was said: session, review, PR, tracker, messenger, or a session memory store |
+| why | one line on why `severity` differs from `stated`; present only then |
 | also | other wordings of the same entry, verbatim, each with its source |
 
 An entry keeps its id when it moves between `Open`, `Decided`, `Later`, and `Follow-ups`. Only a new parent changes it, such as a detached entry the user links to a requirement.
@@ -69,7 +71,7 @@ Quotes never change. Section, id, title, status, `from`, and `depth` may change.
 
 ## Severity
 
-Assigned by user impact, not by the source's label. When two levels fit, take the higher one and state why in one line.
+Assigned by user impact, not by the source's label. When two levels fit, take the higher one.
 
 | Level | Definition | Example |
 |---|---|---|
