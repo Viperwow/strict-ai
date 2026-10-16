@@ -191,7 +191,8 @@ Detached
 ```
 
 - Requirements are always the roots. One `Leftovers` tree holds open and decided entries in place;
-  `Later` and `Follow-ups` become separate trees only when they have entries. `Detached` is a flat list.
+  `Later` and `Follow-ups` become separate trees only when they have entries. `Later` repeats the full
+  path from the requirement to each deferred entry. `Detached` is a flat list.
 - Siblings sort by id, ascending, whatever their status.
 - A branch shows `<decided children>/<children>`; a leaf shows `[ ]` or `[x]`.
 - The id and a short title come first; meta follows `|`.

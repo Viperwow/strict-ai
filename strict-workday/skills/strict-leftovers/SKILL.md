@@ -98,7 +98,9 @@ Leftovers
 └─ [ ] L5 · <entry title> | medium · was D1
 
 Later
-└─ [ ] L6 · <entry title> | low
+R1 · <requirement title>
+└─ L1 · <entry title>
+   └─ [ ] L1.2 · <entry title> | low
 
 Detached
 - D2 · <remark, at most 30 words> | user
@@ -111,5 +113,5 @@ Tracker data is unavailable.
 - A branch shows `<decided children>/<children>` before its id. A leaf shows `[ ]` open or `[x]` decided.
 - Siblings sort by id, ascending.
 - Each line reads `<id> · <title>`, then meta after `|`. A requirement's meta is `gate ok` or `Blocked by <ids>`. An open entry's meta is its severity, `▲ <stated>` or `▼ <stated>` when the source labelled it lower or higher, then `drift` and `was <id>` when they apply. A decided entry has no meta.
-- `Later`, `Follow-ups`, and `Detached` print only when not empty. `Later` and `Follow-ups` are trees; a `Follow-ups` root carries `ticket candidate`. `Detached` is a flat list: `<id> · <summary of at most 30 words> | <author>`.
+- `Later`, `Follow-ups`, and `Detached` print only when not empty. `Later` and `Follow-ups` are trees. `Later` repeats the full path from the requirement to each deferred entry; path nodes show only `<id> · <title>`. a `Follow-ups` root carries `ticket candidate`. `Detached` is a flat list: `<id> · <summary of at most 30 words> | <author>`.
 - Unmet task-done conditions, then absence lines, come last.
