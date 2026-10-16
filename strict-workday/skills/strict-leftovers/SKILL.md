@@ -82,6 +82,8 @@ Progress `n/m` counts decided depth-1 entries out of all depth-1 entries of that
 
 ## Chat output
 
+Every symbol is defined in [references/output-legend.md](https://github.com/Viperwow/strict-ai/blob/main/strict-workday/skills/strict-leftovers/references/output-legend.md).
+
 ```text
 ## strict-leftovers output
 
