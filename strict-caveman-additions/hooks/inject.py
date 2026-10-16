@@ -6,6 +6,7 @@ import sys
 
 SKILL_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "skills", "strict-caveman-additions")
 SKILL = os.path.join(SKILL_DIR, "SKILL.md")
+REPO_LINK = "](https://github.com/Viperwow/strict-ai/blob/main/"
 REFERENCES = [os.path.join(SKILL_DIR, "references", name) for name in ("en.md", "ru.md")]
 
 
@@ -29,7 +30,7 @@ def rules():
     parts = [body(read(SKILL))] + [read(path) for path in REFERENCES]
     text = "\n\n".join(part.strip() for part in parts if part.strip())
     # The references are inlined below, so their link lines would only add tokens to every session.
-    return "\n".join(line for line in text.split("\n") if "https://" not in line)
+    return "\n".join(line for line in text.split("\n") if REPO_LINK not in line)
 
 
 def reminder():
@@ -38,6 +39,8 @@ def reminder():
 
 def main():
     mode = sys.argv[1] if len(sys.argv) > 1 else "session"
+    if mode not in ("session", "prompt"):
+        sys.exit(f"unknown mode: {mode}")
     print(rules() if mode == "session" else reminder())
 
 

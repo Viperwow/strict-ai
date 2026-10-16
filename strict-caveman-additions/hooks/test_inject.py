@@ -5,8 +5,10 @@ import os
 import subprocess
 import sys
 import tempfile
+from unittest import mock
 
-from inject import REFERENCES, reminder, rules
+import inject
+from inject import REFERENCES, body, reminder, rules
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 SCRIPT = os.path.join(HERE, "inject.py")
@@ -36,16 +38,17 @@ assert len(prompt.stdout.decode("utf-8").strip().splitlines()) == 1
 
 assert "https://" not in text, "link lines cost tokens every session"
 
-original = list(REFERENCES)
+assert body("---\na: 1\n---\nx\n\n---\n\ny") == "x\n\n---\n\ny", "horizontal rule in body must survive"
+
+unknown = run("sesion")
+assert unknown.returncode != 0 and unknown.stdout == b"", "unknown mode must fail loudly"
+
 with tempfile.TemporaryDirectory() as tmp:
     broken = os.path.join(tmp, "broken.md")
     with open(broken, "wb") as handle:
         handle.write(b"\xff\xfe not utf-8")
-    REFERENCES[:] = [os.path.join(tmp, "missing.md"), broken, original[1]]
-    try:
+    with mock.patch.object(inject, "REFERENCES", [os.path.join(tmp, "missing.md"), broken, REFERENCES[1]]):
         partial = rules()
-    finally:
-        REFERENCES[:] = original
 assert "8.2.5.1" in partial and "six sentences" in partial, "missing or broken reference must not drop the rest"
 assert "-ing" not in partial
 
