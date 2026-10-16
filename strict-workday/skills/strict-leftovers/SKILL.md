@@ -7,6 +7,15 @@ description: Use when the user intends to see what is still left on a task and k
 
 A verbatim journal of what is left on one task. Every run makes the open list smaller or says why it did not.
 
+Each run rebuilds the trees from the journal, so entries may move between trees as the work changes. The output always answers, without ambiguity:
+
+| Question | Where |
+|---|---|
+| What is left, and what grew from what? | `Leftovers` |
+| What are we working on now? | open entries in `Leftovers` |
+| What is deferred? | `Later` |
+| What becomes separate tasks? | `Follow-ups`, `Detached` |
+
 ## Invocation
 
 ```text
