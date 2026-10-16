@@ -77,9 +77,9 @@ Read on every run, each only when the agent can reach it:
 
 ## Stall rule
 
-After `stallRuns` runs in a row without `Open` shrinking, the first output line says so. The skill then
-lists the `Open` entries at `driftDepth` or deeper and proposes moving them to `Later`. The user
-decides; the skill moves nothing on its own.
+After `stallRuns` runs in a row without `Open` shrinking, the output opens with
+`🟧 Stall Open <n> (+<growth>).` Entries at `driftDepth` or deeper carry `drift` in the tree. The skill
+moves nothing on its own.
 
 ## Journal format
 
@@ -89,32 +89,32 @@ decides; the skill moves nothing on its own.
 DoD: "<verbatim>"
 
 ## Requirements
-- R-1 · "<verbatim>"
+- R1 · <title> · "<verbatim>"
 
 ## Open
-- L-4 · new · agent · high · Q1 · from L-1 · depth 2 · 2026-10-15 · review PR #12
+- L1.1 · <title> · new · agent · high · Q1 · from L1 · depth 2 · 2026-10-15 · review PR #12
   "<question verbatim>"
 
 ## Decided
-- L-1 · decided · user · from R-1 · depth 1 · 2026-10-15
+- L1 · <title> · decided · user · from R1 · depth 1 · 2026-10-15
   "<question verbatim>"
   → "<decision verbatim>"
 
 ## Later
-- L-2 · viewed · user · from L-1 · depth 2 · 2026-10-15
+- L1.2 · <title> · viewed · user · from L1 · depth 2 · 2026-10-15
   "<question verbatim>"
   → backlog: PROJ-140
 
 ## Detached
-- L-6 · new · user · 2026-10-15
+- D1 · <title> · new · user · 2026-10-15
   "<remark verbatim>"
 
 ## Graph
 ```mermaid
 graph TD
-  R1 --> L1 --> L4
-  L1 --> L2
-  L6
+  R1 --> L1 --> L1.1
+  L1 --> L1.2
+  D1
 ```
 ```
 
@@ -122,7 +122,7 @@ Entry fields:
 
 | Field | Values |
 |---|---|
-| id | `R-n` requirement, `L-n` leftover; ids never change or get reused |
+| id | `R<n>` requirement; `L<n>` depth-1 entry; a child adds `.<n>` to its parent's id; `D<n>` detached. A move changes the id and keeps the old one as `was` |
 | status | `new` → `viewed` → `decided` |
 | by | `user` \| `agent` |
 | severity | `blocker` \| `critical` \| `high` \| `medium` \| `low`, assigned by the skill per the table below |
@@ -169,44 +169,46 @@ On `/strict-leftovers [task-id]`:
 8. Rewrite the graph block.
 9. Print the chat output.
 
-## Ordering
-
-`Open` is sorted by these keys, in order:
-
-1. Severity `blocker`, `critical`, `high`, in that order — always first, whoever raised it.
-2. Depth from a requirement, ascending.
-3. Author: `user` before `agent`.
-4. Eisenhower quadrant: `Q1`, `Q2`, `Q3`, `Q4`.
-5. Age: oldest first.
-
-Entries at `driftDepth` or deeper are tagged `drift`. `Detached` always prints last and only on request
-or when `Open` is empty.
-
 ## Chat output
 
-```markdown
+The output is a folder-style tree, read at a glance:
+
+```text
 ## strict-leftovers output
 
-Open 4 (+1) · Decided 7 · Later 3 · Detached 2
+🟧 Stall Open 5 (+3).
 
-1. L-4 · high · Q1 · depth 2 · "<question verbatim>"
-2. …
+Leftovers
+1/5 R1 · Pencil icons in the table | Blocked by L4
+├─ 0/1 L1 · Buttons break the pencil pattern | medium
+│  └─ [ ] L1.1 · <entry title> | medium
+├─ [x] L2 · Pencil opens inline editing
+├─ [ ] L3 · Rename editCell → onEditCell | low ▼ critical
+└─ [ ] L4 · Export menu no longer opens | critical ▲ medium
+
+Detached
+- D1 · Annotate video frames during review | user
 ```
 
-When `Open` grew since the last run, the counts line shows the delta. Nothing else prints unless
-requested.
+- Requirements are always the roots. One `Leftovers` tree holds open and decided entries in place;
+  `Later` and `Follow-ups` become separate trees only when they have entries. `Detached` is a flat list.
+- Siblings sort by id, ascending, whatever their status.
+- A branch shows `<decided children>/<children>`; a leaf shows `[ ]` or `[x]`.
+- The id and a short title come first; meta follows `|`.
+- The stall line, or `✅ Task Done: please, review the follow-ups.` when the task is done, opens the
+  output. Absence lines close it.
 
 ## Done
 
 Done is tracked per requirement, then per task.
 
-**Requirement done.** Each `R-n` is judged on its own subtree. It is done when both hold:
+**Requirement done.** Each `R<n>` is judged on its own subtree. It is done when both hold:
 
 1. **Hard gate.** No open entry in the subtree is `blocker`, `critical`, or `high`.
 2. **Direct entries.** Every depth-1 entry, one that grew straight from the requirement, is `decided`.
 
-The output shows progress per requirement:
-`R-1 · gate ok · 4/4 · done`, `R-2 · 1 high open · 2/5`.
+The tree shows progress per requirement:
+`4/4 R1 · <title> | gate ok`, `2/5 R2 · <title> | Blocked by L7`.
 
 There is no percentage threshold. No study found supports a universal share of resolved items, and
 most review comments never lead to a code change, so a high ratio would force the user through noise.
@@ -242,8 +244,8 @@ Each design choice rests on a measured effect:
 
 Settled during the builder check. Each is the author's call, not the user's.
 
-- **Requirements.** One `R-n` per atomic requirement or DoD criterion, verbatim. Any run may append
-  new `R-n` entries. With none found, the task title becomes `R-1`.
+- **Requirements.** One `R<n>` per atomic requirement or DoD criterion, verbatim. Any run may append
+  new `R<n>` entries. With none found, the task title becomes `R1`.
 - **DoD.** Copied verbatim from the session once, on first run. The skill invokes nothing to get it.
 - **Cursor.** The journal header stores `last-run` (UTC) and `open-count`. Each run reads the session
   source from `last-run` onward and drops quotes already in the journal. Host transcript paths live in a

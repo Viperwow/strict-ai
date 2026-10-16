@@ -10,37 +10,37 @@ last-run: 2026-10-15T14:02:00Z · open-count: 4 · stall: 0
 DoD: "<verbatim>"
 
 ## Requirements
-- R-1 · "<verbatim>"
+- R1 · <title> · "<verbatim>"
 
 ## Open
-- L-4 · new · agent · critical · stated: medium · Q1 · from L-1 · depth 2 · 2026-10-15 · review PR #12
+- L1.1 · <title> · new · agent · critical · stated: medium · Q1 · from L1 · depth 2 · 2026-10-15 · review PR #12
   "<question verbatim>"
   also: "<other wording verbatim>" · session
 
 ## Decided
-- L-1 · decided · user · from R-1 · depth 1 · 2026-10-15 · session
+- L1 · <title> · decided · user · from R1 · depth 1 · 2026-10-15 · session
   "<question verbatim>"
   → "<decision verbatim>"
 
 ## Later
-- L-2 · viewed · user · from L-1 · depth 2 · 2026-10-15 · session
+- L1.2 · <title> · viewed · user · from L1 · depth 2 · 2026-10-15 · session
   "<question verbatim>"
   → backlog: PROJ-140
 
 ## Detached
-- L-6 · new · user · 2026-10-15 · session
+- D1 · <title> · new · user · 2026-10-15 · session
   "<remark verbatim>"
 
 ## Follow-ups
-- L-2 · candidate ticket
-  - L-7 · from L-2
+- L1.2 · candidate ticket
+  - L1.2.1 · from L1.2
 
 ## Graph
 ```mermaid
 graph TD
-  R1 --> L1 --> L4
-  L1 --> L2
-  L6
+  R1 --> L1 --> L1.1
+  L1 --> L1.2
+  D1
 ```
 ````
 
@@ -50,7 +50,9 @@ graph TD
 
 | Field | Values |
 |---|---|
-| id | `R-n` requirement, `L-n` leftover; ids never change or get reused |
+| id | `R<n>` requirement; `L<n>` depth-1 entry, numbered across all requirements; a child adds `.<n>` to its parent's id (`L1.2.1`); `D<n>` detached entry. Ids are never reused |
+| title | the skill's summary of the quote, at most 8 words, in the user's language |
+| was | the entry's previous id, set when a move changed it |
 | status | `new` → `viewed` → `decided` |
 | by | `user` \| `agent` |
 | severity | `blocker` \| `critical` \| `high` \| `medium` \| `low`, assigned per the severity table |
@@ -61,7 +63,7 @@ graph TD
 | source | where it was said: session, review, PR, tracker, messenger, or a session memory store |
 | also | other wordings of the same entry, verbatim, each with its source |
 
-Quotes never change. Section, status, `from`, and `depth` may change.
+Quotes never change. Section, id, title, status, `from`, and `depth` may change.
 
 ## Severity
 

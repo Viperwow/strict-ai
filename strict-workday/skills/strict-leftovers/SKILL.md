@@ -10,13 +10,12 @@ A verbatim journal of what is left on one task. Every run makes the open list sm
 ## Invocation
 
 ```text
-/strict-leftovers [task-id] [--all] [--graph]
+/strict-leftovers [task-id] [--graph]
 ```
 
 | Parameter | Default | Purpose |
 |---|---|---|
 | `task-id` | resolved | explicit argument, then tracker key, then branch name; kebab-case, 60 characters maximum; fallback `YYYY-MM-DD-<topic>` |
-| `--all` | off | print every section in chat, not only `Open` |
 | `--graph` | off | print the graph block in chat |
 
 ## Artifacts
@@ -46,11 +45,11 @@ An unreachable source prints one line, `<Source> data is unavailable.`, and the 
 
 ## Run
 
-1. **Journal.** Read it, or create it. On creation, copy the DoD verbatim from the sources, or write `DoD: n/a` when none is stated, and add one `R-n` per atomic requirement or DoD criterion, verbatim. With no requirement found, the task title becomes `R-1`. Any run may append new `R-n`.
+1. **Journal.** Read it, or create it. On creation, copy the DoD verbatim from the sources, or write `DoD: n/a` when none is stated, and add one `R<n>` per atomic requirement or DoD criterion, verbatim. With no requirement found, the task title becomes `R1`. Any run may append new `R<n>`.
 2. **Read.** Take source content from `last-run` onward. Drop quotes the journal already holds.
-3. **Extract.** Questions, findings, and decisions. Store each quote verbatim.
+3. **Extract.** Questions, findings, and decisions. Store each quote verbatim, and give each entry a title of at most 8 words in the user's language.
 4. **Merge.** Entries that need the same decision are one entry. The first wording is the quote; every other wording goes under `also:` verbatim with its source.
-5. **Link.** Infer each entry's parent from its content and compute its depth. An entry with no inferable parent is detached.
+5. **Link.** Infer each entry's parent from its content and compute its depth. An entry with no inferable parent is detached. Assign ids per the journal format; an entry that moves gets a new id and keeps the old one as `was`.
 6. **Status.** `viewed` when the user referred to the entry; `decided` when the user stated a decision, stored verbatim under the question.
 7. **Severity.** Assign it per the severity table in the journal format. Keep the source's label as `stated`.
 8. **Route.**
@@ -64,23 +63,13 @@ An unreachable source prints one line, `<Source> data is unavailable.`, and the 
 
 Entries are never deleted. Quotes are never rewritten.
 
-## Order of `Open`
-
-1. Severity `blocker`, `critical`, `high`, in that order, whoever raised it.
-2. Depth from a requirement, ascending.
-3. Author: `user` before `agent`.
-4. Quadrant: `Q1`, `Q2`, `Q3`, `Q4`.
-5. Age: oldest first.
-
-Entries at `driftDepth` or deeper carry the tag `drift`.
-
 ## Stall rule
 
-When `stall` reaches `stallRuns`, the first output line says so. Then list the `Open` entries at `driftDepth` or deeper and propose moving them to `Later`. Move nothing without the user.
+When `stall` reaches `stallRuns`, the output opens with the stall line. Entries at `driftDepth` or deeper carry the tag `drift`.
 
 ## Done
 
-**Requirement done.** Judge each `R-n` on its own subtree. It is done when both hold:
+**Requirement done.** Judge each `R<n>` on its own subtree. It is done when both hold:
 
 1. No open entry in the subtree is `blocker`, `critical`, or `high`. The `stated` label never counts.
 2. Every depth-1 entry is `decided`.
@@ -93,18 +82,34 @@ Progress `n/m` counts decided depth-1 entries out of all depth-1 entries of that
 
 ## Chat output
 
-```markdown
+```text
 ## strict-leftovers output
 
-Open 4 (+1) · Decided 7 · Later 3 · Detached 2
-R-1 · gate ok · 4/4 · done
-R-2 · 1 high open · 2/5
+🟧 Stall Open 5 (+3).
 
-1. L-4 · critical · Q1 · depth 2 · "<question verbatim>"
-   raised from medium: the Export menu no longer opens
-2. …
+Leftovers
+1/5 R1 · <requirement title> | Blocked by L4
+├─ 0/1 L1 · <entry title> | medium
+│  └─ 0/1 L1.1 · <entry title>
+│     └─ [ ] L1.1.1 · <entry title> | medium · drift
+├─ [x] L2 · <entry title>
+├─ [ ] L3 · <entry title> | low ▼ critical
+├─ [ ] L4 · <entry title> | critical ▲ medium
+└─ [ ] L5 · <entry title> | medium · was D1
+
+Later
+└─ [ ] L6 · <entry title> | low
+
+Detached
+- D2 · <remark, at most 30 words> | user
+
+Tracker data is unavailable.
 ```
 
-- `(+n)` compares with `open-count` from the previous run.
-- The stall line, then absence lines, come before the counts.
-- `Detached` prints only with `--all` or when `Open` is empty.
+- The first line after the heading is the stall line, `🟧 Stall Open <n> (+<growth>).`, or, when the task is done, `✅ Task Done: please, review the follow-ups.` Neither applies → the output starts at `Leftovers`. One empty line follows it.
+- `Leftovers` always prints. Its roots are the requirements; the tree holds `Open` and `Decided` entries in place.
+- A branch shows `<decided children>/<children>` before its id. A leaf shows `[ ]` open or `[x]` decided.
+- Siblings sort by id, ascending.
+- Each line reads `<id> · <title>`, then meta after `|`. A requirement's meta is `gate ok` or `Blocked by <ids>`. An open entry's meta is its severity, `▲ <stated>` or `▼ <stated>` when the source labelled it lower or higher, then `drift` and `was <id>` when they apply. A decided entry has no meta.
+- `Later`, `Follow-ups`, and `Detached` print only when not empty. `Later` and `Follow-ups` are trees; a `Follow-ups` root carries `ticket candidate`. `Detached` is a flat list: `<id> · <summary of at most 30 words> | <author>`.
+- Unmet task-done conditions, then absence lines, come last.
