@@ -49,7 +49,7 @@ A source that is missing or unreachable prints one line, `<Source> data is unava
 2. **Read.** Take source content from `last-run` onward. Drop quotes the journal already holds.
 3. **Extract.** Questions, findings, and decisions. Store each quote verbatim, and give each entry a title of at most 8 words in the user's language.
 4. **Split and merge.** A quote whose parts are joined by "and" becomes one entry per part: the whole quote is the parent, each part a child quoting that part verbatim. Entries that one answer or one fix settles are one entry. The first wording is the quote; every other wording goes under `also:` verbatim with its source.
-5. **Link.** Infer each entry's parent from its content and compute its depth. An entry with no inferable parent is detached. Assign ids per the journal format; an entry keeps its id across sections and trees; only a new parent gives it a new id, with the old one kept as `was`.
+5. **Link.** Infer each entry's parent from its content and compute its depth. An entry raised by another one ("also", "either", "too", "while we're here") is its child. An entry with no inferable parent is detached. Assign ids per the journal format; an entry keeps its id across sections and trees; only a new parent gives it a new id, with the old one kept as `was`.
 6. **Status.** `viewed` when the user referred to the entry; `decided` when the user stated a decision, stored verbatim under the question. Deciding an entry never decides its children.
 7. **Severity.** Assign it per the severity table in the journal format. Keep the source's label as `stated`. When the severity differs from `stated`, record why in one line under `why`.
 8. **Route.**
@@ -92,7 +92,7 @@ Every symbol is defined in [references/output-legend.md](https://github.com/Vipe
 Leftovers
 1/5 R1 · <requirement title> | Blocked by L4
 ├─ 0/1 L1 · <entry title> | medium
-│  └─ 0/1 L1.1 · <entry title>
+│  └─ 0/1 L1.1 · <entry title> | medium
 │     └─ [ ] L1.1.1 · <entry title> | medium · drift
 ├─ [x] L2 · <entry title>
 ├─ [ ] L3 · <entry title> | low ▼ critical
@@ -112,7 +112,8 @@ Tracker data is unavailable.
 
 - The first line after the heading is the stall line, `🟧 Stall Open <n> (+<growth>).`, or, when the task is done, `✅ Task Done: please, review the follow-ups.` Neither applies → the output starts at `Leftovers`. One empty line follows it.
 - `Leftovers` always prints. Its roots are the requirements; the tree holds `Open` and `Decided` entries in place.
-- A branch shows `<decided children>/<children>` before its id. A leaf shows `[ ]` open or `[x]` decided.
+- A branch shows `<decided children>/<children>` before its id, in every tree. A leaf shows `[ ]` open or `[x]` decided.
+- Each tree counts only the entries it holds. An entry whose children all moved to another tree is a leaf in its own tree, and counts there by its own status.
 - Siblings sort by id, ascending.
 - Each line reads `<id> · <title>`, then meta after `|`. A requirement's meta is `gate ok` or `Blocked by <ids>`. An open entry's meta is its severity, `▲ <stated>` or `▼ <stated>` when the source labelled it lower or higher, then `drift` and `was <id>` when they apply. A decided entry has no meta.
 - `Later`, `Follow-ups`, and `Detached` print only when not empty. `Later` and `Follow-ups` are trees that repeat the full path from the requirement to each moved entry; path nodes show only `<id> · <title>`. In `Follow-ups`, the topmost moved entry on each path carries `ticket candidate`. `Detached` is a flat list: `<id> · <summary of at most 30 words> | <author>`.

@@ -79,7 +79,7 @@ Assigned by user impact, not by the source's label. When two levels fit, take th
 | `critical` | Harm with no workaround. | A vulnerability. Money loss. Personal-data leak. Data corruption. A regression breaks an existing feature. |
 | `high` | A common scenario works wrong. A workaround exists. | A requirement behaves wrong in the typical case. Visible performance or visual degradation. |
 | `medium` | A rare scenario works wrong. | An edge case with a simple workaround. |
-| `low` | No effect on behavior. | Style, naming, a refactoring suggestion. |
+| `low` | No effect on behavior. | Style, naming, visual inconsistency with a pattern, a refactoring suggestion. |
 
 ## Graph
 
