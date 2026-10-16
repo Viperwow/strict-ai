@@ -17,6 +17,13 @@ Since the last run:
 
 Later in the same case, the user decides every depth-1 entry of `R1`: the Export regression, the button-management entry, the rename, and the video entry. The session shows every check green. The user leaves `L1.1` and `L1.1.1` undecided and runs `/strict-leftovers` again.
 
+After that run:
+
+5. The user answers "Not finished."
+6. The user picks `L1.1`, and the skill runs again.
+7. A test for `L1.1` passes and the user decides it. The user asks to move `L1.1.1` to follow-ups, and the skill runs again.
+8. The user answers "Finished."
+
 ## Expected final state
 
 - The rename comment is `L3` and has `severity: low`, `stated: critical`, and a `why` line. It does not block the gate.
@@ -27,10 +34,10 @@ Later in the same case, the user decides every depth-1 entry of `R1`: the Export
 - The header now holds `stall: 3`.
 - After the final run, the first line after the heading is `✅ Task Done: please, review the leftovers. Is the task finished?`, and `R1` reads `5/5 R1 · <title> | gate ok` with `L1`–`L5` in ascending order (the inline-editing entry `L2` from case 01 is one of the five).
 - After that run, `L1.1` and `L1.1.1` stay in `Leftovers`, undecided. Nothing moves to `Follow-ups` or `Later`.
-- The user answers "Not finished." The skill proposes exactly `L1.1` and `L1.1.1`, by id and title, and nothing else.
-- The user picks `L1.1`. On the next run `L1.1` carries `must`, `R1` reads `Blocked by L1.1`, and the Task Done line is gone.
-- A test for `L1.1` passes and the user decides it; its `proof` names the test. The user asks to move `L1.1.1` to follow-ups. On the next run the Task Done line is back, and `L1.1.1` sits in `Follow-ups` under the path `R1 › L1 › L1.1`, id unchanged, with `ticket candidate`.
-- The user answers "Finished." The header holds `finished: "Finished."`.
+- After turn 5, the skill proposes exactly `L1.1` and `L1.1.1`, by id and title, and nothing else.
+- After turn 6, `L1.1` carries `must`, `R1` reads `Blocked by L1.1`, and the Task Done line is gone.
+- After turn 7, `L1.1`'s `proof` names the test, the Task Done line is back, and `L1.1.1` sits in `Follow-ups` under the path `R1 › L1 › L1.1`, id unchanged, with `ticket candidate`.
+- After turn 8, the header holds `finished: "Finished."`.
 
 ## Required tool calls
 
