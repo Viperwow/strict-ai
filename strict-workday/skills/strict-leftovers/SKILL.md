@@ -107,8 +107,8 @@ Every symbol is defined in [references/output-legend.md](https://github.com/Vipe
 
 Leftovers
 1/5 R1 · <requirement title> | Blocked by L4
-├─ 0/1 L1 · <entry title> | medium
-│  └─ 0/1 L1.1 · <entry title> | medium
+├─ [ ] 0/1 L1 · <entry title> | medium
+│  └─ [ ] 0/1 L1.1 · <entry title> | medium
 │     └─ [ ] L1.1.1 · <entry title> | medium · drift
 ├─ [x] L2 · <entry title>
 ├─ [ ] L3 · <entry title> | low ▼ critical
@@ -128,7 +128,7 @@ Tracker data is unavailable.
 
 - The first line after the heading is the stall line, `🟧 Stall Open <n> (+<growth>).`, or, when the task is done, `✅ Task Done: please, review the leftovers. Is the task finished?` Neither applies → the output starts at `Leftovers`. One empty line follows it.
 - `Leftovers` always prints. Its roots are the requirements; the tree holds `Open` and `Decided` entries in place.
-- A branch shows `<decided children>/<children>` before its id, in every tree. A leaf shows `[ ]` open or `[x]` decided.
+- Every entry shows `[ ]` open or `[x]` decided. A branch adds `<decided children>/<children>` after it, in every tree: `[x] 0/1 L1` is decided with one open child. A requirement shows only the count.
 - Each tree counts only the entries it holds. An entry whose children all moved to another tree is a leaf in its own tree, and counts there by its own status.
 - Siblings sort by id, ascending.
 - Each line reads `<id> · <title>`, then meta after `|`. A requirement's meta is `gate ok` or `Blocked by <ids>`. An open entry's meta is its severity, `▲ <stated>` or `▼ <stated>` when the source labelled it lower or higher, then `must`, `drift`, `was <id>`, and `ticket candidate` when they apply, in that order. A decided entry has no meta.

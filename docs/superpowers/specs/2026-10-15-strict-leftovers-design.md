@@ -180,7 +180,7 @@ The output is a folder-style tree, read at a glance:
 
 Leftovers
 1/5 R1 · Pencil icons in the table | Blocked by L4
-├─ 0/1 L1 · Buttons break the pencil pattern | medium
+├─ [ ] 0/1 L1 · Buttons break the pencil pattern | medium
 │  └─ [ ] L1.1 · <entry title> | medium
 ├─ [x] L2 · Pencil opens inline editing
 ├─ [ ] L3 · Rename editCell → onEditCell | low ▼ critical
@@ -194,7 +194,7 @@ Detached
   `Later` and `Follow-ups` become separate trees only when they have entries. Both repeat the full path
   from the requirement to each moved entry. `Detached` is a flat list.
 - Siblings sort by id, ascending, whatever their status.
-- A branch shows `<decided children>/<children>`; a leaf shows `[ ]` or `[x]`.
+- Every entry shows `[ ]` or `[x]`; a branch adds `<decided children>/<children>` after it.
 - The id and a short title come first; meta follows `|`.
 - The stall line, or `✅ Task Done: please, review the leftovers. Is the task finished?` when the task is done, opens the
   output. Absence lines close it.

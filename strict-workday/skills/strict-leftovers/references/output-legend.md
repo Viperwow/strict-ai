@@ -36,9 +36,9 @@ An id keeps its value across `Leftovers`, `Later`, and `Follow-ups`: `L6` stays 
 | Symbol | Meaning |
 |---|---|
 | `├─` `└─` `│` | Tree branches: a child, the last child, a continuing level. |
-| `<a>/<b>` | A branch: `<a>` decided children out of `<b>` children on the level below, counting only children in this tree. On a requirement, progress toward requirement done. |
-| `[ ]` | An open leaf. |
-| `[x]` | A decided leaf. |
+| `<a>/<b>` | After an entry's checkbox, or on a requirement: `<a>` decided children out of `<b>` children on the level below, counting only children in this tree. On a requirement, progress toward requirement done. |
+| `[ ]` | An open entry. |
+| `[x]` | A decided entry; on a branch, its children may still be open. |
 | `<id> · <title>` | The entry's id and its title, at most 8 words. A `Detached` line carries a summary of at most 30 words instead. |
 | `\|` | Meta follows. |
 | `<id> · <title>` with no checkbox and no count | A path node in `Later` or `Follow-ups`: context only, not a task. |

@@ -34,7 +34,7 @@ No Definition of Done was stated.
   ```text
   Leftovers
   1/2 R1 · <title> | gate ok
-  ├─ 0/1 L1 · <title> | low
+  ├─ [ ] 0/1 L1 · <title> | low
   │  └─ [ ] L1.1 · <title> | low
   └─ [x] L2 · <title>
 
