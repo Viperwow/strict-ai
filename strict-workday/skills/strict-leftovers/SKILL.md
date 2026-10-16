@@ -59,7 +59,7 @@ A source that is missing or unreachable prints one line, `<Source> data is unava
 3. **Extract.** Questions, findings, and decisions. Store each quote verbatim, and give each entry a title of at most 8 words in the user's language.
 4. **Split and merge.** A quote whose parts are joined by "and" becomes one entry per part: the whole quote is the parent, each part a child quoting that part verbatim. Entries that one answer or one fix settles are one entry. The first wording is the quote; every other wording goes under `also:` verbatim with its source.
 5. **Link.** Infer each entry's parent from its content and compute its depth. An entry raised by another one ("also", "either", "too", "while we're here") is its child. An entry with no inferable parent is detached. Assign ids per the journal format; an entry keeps its id across sections and trees; only a new parent gives it a new id, with the old one kept as `was`.
-6. **Status.** `viewed` when the user referred to the entry; `decided` when the user stated a decision, stored verbatim under the question. Deciding an entry never decides its children.
+6. **Status.** `viewed` when the user referred to the entry; `decided` only with proof, stored under `proof`: for a change, a deterministic proof when one is reachable (a passing test or check, a commit); otherwise the user's decision, verbatim. Deciding an entry never decides its children.
 7. **Severity.** Assign it per the severity table in the journal format. Keep the source's label as `stated`. When the severity differs from `stated`, record why in one line under `why`.
 8. **Route.**
    - A user remark like "would be cool", "not sure", or "need a ticket", with no explicit link to a requirement → `Detached`.
@@ -67,6 +67,7 @@ A source that is missing or unreachable prints one line, `<Source> data is unava
    - Any other entry with no parent → `Detached`.
    - An entry the user deferred → `Later`.
    - Anything else undecided → `Open`.
+   - The user may ask to move any entry to another tree on any run. Apply it; the entry takes its subtree with it, links kept.
 9. **Write.** Update `last-run` and `open-count`. Set `stall` to 0 on the first run or when `Open` shrank, otherwise add 1. Rewrite the graph block and update the registry line.
 10. **Print** the chat output.
 
@@ -88,10 +89,12 @@ Progress `n/m` counts decided depth-1 entries out of all depth-1 entries of that
 
 **Task done.** Every requirement is done and every check is green. Take check and review state from the sources and the local git state. A fact the agent cannot see counts as not met. Task done changes only the first line; the trees print as usual.
 
-**After task done.** The trees hold until the first task done. Then the user decides; the skill moves nothing on its own:
+**After task done.** The trees grow until task done; then the user decides whether the task is finished. The skill moves nothing on its own.
 
-- **Not finished.** The user names the remaining entries that must close. Each gets `must`, which raises the bar for its requirement. Runs go on until the next task done.
-- **Finished.** The user names which remaining entries move to `Follow-ups` and which to `Later`. A moved entry takes its subtree with it, links kept. In `Follow-ups`, the topmost moved entry on each path is a ticket candidate. Record a ticket link only when the user gives one.
+- **Finished.** Record the user's answer verbatim as `finished:` in the header. The task is over.
+- **Not finished.** Propose exactly the undecided entries from the journal, by id and title; nothing outside the trees. Each entry the user picks gets `must`, which raises the bar for its requirement. Runs go on until the next task done, and the question repeats.
+
+Entries the user moves to `Follow-ups` keep their subtree; the topmost moved entry on each path is a ticket candidate. Record a ticket link only when the user gives one.
 
 ## Chat output
 
@@ -123,7 +126,7 @@ Detached
 Tracker data is unavailable.
 ```
 
-- The first line after the heading is the stall line, `🟧 Stall Open <n> (+<growth>).`, or, when the task is done, `✅ Task Done: please, review the follow-ups.` Neither applies → the output starts at `Leftovers`. One empty line follows it.
+- The first line after the heading is the stall line, `🟧 Stall Open <n> (+<growth>).`, or, when the task is done, `✅ Task Done: please, review the leftovers. Is the task finished?` Neither applies → the output starts at `Leftovers`. One empty line follows it.
 - `Leftovers` always prints. Its roots are the requirements; the tree holds `Open` and `Decided` entries in place.
 - A branch shows `<decided children>/<children>` before its id, in every tree. A leaf shows `[ ]` open or `[x]` decided.
 - Each tree counts only the entries it holds. An entry whose children all moved to another tree is a leaf in its own tree, and counts there by its own status.

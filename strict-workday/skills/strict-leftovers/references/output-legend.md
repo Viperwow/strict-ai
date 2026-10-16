@@ -8,7 +8,7 @@ Every symbol the chat output may print, and what it means.
 |---|---|
 | `## strict-leftovers output` | Heading. Always the first line. |
 | `🟧 Stall Open <n> (+<growth>).` | `Open` has not shrunk for `stallRuns` runs in a row. `<n>` is the current `Open` count; `<growth>` is the change since the previous run. |
-| `✅ Task Done: please, review the follow-ups.` | Every requirement is done and every check is green, strictly by the done rules. Replaces the stall line; the trees print as usual. |
+| `✅ Task Done: please, review the leftovers. Is the task finished?` | Every requirement is done and every check is green, strictly by the done rules. Replaces the stall line; the trees print as usual. |
 | `<Source> data is unavailable.` | `Session`, `PR`, `Tracker`, or `Messenger` is missing or unreachable. The run continued without it. |
 
 ## Sections

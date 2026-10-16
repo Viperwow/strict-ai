@@ -196,7 +196,7 @@ Detached
 - Siblings sort by id, ascending, whatever their status.
 - A branch shows `<decided children>/<children>`; a leaf shows `[ ]` or `[x]`.
 - The id and a short title come first; meta follows `|`.
-- The stall line, or `✅ Task Done: please, review the follow-ups.` when the task is done, opens the
+- The stall line, or `✅ Task Done: please, review the leftovers. Is the task finished?` when the task is done, opens the
   output. Absence lines close it.
 
 ## Done
@@ -222,10 +222,12 @@ most review comments never lead to a code change, so a high ratio would force th
 
 Task done changes only the first line of the output; the trees print as usual.
 
-**After task done.** The trees hold until the first task done; then the user decides. Not finished: the
-user names entries that must close, each gets `must` and joins its requirement's gate, and runs go on
-until the next task done. Finished: the user names which remaining entries move to `Follow-ups` and
-which to `Later`. The skill moves nothing on its own.
+**After task done.** The trees grow until task done; then the skill asks whether the task is finished.
+Finished: the user's answer is recorded verbatim and the task is over. Not finished: the skill proposes
+exactly the undecided entries from the journal, nothing outside the trees; each one the user picks gets
+`must` and joins its requirement's gate, and runs go on until the next task done. An entry becomes
+`decided` only with proof, deterministic when reachable. The user may move entries between trees on
+any run; the skill moves nothing on its own.
 
 ## Evidence
 

@@ -6,6 +6,7 @@
 # PROJ-123 leftovers
 
 last-run: 2026-10-15T14:02:00Z · open-count: 4 · stall: 0
+finished: "<user's answer verbatim>"   (only once the user says the task is finished)
 
 DoD: "<verbatim>"
 
@@ -22,6 +23,7 @@ DoD: "<verbatim>"
 - L1 · <title> · decided · user · from R1 · depth 1 · 2026-10-15 · session
   "<question verbatim>"
   → "<decision verbatim>"
+  proof: `<test, check, or commit>`
 
 ## Later
 - L1.2 · <title> · viewed · user · from L1 · depth 2 · 2026-10-15 · session
@@ -63,6 +65,7 @@ graph TD
 | depth | edges from the nearest requirement; absent for detached entries |
 | source | where it was said: session, review, PR, tracker, messenger, or a session memory store |
 | why | one line on why `severity` differs from `stated`; present only then |
+| proof | what closed the entry: a test, check, or commit when reachable, otherwise the user's decision verbatim |
 | also | other wordings of the same entry, verbatim, each with its source |
 
 An entry keeps its id when it moves between `Open`, `Decided`, `Later`, and `Follow-ups`. Only a new parent changes it, such as a detached entry the user links to a requirement.
