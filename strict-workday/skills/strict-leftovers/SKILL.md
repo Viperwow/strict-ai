@@ -23,10 +23,10 @@ A verbatim journal of what is left on one task. Every run makes the open list sm
 
 This skill writes `.strict-ai/leftovers/`:
 
-- `<task-id>.md` — the journal, format in [references/journal-format.md](https://github.com/Viperwow/strict-ai/blob/main/strict-workday/skills/strict-leftovers/references/journal-format.md). The journal is the record; the conversation is not.
+- `<task-id>.md` — the journal, format in [references/journal-format.md](https://github.com/Viperwow/strict-ai/blob/main/strict-workday/skills/strict-leftovers/references/journal-format.md). The journal is the record; the conversation is not. Quotes are verbatim, so a journal can hold secrets or customer data; keep it out of version control.
 - `README.md` — one line per journal.
 
-Configuration: `.strict-ai/configs/strict-workday.json`, key `strict-leftovers`. No file ships.
+Configuration: read `.strict-ai/configs/strict-workday.json`, key `strict-leftovers`, before the run. No file ships; an absent file, key, or field means the default.
 
 | Field | Default | Meaning |
 |---|---|---|
@@ -46,7 +46,7 @@ An unreachable source prints one line, `<Source> data is unavailable.`, and the 
 
 ## Run
 
-1. **Journal.** Read it, or create it. On creation, copy the DoD verbatim from the sources, and add one `R-n` per atomic requirement or DoD criterion, verbatim. With no requirement found, the task title becomes `R-1`. Any run may append new `R-n`.
+1. **Journal.** Read it, or create it. On creation, copy the DoD verbatim from the sources, or write `DoD: n/a` when none is stated, and add one `R-n` per atomic requirement or DoD criterion, verbatim. With no requirement found, the task title becomes `R-1`. Any run may append new `R-n`.
 2. **Read.** Take source content from `last-run` onward. Drop quotes the journal already holds.
 3. **Extract.** Questions, findings, and decisions. Store each quote verbatim.
 4. **Merge.** Entries that need the same decision are one entry. The first wording is the quote; every other wording goes under `also:` verbatim with its source.
@@ -82,12 +82,12 @@ When `stall` reaches `stallRuns`, the first output line says so. Then list the `
 
 **Requirement done.** Judge each `R-n` on its own subtree. It is done when both hold:
 
-1. No open entry in the subtree is `blocker`, `critical`, or `high`.
+1. No open entry in the subtree is `blocker`, `critical`, or `high`. The `stated` label never counts.
 2. Every depth-1 entry is `decided`.
 
 Progress `n/m` counts decided depth-1 entries out of all depth-1 entries of that requirement.
 
-**Task done.** Every requirement is done, every check is green, and no open entry has an assigned severity above `medium`. The `stated` label never counts. Take check and review state from the sources and the local git state. A fact the agent cannot see prints `unknown` and counts as not met. Print each unmet condition on one line.
+**Task done.** Every requirement is done and every check is green. Take check and review state from the sources and the local git state. A fact the agent cannot see prints `unknown` and counts as not met. Print each unmet condition on one line.
 
 **Follow-ups.** When the task is done, move every remaining entry into the `Follow-ups` tree, links kept: undecided entries, `Later`, and `Detached`. List each root as a ticket candidate. Record a ticket link only when the user gives one.
 
@@ -105,6 +105,6 @@ R-2 · 1 high open · 2/5
 2. …
 ```
 
-- `(+n)` compares with `open-count` from the previous run. When `Open` grew, the first line says so.
+- `(+n)` compares with `open-count` from the previous run.
 - The stall line, then absence lines, come before the counts.
 - `Detached` prints only with `--all` or when `Open` is empty.

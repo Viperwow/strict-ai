@@ -22,6 +22,7 @@ No Definition of Done was stated.
 ## Expected final state
 
 - `.strict-ai/leftovers/feat-table-pencil-icons.md` exists. Its header holds `last-run` (UTC) and `open-count`.
+- The header holds `DoD: n/a`.
 - `R-1` is the task title, verbatim: "Replace the set… actions in the table with pencil icons."
 - Messages 2 and 3 need the same decision, so they form one entry. Message 2 is its quote. Message 3 sits under `also:` verbatim, with its source.
 - That entry is `by: agent`, `from: R-1`, `depth 1`, under `Open`.

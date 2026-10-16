@@ -127,10 +127,10 @@ Entry fields:
 | by | `user` \| `agent` |
 | severity | `blocker` \| `critical` \| `high` \| `medium` \| `low`, assigned by the skill per the table below |
 | stated | the severity label the source gave, kept as-is |
-| quadrant | Eisenhower `Q1`–`Q4`: importance = path to a requirement, urgency = severity or a stated deadline |
+| quadrant | Eisenhower `Q1`–`Q4`: importance = path to a requirement, urgency = severity `high` or above, or a stated deadline |
 | from | parent id; absent for detached entries |
 | depth | edges from the nearest requirement; absent for detached entries |
-| source | where it was said: session, review, PR, tracker |
+| source | where it was said: session, review, PR, tracker, messenger, or a session memory store |
 
 Entries move between sections. They are never rewritten or deleted.
 
@@ -193,7 +193,7 @@ Open 4 (+1) · Decided 7 · Later 3 · Detached 2
 2. …
 ```
 
-When `Open` grew since the last run, the first line says so with the delta. Nothing else prints unless
+When `Open` grew since the last run, the counts line shows the delta. Nothing else prints unless
 requested.
 
 ## Done
@@ -205,22 +205,21 @@ Done is tracked per requirement, then per task.
 1. **Hard gate.** No open entry in the subtree is `blocker`, `critical`, or `high`.
 2. **Direct entries.** Every depth-1 entry, one that grew straight from the requirement, is `decided`.
 
-Everything else in the subtree moves to `Follow-ups`. The output shows progress per requirement:
+The output shows progress per requirement:
 `R-1 · gate ok · 4/4 · done`, `R-2 · 1 high open · 2/5`.
 
 There is no percentage threshold. No study found supports a universal share of resolved items, and
 most review comments never lead to a code change, so a high ratio would force the user through noise.
 
-**Task done.** All three hold:
+**Task done.** Both hold:
 
 - every requirement is done;
-- every check is green;
-- review shows no finding above `medium`.
+- every check is green.
 
 The skill states which conditions are not yet met, one line each.
 
 **Follow-ups.** When the task is done, every remaining entry moves into a separate `Follow-ups` tree:
-undecided entries at `driftDepth` or deeper, `Later`, and `Detached`. The tree keeps its links, so it
+undecided entries, `Later`, and `Detached`. The tree keeps its links, so it
 shows what each follow-up grew from. Each root of that tree is a candidate ticket. The skill lists the
 candidates; the user creates the tickets and the skill records their links. This is the conclusion of
 the task: what the work found but did not own.
