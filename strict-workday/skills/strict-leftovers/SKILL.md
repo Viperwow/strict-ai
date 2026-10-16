@@ -78,16 +78,20 @@ When `stall` reaches `stallRuns`, the output opens with the stall line. Entries 
 
 ## Done
 
-**Requirement done.** Judge each `R<n>` on its own subtree. It is done when both hold:
+**Requirement done.** Judge each `R<n>` on its own subtree. It is done when all hold:
 
 1. No open entry in the subtree is `blocker`, `critical`, or `high`. The `stated` label never counts.
 2. Every depth-1 entry is `decided`.
+3. Every entry marked `must` is `decided`.
 
 Progress `n/m` counts decided depth-1 entries out of all depth-1 entries of that requirement.
 
-**Task done.** Every requirement is done and every check is green. Take check and review state from the sources and the local git state. A fact the agent cannot see counts as not met. Task done changes only the first line; the trees print as usual, with moved entries now in `Follow-ups` instead of `Leftovers`.
+**Task done.** Every requirement is done and every check is green. Take check and review state from the sources and the local git state. A fact the agent cannot see counts as not met. Task done changes only the first line; the trees print as usual.
 
-**Follow-ups.** When the task is done, move every remaining entry into the `Follow-ups` tree, links kept: undecided entries, `Later`, and `Detached`. Mark the topmost moved entry on each path as a ticket candidate. Record a ticket link only when the user gives one.
+**After task done.** The trees hold until the first task done. Then the user decides; the skill moves nothing on its own:
+
+- **Not finished.** The user names the remaining entries that must close. Each gets `must`, which raises the bar for its requirement. Runs go on until the next task done.
+- **Finished.** The user names which remaining entries move to `Follow-ups` and which to `Later`. A moved entry takes its subtree with it, links kept. In `Follow-ups`, the topmost moved entry on each path is a ticket candidate. Record a ticket link only when the user gives one.
 
 ## Chat output
 
@@ -124,6 +128,6 @@ Tracker data is unavailable.
 - A branch shows `<decided children>/<children>` before its id, in every tree. A leaf shows `[ ]` open or `[x]` decided.
 - Each tree counts only the entries it holds. An entry whose children all moved to another tree is a leaf in its own tree, and counts there by its own status.
 - Siblings sort by id, ascending.
-- Each line reads `<id> · <title>`, then meta after `|`. A requirement's meta is `gate ok` or `Blocked by <ids>`. An open entry's meta is its severity, `▲ <stated>` or `▼ <stated>` when the source labelled it lower or higher, then `drift` and `was <id>` when they apply. A decided entry has no meta.
+- Each line reads `<id> · <title>`, then meta after `|`. A requirement's meta is `gate ok` or `Blocked by <ids>`. An open entry's meta is its severity, `▲ <stated>` or `▼ <stated>` when the source labelled it lower or higher, then `must`, `drift`, and `was <id>` when they apply. A decided entry has no meta.
 - `Later`, `Follow-ups`, and `Detached` print only when not empty. `Later` and `Follow-ups` are trees that repeat the full path from the requirement to each moved entry; path nodes show only `<id> · <title>`. In `Follow-ups`, the topmost moved entry on each path carries `ticket candidate`. `Detached` is a flat list: `<id> · <summary of at most 30 words> | <author>`.
 - Absence lines come last.

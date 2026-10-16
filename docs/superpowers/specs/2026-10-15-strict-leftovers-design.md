@@ -203,10 +203,11 @@ Detached
 
 Done is tracked per requirement, then per task.
 
-**Requirement done.** Each `R<n>` is judged on its own subtree. It is done when both hold:
+**Requirement done.** Each `R<n>` is judged on its own subtree. It is done when all hold:
 
 1. **Hard gate.** No open entry in the subtree is `blocker`, `critical`, or `high`.
 2. **Direct entries.** Every depth-1 entry, one that grew straight from the requirement, is `decided`.
+3. **Must entries.** Every entry the user marked `must` is `decided`.
 
 The tree shows progress per requirement:
 `4/4 R1 · <title> | gate ok`, `2/5 R2 · <title> | Blocked by L7`.
@@ -221,11 +222,10 @@ most review comments never lead to a code change, so a high ratio would force th
 
 Task done changes only the first line of the output; the trees print as usual.
 
-**Follow-ups.** When the task is done, every remaining entry moves into a separate `Follow-ups` tree:
-undecided entries, `Later`, and `Detached`. The tree keeps its links, so it
-shows what each follow-up grew from. The topmost moved entry on each path is a ticket candidate. The skill lists the
-candidates; the user creates the tickets and the skill records their links. This is the conclusion of
-the task: what the work found but did not own.
+**After task done.** The trees hold until the first task done; then the user decides. Not finished: the
+user names entries that must close, each gets `must` and joins its requirement's gate, and runs go on
+until the next task done. Finished: the user names which remaining entries move to `Follow-ups` and
+which to `Later`. The skill moves nothing on its own.
 
 ## Evidence
 

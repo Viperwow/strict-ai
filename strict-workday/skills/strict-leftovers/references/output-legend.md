@@ -17,7 +17,7 @@ Every symbol the chat output may print, and what it means.
 |---|---|
 | `Leftovers` | The main tree. Roots are requirements; open and decided entries sit in place. Always printed. |
 | `Later` | Entries the user deferred, each with the full path from its requirement. Printed only when not empty. |
-| `Follow-ups` | What remains once the task is done, each with the full path from its requirement. Printed only when not empty. |
+| `Follow-ups` | Entries the user moved out as separate tasks after task done, each with the full path from its requirement. Printed only when not empty. |
 | `Detached` | Entries with no link to a requirement. A flat list. Printed only when not empty. |
 
 ## Ids
@@ -54,5 +54,6 @@ An id keeps its value across `Leftovers`, `Later`, and `Follow-ups`: `L6` stays 
 | `▼ <stated>` | The skill lowered the severity below the source's label `<stated>`. |
 | `drift` | The entry sits at `driftDepth` or deeper: far from its requirement. |
 | `was <id>` | The entry's previous id, before a new parent changed it. |
+| `must` | The user said this entry must close before the task is finished. It joins its requirement's gate. |
 | `ticket candidate` | The topmost moved entry on a `Follow-ups` path; the user may turn it into a ticket. |
 | `user` / `agent` | Who raised a detached entry. |

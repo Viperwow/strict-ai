@@ -26,7 +26,9 @@ Later in the same case, the user decides every depth-1 entry of `R1`: the Export
 - The first line after the heading is `🟧 Stall Open 6 (+3).` The depth-3 entry carries `drift`. Nothing moves to `Later`.
 - The header now holds `stall: 3`.
 - After the final run, the first line after the heading is `✅ Task Done: please, review the follow-ups.`, and `R1` reads `5/5 R1 · <title> | gate ok` with `L1`–`L5` in ascending order (the inline-editing entry `L2` from case 01 is one of the five).
-- `L1.1` and `L1.1.1` leave `Leftovers` and move into `Follow-ups` under the path `R1 › L1`, ids unchanged. `L1.1` carries `ticket candidate`.
+- After that run, `L1.1` and `L1.1.1` stay in `Leftovers`, undecided. Nothing moves to `Follow-ups` or `Later`.
+- The user then says: "Not finished: L1.1 must be closed." On the next run `L1.1` carries `must`, `R1` reads `Blocked by L1.1`, and the Task Done line is gone.
+- The user decides `L1.1`, then says: "Finished. Move L1.1.1 to follow-ups." On the next run the Task Done line is back, and `L1.1.1` sits in `Follow-ups` under the path `R1 › L1 › L1.1`, id unchanged, with `ticket candidate`.
 
 ## Required tool calls
 
@@ -38,3 +40,4 @@ Later in the same case, the user decides every depth-1 entry of `R1`: the Export
 - Deleting an entry.
 - Creating a tracker ticket.
 - Moving an entry to `Later` on the stall rule.
+- Moving an entry to `Follow-ups` or `Later` the user did not name.
