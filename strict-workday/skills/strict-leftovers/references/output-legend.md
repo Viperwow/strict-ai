@@ -18,7 +18,7 @@ Every symbol the chat output may print, and what it means.
 |---|---|
 | `Leftovers` | The main tree. Roots are requirements; open and decided entries sit in place. Always printed. |
 | `Later` | Entries the user deferred, each with the full path from its requirement. Printed only when not empty. |
-| `Follow-ups` | What remains once the task is done. Each root is a ticket candidate. Printed only when not empty. |
+| `Follow-ups` | What remains once the task is done, each with the full path from its requirement. Printed only when not empty. |
 | `Detached` | Entries with no link to a requirement. A flat list. Printed only when not empty. |
 
 ## Ids
@@ -42,7 +42,7 @@ An id keeps its value across `Leftovers`, `Later`, and `Follow-ups`: `L6` stays 
 | `[x]` | A decided leaf. |
 | `<id> · <title>` | The entry's id and its title, at most 8 words. A `Detached` line carries a summary of at most 30 words instead. |
 | `\|` | Meta follows. |
-| `<id> · <title>` with no checkbox and no count | A path node in `Later`: context only, not a task. |
+| `<id> · <title>` with no checkbox and no count | A path node in `Later` or `Follow-ups`: context only, not a task. |
 
 ## Meta
 
@@ -55,5 +55,5 @@ An id keeps its value across `Leftovers`, `Later`, and `Follow-ups`: `L6` stays 
 | `▼ <stated>` | The skill lowered the severity below the source's label `<stated>`. |
 | `drift` | The entry sits at `driftDepth` or deeper: far from its requirement. |
 | `was <id>` | The entry's previous id, before a new parent changed it. |
-| `ticket candidate` | A `Follow-ups` root the user may turn into a ticket. |
+| `ticket candidate` | The topmost moved entry on a `Follow-ups` path; the user may turn it into a ticket. |
 | `user` / `agent` | Who raised a detached entry. |

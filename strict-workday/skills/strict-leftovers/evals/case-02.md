@@ -26,7 +26,7 @@ Later in the same case, the user decides every depth-1 entry of `R1`: the Export
 - The first line after the heading is `🟧 Stall Open <n> (+<growth>).` The depth-3 entry carries `drift`. Nothing moves to `Later`.
 - The header now holds `stall: 3`.
 - After the final run, the first line after the heading is `✅ Task Done: please, review the follow-ups.`, and `R1` reads `5/5 R1 · <title> | gate ok` with `L1`–`L5` in ascending order (the inline-editing entry `L2` from case 01 is one of the five).
-- The undecided depth-3 entry moves into a `Follow-ups` tree with its links kept. It prints as the `Follow-ups` tree; each root carries `ticket candidate`.
+- The undecided depth-3 entry moves into a `Follow-ups` tree with its links kept. It prints in the `Follow-ups` tree under its full path from `R1`; the topmost moved entry carries `ticket candidate`.
 
 ## Required tool calls
 
