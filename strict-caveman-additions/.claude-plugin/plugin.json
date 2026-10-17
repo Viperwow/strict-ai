@@ -1,0 +1,10 @@
+{
+  "name": "strict-caveman-additions",
+  "version": "0.1.0",
+  "description": "Always-on controlled-language rules on top of a compression style: paragraphs, warnings, English verb forms, and simplified technical Russian.",
+  "author": {
+    "name": "Viperwow",
+    "email": "viperkodiak@gmail.com"
+  },
+  "keywords": ["controlled-language", "ste100", "russian", "writing", "hooks"]
+}

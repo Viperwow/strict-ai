@@ -71,6 +71,13 @@
       "description": "Skills for knowledge and procedure handling — playbooks, knowledge-grounded guidance, and design evidence research.",
       "version": "0.2.0",
       "category": "knowledge"
+    },
+    {
+      "name": "strict-caveman-additions",
+      "source": "./strict-caveman-additions",
+      "description": "Always-on controlled-language rules on top of a compression style: paragraphs, warnings, English verb forms, and simplified technical Russian.",
+      "version": "0.1.0",
+      "category": "productivity"
     }
   ]
 }
