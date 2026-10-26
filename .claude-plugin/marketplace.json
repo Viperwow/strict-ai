@@ -52,13 +52,6 @@
       "category": "automation"
     },
     {
-      "name": "strict-mod-creator",
-      "source": "./strict-mod-creator",
-      "description": "Build a Claude Code mod — a plugin whose hooks module runs inside the engine — with a declared reach budget, a test per hook file, and a validator footprint check before it is done.",
-      "version": "0.1.0",
-      "category": "automation"
-    },
-    {
       "name": "strict-workflows",
       "source": "./strict-workflows",
       "description": "Composed end-to-end workflows — reusable multi-step flows that combine lower-level skills from other packages across the full SDLC.",
