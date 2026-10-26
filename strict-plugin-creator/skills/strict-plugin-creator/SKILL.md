@@ -32,6 +32,8 @@ A plugin is a unit of distribution, not a unit of authorship. Read down the tabl
 
 **The hook rule.** A hook runs whether or not anyone asked for it. Shipped inside a package someone installed for a different skill, it fires on their sessions uninvited. So a hook narrows the unit rather than joining an existing one, and it outranks every row below it: one skill plus the hooks that serve it is a plugin, however small, because there is nowhere else the hooks can live. What the rule forbids is the reverse — hanging hooks off a package that holds unrelated skills.
 
+Hooks are also agent-specific: each agent has its own events and payloads, and no portable format carries them. So a plugin that ships hooks targets exactly one agent. A plugin without hooks ships the portable core and loads in every agent the format reference lists.
+
 Failing the gate is a result, not a dead end. Name the home the table points at, say so in one line, and stop.
 
 ## Create flow
@@ -57,9 +59,9 @@ Run the steps in order.
 - **Step 4.** Route first: a component type with a creator is written by that creator, so one authoring standard per type survives instead of a second one growing here. A creator that is not available is not a blocker — write the component here to that standard, and say which creator would have owned it.
 - **Step 5.** Ship only directories with content. An empty `agents/` teaches a reader the plugin has agents.
 - **Step 6.** Components carry their own gates — an agent needs its eval, a script needs its verification run. Those gates hold inside this flow; do not clear them on the plugin's behalf.
-- **Step 7.** Installing locally is the test. A manifest that parses proves nothing about whether a skill's frontmatter is readable or a hook's command resolves.
+- **Step 7.** Installing locally is the test, in every agent the plugin targets. A manifest that parses proves nothing about whether a skill's frontmatter is readable or a hook's command resolves.
 - **Step 8.** Show the whole tree and the exact marketplace entry in one block, so one confirmation covers both.
-- **Step 9.** Then confirm the four surfaces agree: the plugin on disk, its entry in the listing, whatever note advertises the installable set, and the listing's own version where it carries one. A repository with a script for this runs the script. A plugin present on disk and absent from the listing installs for nobody.
+- **Step 9.** Then confirm the four surfaces agree: the plugin on disk, its entry in every listing file, whatever note advertises the installable set, and the listing's own version where it carries one. A repository with a script for this runs the script. A plugin present on disk and absent from the listing installs for nobody.
 
 ## Common mistakes
 
@@ -67,6 +69,8 @@ Run the steps in order.
 |---|---|
 | A plugin per skill | Distribution overhead with no payoff. A skill that ships no hook belongs in a package that already exists. |
 | Shipping a hook inside a shared package | The hook fires for everyone who installed that package for something else. A hook makes the plugin single-purpose. |
+| One hooks file for several agents | Two agents can read the same path with different event schemas. A hook plugin targets one agent. |
+| Only the manifest of the agent you work in | The other agents do not see the plugin. Ship the portable core beside it. |
 | Scaffolding every directory the format allows | Empty directories are a claim about what the plugin does. Ship what has content. |
 | Writing the skills and agents inline here | Each component type has a creator that owns its standard. Route to it. |
 | Listing it in the marketplace before it installs | The listing is the irreversible step; a broken plugin reaches every installer at once. |

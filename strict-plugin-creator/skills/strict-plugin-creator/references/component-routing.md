@@ -10,6 +10,7 @@ A plugin is a container. Each thing inside it has an authoring standard, and tha
 | hook | a hook creator | the event, the matcher, the payload it reads |
 | command | this skill | a thin entry point; it has no separate standard |
 | MCP server | an MCP builder | the server, its tools, its transport |
+| mod | the host's own mod skill — Claude Code ships `plugin-authoring` | the engine API, the generated types, the validator. Mods exist only in Claude Code, so a mod plugin targets Claude Code alone |
 
 Survey what is available in the session before routing. A creator that is not installed is not a blocker: write the component here, to the standard the plugin already uses, and say which creator would have owned it.
 

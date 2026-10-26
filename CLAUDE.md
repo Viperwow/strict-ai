@@ -207,7 +207,7 @@ Include only directories useful for the package.
 
 ### Agent Plugins portable layout
 
-A second, vendor-neutral packaging standard supported alongside the layout above. Adopt it for a package meant to load in clients other than Claude Code; keep `.claude-plugin/plugin.json` in place so the package stays loadable in both.
+A second, vendor-neutral packaging standard required alongside the layout above. Every strict.ai package loads in Claude Code, Codex, and Cursor. Any other client that reads one of these formats is supported too. Ship the root `plugin.json` and keep `.claude-plugin/plugin.json` in place, so the package loads in both. A package that ships hooks is the exception: hooks are client-specific, so it targets one client. The concrete per-client paths live in the `strict-plugin-creator` skill's [references/plugin-format.md](https://github.com/Viperwow/strict-ai/blob/main/strict-plugin-creator/skills/strict-plugin-creator/references/plugin-format.md).
 
 ```text
 package-name/
