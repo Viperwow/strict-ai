@@ -1,0 +1,10 @@
+{
+  "name": "strict-plugin-creator",
+  "version": "0.1.0",
+  "description": "Turn components that ship and version together into an installable plugin — decide whether a domain earns one, scaffold the manifest and only the directories it uses, route each component to the creator that owns it, and wire the marketplace entry.",
+  "author": {
+    "name": "Viperwow",
+    "email": "viperkodiak@gmail.com"
+  },
+  "keywords": ["plugins", "plugin-creator", "marketplace", "scaffolding", "packaging", "distribution"]
+}

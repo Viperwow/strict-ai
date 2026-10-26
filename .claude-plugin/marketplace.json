@@ -6,7 +6,7 @@
   },
   "metadata": {
     "description": "Opinionated skill collection for professional software engineering workflows \u2014 modular, replaceable packages for every phase of daily work and SDLC.",
-    "version": "0.11.0"
+    "version": "0.12.0"
   },
   "plugins": [
     {
@@ -78,6 +78,13 @@
       "description": "Always-on controlled-language rules on top of a compression style: paragraphs, warnings, English verb forms, and simplified technical Russian.",
       "version": "0.1.0",
       "category": "productivity"
+    },
+    {
+      "name": "strict-plugin-creator",
+      "source": "./strict-plugin-creator",
+      "description": "Turn a set of components that ship together into an installable plugin, and decide when a domain earns one at all.",
+      "version": "0.1.0",
+      "category": "packaging"
     }
   ]
 }
