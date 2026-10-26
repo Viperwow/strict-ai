@@ -1,0 +1,102 @@
+[
+  {
+    "query": "/strict-leftovers",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "what's left on this task before I can call it done?",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "write down what we decided so far on this ticket, word for word, so we don't lose it",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "we keep drifting away from the requirement — show me what pulled in what",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "the review dumped 30 comments on my PR, log them against the requirements so I only see what matters",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "is PROJ-123 done yet or are there still open questions?",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "что осталось по задаче? покажи открытые вопросы и решения",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "keep a journal of the open questions on this branch so the list shrinks instead of growing",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "the requirement is done, move the rest into follow-ups and list what needs its own ticket",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "запиши дословно решения, которые мы приняли в этой сессии",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "fix this failing test in the orders module",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "estimate how long this epic will take",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "write the Definition of Done for a new task before I start",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "summarize this Slack thread for me",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "what's the status of the sprint overall?",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "create a Jira ticket for this bug",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "review my diff for security issues",
+    "should_trigger": false,
+    "split": "validation"
+  },
+  {
+    "query": "plan my day around these three meetings",
+    "should_trigger": false,
+    "split": "validation"
+  },
+  {
+    "query": "score these backlog items by WSJF for the manager",
+    "should_trigger": false,
+    "split": "validation"
+  },
+  {
+    "query": "напиши changelog для этого релиза",
+    "should_trigger": false,
+    "split": "validation"
+  }
+]

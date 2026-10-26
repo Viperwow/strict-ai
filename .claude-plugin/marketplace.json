@@ -6,28 +6,28 @@
   },
   "metadata": {
     "description": "Opinionated skill collection for professional software engineering workflows \u2014 modular, replaceable packages for every phase of daily work and SDLC.",
-    "version": "0.9.5"
+    "version": "0.12.0"
   },
   "plugins": [
     {
       "name": "strict-workday",
       "source": "./strict-workday",
       "description": "Skills for daily work execution \u2014 operating rhythm, focus, time management, day planning.",
-      "version": "0.4.0",
+      "version": "0.5.0",
       "category": "productivity"
     },
     {
       "name": "strict-labs",
       "source": "./strict-labs",
       "description": "Experimental and unstable content \u2014 early skills and drafts being evaluated.",
-      "version": "0.3.0",
+      "version": "0.5.1",
       "category": "labs"
     },
     {
       "name": "strict-development",
       "source": "./strict-development",
-      "description": "Skills for engineering implementation \u2014 changelog generation, technical design, PR preparation.",
-      "version": "0.3.0",
+      "description": "Skills for engineering implementation \u2014 technical design, architecture, coding procedures, comment and documentation policy, changelog generation, and PR preparation.",
+      "version": "0.4.0",
       "category": "development"
     },
     {
@@ -48,8 +48,36 @@
       "name": "strict-script-creator",
       "source": "./strict-script-creator",
       "description": "Turn a repeated routine into a reusable script, then reuse it and remove what nothing calls.",
+      "version": "0.1.1",
+      "category": "automation"
+    },
+    {
+      "name": "strict-mod-creator",
+      "source": "./strict-mod-creator",
+      "description": "Build a Claude Code mod — a plugin whose hooks module runs inside the engine — with a declared reach budget, a test per hook file, and a validator footprint check before it is done.",
       "version": "0.1.0",
       "category": "automation"
+    },
+    {
+      "name": "strict-workflows",
+      "source": "./strict-workflows",
+      "description": "Composed end-to-end workflows — reusable multi-step flows that combine lower-level skills from other packages across the full SDLC.",
+      "version": "0.1.1",
+      "category": "workflows"
+    },
+    {
+      "name": "strict-knowledge",
+      "source": "./strict-knowledge",
+      "description": "Skills for knowledge and procedure handling — playbooks, knowledge-grounded guidance, and design evidence research.",
+      "version": "0.2.0",
+      "category": "knowledge"
+    },
+    {
+      "name": "strict-caveman-additions",
+      "source": "./strict-caveman-additions",
+      "description": "Always-on controlled-language rules on top of a compression style: paragraphs, warnings, English verb forms, and simplified technical Russian.",
+      "version": "0.1.0",
+      "category": "productivity"
     },
     {
       "name": "strict-plugin-creator",

@@ -1,0 +1,102 @@
+[
+  {
+    "query": "We're designing a new notification service — I need to know what patterns companies use for delivery guarantees before we lock the ADR. Can you research that?",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "compare cursor vs offset pagination for our public API, include how others do it and what we already have in the codebase",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "drafting ADR for event sourcing on the orders bounded context — need external references with quotes and whether we're aligned with industry",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "my architect asked what's the right way to handle multi-tenant data isolation at the container level — not implementation yet, just options grounded in practice",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "/strict-best-practices auth session management for B2B SaaS",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "we're stuck between saga vs outbox for cross-service payments — what does the market do and do we have internal precedents?",
+    "should_trigger": true,
+    "split": "train"
+  },
+  {
+    "query": "before we choose a design system token structure for dark mode, what are established practices? include habr/dev.to if relevant",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "help me think through GDPR data residency for EU customers — need evidence block for the decision record, not a recommendation yet",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "Container-level caching strategy for read-heavy catalog — trade-offs and how mature teams approach TTL invalidation",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "what's the usual approach to idempotency keys in REST APIs? boss wants sources before we write anything",
+    "should_trigger": true,
+    "split": "validation"
+  },
+  {
+    "query": "implement cursor pagination in src/api/lists.go using the existing repository pattern",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "/strict-dod add rate limiting to the public API",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "score these three backlog items with WSJF and tell me which to do first",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "write the ADR file for event sourcing and save it under docs/adr/0042-events.md",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "fix the typo in README and push",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "how do I sort a list in Python?",
+    "should_trigger": false,
+    "split": "train"
+  },
+  {
+    "query": "review this PR for code style and suggest improvements in the diff",
+    "should_trigger": false,
+    "split": "validation"
+  },
+  {
+    "query": "we need a gantt chart for the sprint — who works on what next week",
+    "should_trigger": false,
+    "split": "validation"
+  },
+  {
+    "query": "analyze this CSV of Q4 sales and chart revenue by region",
+    "should_trigger": false,
+    "split": "validation"
+  },
+  {
+    "query": "compare saga vs outbox and then implement the outbox table migration in postgres",
+    "should_trigger": false,
+    "split": "validation"
+  }
+]

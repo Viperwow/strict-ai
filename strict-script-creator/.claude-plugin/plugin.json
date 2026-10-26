@@ -1,6 +1,6 @@
 {
   "name": "strict-script-creator",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Turn a repeated multi-step routine into a reusable script under .strict-ai/scripts/, reuse it from then on, and remove the scripts nothing calls. Ships advisory hooks that load the script catalog and flag a command-heavy turn.",
   "author": {
     "name": "Viperwow",

@@ -2,6 +2,10 @@
 
 Primary operating guide for any assistant, agent, automation, or contributor in the strict.ai repository. First source of truth for structure, placement, and authoring conventions.
 
+## Git workflow
+
+Follow [CONTRIBUTING.md](https://github.com/Viperwow/strict-ai/blob/main/CONTRIBUTING.md): branches use `<type>/<short-kebab-case-topic>` from `main`, commits use Conventional Commits with lowercase subjects and headers of at most 100 characters. Local Husky and pull request CI enforce the shared commitlint configuration. Do not add AI attribution trailers.
+
 ## Core principle
 
 Preserve the repository structure as a stable contract. Change only on explicit user request.
@@ -24,6 +28,8 @@ strict/
   strict-adapters/
   strict-agents-creator/
   strict-script-creator/
+  strict-mod-creator/
+  strict-caveman-additions/
   strict-plugin-creator/
   strict-labs/
   strict-deprecated/
@@ -45,6 +51,8 @@ strict/
 | `strict-adapters` | one specific tool/API/CLI/SDK only; replaceable; invocable by other skills only, not directly by users                        |
 | `strict-agents-creator` | creating custom subagents from a task/role — composing skills into an agent `.md`, its tools, model, and eval contract         |
 | `strict-script-creator` | turning a repeated routine into a reusable script, reusing it, and removing scripts nothing calls                              |
+| `strict-mod-creator` | building a mod — code that runs inside the agent engine on its events — with its reach budget, tests, and footprint check      |
+| `strict-caveman-additions` | always-on reply rules added on top of a compression style — paragraphs, warnings, per-language controlled-language references |
 | `strict-plugin-creator` | packaging components that ship and version together into an installable plugin, and judging when a domain earns one   |
 | `strict-labs` | experimental, still stabilizing, or searching for a permanent home                                                            |
 | `strict-deprecated` | confirmed replacement exists; removal scheduled; not the recommended path for any use case                                    |
@@ -119,6 +127,15 @@ Before creating or editing a skill, review:
 - Codex skill catalog, archived — read for examples only: <https://github.com/openai/skills>
 - Codex skill authoring guide, including skill-only plugins: <https://developers.openai.com/codex/skills/create-skill>
 - Curated skill catalog grouped by workflow stage, with skill-to-skill cross-referencing — read for ideas, its install path is awkward: <https://www.aihero.dev/skills>
+- Atomized single-purpose skill catalog — compare its behavior decomposition against local ideas: <https://skills.addy.ie>
+
+### Skill isolation
+
+Skills are fully independent. No skill references or invokes another. Integration happens only through session context and user input — the agent is the bus.
+
+### Audience
+
+Write for a general adult audience: clear, moderate complexity.
 
 Authoring rules:
 1. Narrow, single-purpose skills.
@@ -147,9 +164,12 @@ The default is no comment. A comment is a hint to the next reader about the code
 5. Never comment about anything outside this repository — an external convention, an authoring persona, a tool that ships no code here. It tells a reader of these files nothing they can act on.
 6. Prefer deleting a comment to updating it.
 
-## Hooks, plugins, agents, and MCP
+This section is the summary. The full contract — doc blocks, the seven inline triggers, the cognitive-complexity threshold, and the configuration behind them — lives in the `strict-comment` skill in `strict-development`, and that skill decides.
 
-Before creating hooks, plugins, agents, or MCP, review:
+## Hooks, mods, plugins, agents, and MCP
+
+Before creating hooks, mods, plugins, agents, or MCP, review:
+- Mods — hooks-module plugins, their test kit and noun contracts, with four shipped examples: <https://github.com/anthropics/claude-code/blob/main/mods/README.md>
 - Plugin structure and examples: <https://github.com/anthropics/claude-code/blob/main/plugins/README.md>
 - Plugin overview: <https://www.anthropic.com/news/claude-code-plugins?cb=zapier>
 - Subagents: <https://docs.claude.com/en/docs/claude-code/sub-agents?_bhlid=fab9dd4ba867c6a3f19d2ee04c0262e5f9fc2d40>
@@ -158,10 +178,18 @@ Before creating hooks, plugins, agents, or MCP, review:
 - MCP course: <https://anthropic.skilljar.com/introduction-to-model-context-protocol>
 - Authorial plugin layout, outside the standards but worth reading: <https://github.com/cursor/plugins>
 - Codex plugin and skill examples, successor of the archived openai/skills catalog: <https://github.com/openai/plugins>
+- Agent Plugins open standard, vendor-neutral portable plugin format: <https://agent-plugins.org>
+- Agent Plugins specification and schemas: <https://github.com/agentplugins/agent-plugins-spec>
 
 Standards outrank authorial examples. Read an authorial layout for ideas; follow the official structure when the two disagree.
 
-Hooks: deterministic enforcement. Workflows: composition. Adapters: tool-specific knowledge. Foundation: shared primitives.
+Hooks: deterministic enforcement. Mods: engine behaviour as code. Workflows: composition. Adapters: tool-specific knowledge. Foundation: shared primitives.
+
+### Mods
+
+Use a mod when the requested behaviour must run inside the agent engine; prefer a settings hook when an external command on an event is enough. Declare the reach and validate the footprint before calling a mod done.
+
+The complete file layout, host approval and activation rules, JS/TS checks, storage scope, and noun contracts live in [references/host-bindings.md](https://github.com/Viperwow/strict-ai/blob/main/strict-mod-creator/skills/strict-mod-creator/references/host-bindings.md) and [references/claude-code-mods.md](https://github.com/Viperwow/strict-ai/blob/main/strict-mod-creator/skills/strict-mod-creator/references/claude-code-mods.md) under `strict-mod-creator`. Completion requires validation, footprint agreement, behavioural tests, and the selected language's checks.
 
 ## Preferred internal package layout
 
@@ -176,6 +204,28 @@ package-name/
 ```
 
 Include only directories useful for the package.
+
+### Agent Plugins portable layout
+
+A second, vendor-neutral packaging standard supported alongside the layout above. Adopt it for a package meant to load in clients other than Claude Code; keep `.claude-plugin/plugin.json` in place so the package stays loadable in both.
+
+```text
+package-name/
+  plugin.json
+  skills/
+  mcp.json            (only when the package ships MCP servers)
+  com.example.client/
+```
+
+- `plugin.json` at the package root requires `$schema` set to `https://agent-plugins.org/schemas/1.0.0/plugin.schema.json` and `name`. Remaining metadata fields are optional and the schema is closed.
+- `skills/` holds one directory per skill, each with `SKILL.md` at its top level. Discovery stops there — a nested `SKILL.md` is not a second skill — while a skill's own `scripts/`, `references/`, and `agents/<vendor>.yaml` stay where the authoring conventions put them.
+- `mcp.json` carries `$schema` set to `https://agent-plugins.org/schemas/1.0.0/mcp.schema.json` and `mcpServers`, and nothing else at the top level. It declares stdio, Streamable HTTP, or legacy HTTP+SSE servers.
+- A stdio `command` is one executable token — a bare name or a plugin-relative path starting with `./`. An explicit `cwd` stays inside `${PLUGIN_ROOT}` or `${PLUGIN_DATA}`. Neither `env` values nor HTTP headers may carry credentials: they are literal, readable package data.
+- Client-specific data splits by kind. Manifest values go under `extensions`, keyed by a reverse-domain namespace. Files go in a top-level directory named for that same namespace — the Claude Code `hooks/` and `agents/` of the layout above land there when a package is packaged portably.
+
+Skill content stays vendor-neutral either way; nothing here changes the authoring conventions above.
+
+Both manifests are client-owned and read by different loaders. Keep `name`, `version`, and `description` identical across them — a package that reports two identities is one users cannot reason about.
 
 ## Artifact storage
 
@@ -194,7 +244,89 @@ Where a skill writes the files it generates. One rule for every skill in this re
 
 **Registry.** When a folder accumulates files, a sibling `README.md` holds one line per artifact. There is no separate index format.
 
+**Configuration.** Tunable values a skill exposes live in `.strict-ai/configs/<plugin-name>.json` — one file per plugin, one top-level key per skill inside it. Ship no file: every field carries a default in the owning `SKILL.md`, and an absent file, key, or field means that default. JSON unless a consumer requires another format.
+
 **Own state only when no native source exists.** Native logs, the session transcript, and git are the source of truth; do not duplicate them.
+
+## Skill conventions
+
+**Overrides.** Every default in this section applies unless the skill's `SKILL.md` or the user or agent invocation defines otherwise.
+
+**No duplication.** Each thought, rule, or constraint appears **once** in this file and in each skill. Do not restate the same meaning in other words across sections, bullets, tables, or notes.
+
+### Output in chat
+
+Skills that return results in chat without a separate artifact use:
+
+```markdown
+## <skill-name> output
+```
+
+Example: `## strict-best-practices output`.
+
+### CLI shape
+
+Author skills like a good CLI command:
+
+- **Sane defaults** — automate the common path; minimize questions.
+- **Parameters override defaults** — flags and arguments, not interrogation.
+- Document every parameter and default in the skill's `SKILL.md`.
+
+### Triggers (description)
+
+The `description` frontmatter is how agents decide to load a skill. Write **positive user intention only** — when the skill **must** be invoked:
+
+- Frame as **what the user intends to achieve**, not how the skill works internally.
+- Use imperative phrasing: `Use when the user intends to…`, `Invoke when…`.
+- List concrete intents: comparing options, evaluating trade-offs, preparing material for a decision, and similar — including when the user does not name the domain or skill.
+- End with `Triggers on /<skill-name>.` when the skill has a slash command.
+
+**Do not put in `description`:**
+
+- `Do not use…` lists — anything outside the stated intent is out of scope by definition.
+- Names of other skills — no cross-references.
+- Anything beyond user intent — implementation detail, output shape, forbidden actions (`SKILL.md` body and `references/`, not frontmatter).
+
+**Auto-invoke** in the body uses the same rule: state when user intent matches; do not list negative cases.
+
+Keep `description` under **1024 characters**. Test with an `eval_queries` set (should-trigger and should-not-trigger) before shipping.
+
+### Terminology
+
+- Prefer terms that fit the **knowledge domain** and stay readable for a broad audience.
+- Keep wording **short, precise, and unambiguous** — avoid overloaded jargon and long prose.
+- Skills do not cross-reference other skills or git URLs to repository files. Repository policy lives here; each skill applies it locally.
+
+### Absence phrases
+
+| Type | Template | Example |
+|---|---|---|
+| Empty | `No <Entity> found.` | `No Internal sources found.` |
+| Unavailable | `<Entity> data is unavailable.` | `Temporal data is unavailable.` |
+| Omitted | `<Entity> omitted: <reason>.` | `Rates omitted: sample below minimum (N=7).` |
+| Not applicable | `<field>: n/a` or `<field>: n/a (<≤5 words>)` | `1Y: n/a (project age)` |
+
+- **Entity** is capitalized (`Sources`, `Patterns`, `Sample`, `Best practice`, `Rates`, …).
+- **Omitted** reason: maximum **15 words**; **n/a** parenthetical: maximum **5 words**.
+
+### Run cache
+
+Skills that persist run data default to **cache on**.
+
+| Parameter | Default | Values |
+|---|---|---|
+| `--cache` | `on` | `on` \| `off` \| `refresh` |
+| `--cache-ttl` | `30d` | duration |
+
+**Location:** `.strict-ai/cache/<skill-name>/`
+
+**Store only raw acquired data** — URLs, quotes, paths, line numbers, UTC timestamps. Cache every fetched record, including findings irrelevant to the current scope, so later runs can reuse them. Do not cache computed metrics or included/excluded **state**. Do not persist output exclusion lists as separate artifacts — only the underlying source records in cache files.
+
+**Filename:** `<slug>-<short-id>.json` — JSON `id` is the short id only; `slug` is a separate field inside the file.
+
+**Atomicity:** one value per JSON field (e.g. `startLine` and `endLine`, not `lines 42-58`).
+
+On cache hit within TTL, merge new raw facts; recompute derived output every run.
 
 ## Repository guardrails
 

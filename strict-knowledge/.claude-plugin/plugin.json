@@ -1,7 +1,7 @@
 {
   "name": "strict-knowledge",
-  "version": "0.1.0",
-  "description": "Skills for knowledge and procedure handling — internal procedure retrieval, playbook access, and knowledge-grounded guidance.",
+  "version": "0.2.0",
+  "description": "Skills for knowledge and procedure handling — playbooks, knowledge-grounded guidance, and design evidence research.",
   "author": {
     "name": "Viperwow",
     "email": "viperkodiak@gmail.com"
