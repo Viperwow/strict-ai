@@ -2,7 +2,7 @@
 
 ## Branches
 
-Start a focused branch from an up-to-date `main`. Use `<type>/<short-topic>` with a lowercase kebab-case topic, for example `feat/strict-mod-creator`, `fix/mod-typecheck`, `docs/mod-creation`, or `ci/commitlint`. Use the conventional commit type that describes the work; omit personal prefixes and generated workspace names. Open a pull request into `main`.
+Start a focused branch from an up-to-date `main`. Use `<type>/<short-topic>` with a lowercase kebab-case topic, for example `feat/strict-comment`, `fix/comment-triggers`, `docs/comment-contract`, or `ci/commitlint`. Use the conventional commit type that describes the work; omit personal prefixes and generated workspace names. Open a pull request into `main`.
 
 This follows the branch naming used in Whispio/erindi. Naming is a contributor convention; no separate branch-name validator is installed.
 
@@ -13,9 +13,9 @@ Use [Conventional Commits](https://www.conventionalcommits.org/en/v1.0.0/): `typ
 Examples:
 
 ```text
-feat(strict-mod-creator): add mod creation workflow
-fix(strict-mod-creator): include host-generated declarations
-test(strict-mod-creator): cover force-push policy
+feat(strict-comment): add comment contract skill
+fix(strict-comment): narrow the inline triggers
+test(strict-comment): cover the doc block case
 ci: check pull request commits with commitlint
 ```
 
